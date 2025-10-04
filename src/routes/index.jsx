@@ -2,17 +2,20 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Dashboard from "../pages/Dashboard";
+import ChargingStationMap from "../pages/Home/ChargingStationMap";
+import Subscription from "../pages/SubscriptionManagement/Subscription";
+import Login from "../pages/Auth/Login";
+import Register from "../pages/Auth/Register";
+import VehicleList from "../pages/VehicleManagement/VehicleList";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "dashboard", element: <Dashboard /> },
+      { index: true, element: <ChargingStationMap /> },
+      { path: "subscription", element: <Subscription /> },
+      { path: "vehicle", element: <VehicleList /> },
     ],
   },
   {
@@ -20,7 +23,7 @@ const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [
       { path: "login", element: <Login /> },
-      { path: "register", element: <div>Register</div> },
+      { path: "register", element: <Register /> },
     ],
   },
   { path: "*", element: <Navigate to="/" /> },
