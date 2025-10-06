@@ -7,6 +7,7 @@ import Subscription from "../pages/SubscriptionManagement/Subscription";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import VehicleList from "../pages/VehicleManagement/VehicleList";
+import AddVehicle from "../pages/VehicleManagement/AddVehicle";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
       { index: true, element: <ChargingStationMap /> },
       { path: "subscription", element: <Subscription /> },
       { path: "vehicle", element: <VehicleList /> },
+      { path: "addvehicle", element: <AddVehicle/> },
     ],
   },
   {
