@@ -8,6 +8,8 @@ import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import VehicleList from "../pages/VehicleManagement/VehicleList";
 import AddVehicle from "../pages/VehicleManagement/AddVehicle";
+import Booking from "../pages/Booking/Booking";
+import Account from "../pages/Account/Account";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +20,8 @@ const router = createBrowserRouter([
       { path: "subscription", element: <Subscription /> },
       { path: "vehicle", element: <VehicleList /> },
       { path: "addvehicle", element: <AddVehicle/> },
+      { path: "booking", element: <Booking /> },
+      { path: "account", element: <Account /> },
     ],
   },
   {

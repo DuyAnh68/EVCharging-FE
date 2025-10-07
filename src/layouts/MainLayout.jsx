@@ -1,19 +1,24 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import Header from "../components/Layout/Header";
+import { useNavigate } from "react-router-dom";
 
 const MainLayout = () => {
-  return (
-    <div className="min-h-screen min-w-screen flex-1">
-      <div className="header bg-amber-200 justify-items-center flex-row">
-        <nav className="gap-10 justify-between bg-amber-600 p-10 flex">
-          <Link to="/">Home</Link>
-          <Link to="/subscription">Subscription</Link>
-          <Link to={"/vehicle"}>Vehicle</Link>
-        </nav>
-      </div>
+  const navigate = useNavigate();
 
-      <main>
-        <Outlet />
-      </main>
+  const handleLogout = () => {
+    navigate("/auth");
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header isAuthenticated={true} handleLogout={handleLogout} />
+      <div className="pt-16">
+        <div className="min-w-screen mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <main>
+            <Outlet />
+          </main>
+        </div>
+      </div>
     </div>
   );
 };
