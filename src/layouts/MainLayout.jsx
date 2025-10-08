@@ -13,7 +13,7 @@ const MainLayout = () => {
     <div className="min-h-screen bg-gray-50">
       <Header isAuthenticated={true} handleLogout={handleLogout} />
       <div className="pt-16">
-        <div className="min-w-screen mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="min-w-screen bg-[#F6F9EE] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <main>
             <Outlet />
           </main>

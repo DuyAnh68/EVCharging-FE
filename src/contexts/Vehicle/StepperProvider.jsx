@@ -4,7 +4,7 @@ const StepperContext = createContext();
 
 export const StepperProvider = ({ children }) => {
   const [currentStep, setCurrentStep] = useState(1);
-
+ 
   const value = {
     currentStep,
     setCurrentStep
