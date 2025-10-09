@@ -15,7 +15,7 @@ function AddVehicle() {
             <div className="text-[black]">
                 <Steps/>
             </div>
-            <div className="bg-[#D9D9D9] h-[508px] w-[1221px] rounded-[36px]"></div>
+            <div className="bg-[#D9D9D9] h-[508px] w-full max-w-5xl mx-auto p-6 md:p-10 shadow-sm flex flex-col gap-6 rounded-[36px]"></div>
         </div>
     </div>
 
