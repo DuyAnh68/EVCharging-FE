@@ -1,17 +1,23 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 
 const StepperContext = createContext();
 
 export const StepperProvider = ({ children }) => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const savedStep = localStorage.getItem('currentStep');
+  const [currentStep, setCurrentStep] = useState(savedStep ? Number(savedStep) : 1);
+
+  useEffect(() => {
+    localStorage.setItem('currentStep', currentStep);
+  }, [currentStep]);
  
   const value = {
     currentStep,
     setCurrentStep
   }
   return (
-    <StepperProvider.Provider value={value}>{children}</StepperProvider.Provider>
+    <StepperContext.Provider value={value}>{children}</StepperContext.Provider>
   );
 };
 
 export default StepperContext;
+
