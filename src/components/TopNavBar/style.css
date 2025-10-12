@@ -1,0 +1,68 @@
+.top-nav {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+
+    .logo-wrapper {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 16px;
+
+        .logo {
+            width: 48px;
+            height: 48px;
+
+            .svg {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .app-name {
+            font-size: 32px;
+            font-weight: 500;
+            color: #000;
+        }
+    }
+
+    .nav-items {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 16px;
+
+        .nav-item {
+            font-size: 16px;
+            font-weight: 500;
+            color: #000;
+            text-decoration: none;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: translateY(-3px);
+            }
+        }
+
+        .nav-item.active {
+            text-decoration-line: underline;
+            text-decoration-color: #009951;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 8px;
+        }
+
+        .nav-item.signup {
+            background-color: #009951;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .nav-item.signup:hover {
+            background-color: #00663c;
+        }
+    }
+}

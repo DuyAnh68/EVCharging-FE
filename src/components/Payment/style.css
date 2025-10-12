@@ -1,0 +1,46 @@
+.bill-details {
+    .title {
+        font-size: 32px;
+        font-weight: 500;
+        color: #000;
+        text-align: center;
+    }
+
+    .card {
+        gap: 16px !important;
+        padding: 24px !important;
+        background: #d9d9d9 !important;
+    }
+
+    .total {
+        font-weight: 500;
+        font-size: 24px;
+        color: #05B10E;
+    }
+}
+
+.payment-methods {
+    gap: 16px !important;
+    padding: 24px !important;
+    background: #d9d9d9 !important;
+
+    .card {
+        flex-flow: row wrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px;
+    }
+
+    .benefit-tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        border: 1px solid #28A56A;
+        padding: 8px 16px;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #000;
+    }
+}
