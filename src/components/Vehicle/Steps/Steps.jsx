@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import Stepper from './Stepper';
+import { useContext } from 'react';
+import StepperContext from '../../../contexts/Vehicle/StepperProvider';
 
 function Steps() {
     const steps = [
@@ -10,7 +12,7 @@ function Steps() {
 
     ];
 
-    const [currentStep, setCurrentStep] = useState(1);
+    const { currentStep, setCurrentStep } = useContext(StepperContext);
   return (
     <div>
         <div className="flex items-center justify-between h-[69px] w-[687px] mx-auto mt-3 relative">             

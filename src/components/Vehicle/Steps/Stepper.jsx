@@ -9,7 +9,7 @@ function Stepper({index, currentStep, isLast, onClick}) {
         onClick={onClick}
         className={`w-[38px] h-[38px] flex items-center justify-center rounded-full cursor-pointer font-bold border-2 transition-all duration-200 ${
           isActive
-            ? 'bg-[#00b35c] text-white border-[#00b35c]'
+            ? 'bg-[#009951] text-white border-[#009951]'
             : isCompleted
             ? 'border-[#00b35c] text-[white] bg-[#00b35c]'
             : 'border-gray-300 text-gray-500 bg-white'
