@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks";
 
 function Login() {
   const navigate = useNavigate();
+  const { login, loading, error } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -16,8 +18,15 @@ function Login() {
     }));
   };
 
-  const handleSubmit = () => {
-    navigate("/");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const result = await login(formData);
+
+    if (result.success) {
+      navigate("/");
+    }
+    // Nếu có lỗi, error sẽ được hiển thị từ useAuth hook
   };
 
   return (
@@ -44,6 +53,13 @@ function Login() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {/* Hiển thị lỗi nếu có */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+              {error}
+            </div>
+          )}
+
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">
@@ -106,9 +122,10 @@ function Login() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Đăng nhập
+              {loading ? "Đang đăng nhập..." : "Đăng nhập"}
             </button>
           </div>
         </form>

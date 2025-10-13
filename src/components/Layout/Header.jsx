@@ -1,14 +1,20 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import Logo from "../../assets/Images/Logo.png";
+import useAuth from "../../hooks/useAuth";
 
-const Header = ({ isAuthenticated, handleLogout }) => {
+const Header = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
   console.log(isAuthenticated);
 
   const navLinkClass = ({ isActive }) =>
     isActive
-      ? "!text-green-500 border-b-2 border-green-500 px-3 py-2 text-sm font-medium"
-      : "!text-gray-600 hover:!text-green-500 px-3 py-2 text-sm font-medium";
+      ? "relative !text-gray-900 px-4 py-3 text-sm font-medium transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-green-500 after:rounded-full"
+      : "relative !text-gray-600 hover:text-gray-900 px-4 py-3 text-sm font-medium transition-colors duration-200  hover:after:bottom-0 hover:after:left-0 hover:after:right-0 hover:after:h-0.5 hover:after:bg-green-300 hover:after:rounded-full";
+
+  // Custom class cho các link khi chưa đăng nhập
+  const navLinkClassUnauthenticated =
+    "relative !text-gray-600 hover:text-gray-900 px-4 py-3 text-sm font-medium transition-colors duration-200 hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:right-0 hover:after:h-0.5 hover:after:bg-green-300 hover:after:rounded-full";
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
@@ -24,28 +30,48 @@ const Header = ({ isAuthenticated, handleLogout }) => {
             <nav className="hidden md:flex m-auto p-auto">
               <NavLink
                 to={isAuthenticated ? "/" : "/auth"}
-                className={navLinkClass}
+                className={
+                  isAuthenticated ? navLinkClass : navLinkClassUnauthenticated
+                }
               >
                 Bản đồ
               </NavLink>
-              <NavLink
-                to={isAuthenticated ? "/booking" : "/auth/login"}
-                className={navLinkClass}
-              >
-                Đặt chỗ
-              </NavLink>
-              <NavLink
-                to={isAuthenticated ? "/vehicle" : "/auth/login"}
-                className={navLinkClass}
-              >
-                Xe của bạn
-              </NavLink>
-              <NavLink
-                to={isAuthenticated ? "/account" : "/auth/login"}
-                className={navLinkClass}
-              >
-                Tài khoản
-              </NavLink>
+              {isAuthenticated ? (
+                <NavLink to="/booking" className={navLinkClass}>
+                  Đặt chỗ
+                </NavLink>
+              ) : (
+                <NavLink
+                  to="/auth/login"
+                  className={navLinkClassUnauthenticated}
+                >
+                  Đặt chỗ
+                </NavLink>
+              )}
+              {isAuthenticated ? (
+                <NavLink to="/vehicle" className={navLinkClass}>
+                  Xe của bạn
+                </NavLink>
+              ) : (
+                <NavLink
+                  to="/auth/login"
+                  className={navLinkClassUnauthenticated}
+                >
+                  Xe của bạn
+                </NavLink>
+              )}
+              {isAuthenticated ? (
+                <NavLink to="/account" className={navLinkClass}>
+                  Tài khoản
+                </NavLink>
+              ) : (
+                <NavLink
+                  to={"/auth/login"}
+                  className={navLinkClassUnauthenticated}
+                >
+                  Tài khoản
+                </NavLink>
+              )}
             </nav>
           </div>
 
@@ -55,7 +81,7 @@ const Header = ({ isAuthenticated, handleLogout }) => {
                 <button
                   className="text-gray-600 hover:text-green-500 px-3 py-2 text-sm font-medium"
                   onClick={() => {
-                    navigate("/guest/login");
+                    navigate("/auth/login");
                   }}
                 >
                   Đăng nhập
@@ -63,7 +89,7 @@ const Header = ({ isAuthenticated, handleLogout }) => {
                 <button
                   className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-600 transition-colors"
                   onClick={() => {
-                    navigate("/guest/register");
+                    navigate("/auth/register");
                   }}
                 >
                   Đăng ký
@@ -71,10 +97,12 @@ const Header = ({ isAuthenticated, handleLogout }) => {
               </>
             ) : (
               <div className="flex items-center space-x-4">
-                <span className="text-gray-700 text-sm">Xin chào, Duy Anh</span>
+                <span className="text-gray-700 text-sm">
+                  Xin chào, {user?.name || "User"}
+                </span>
                 <button
                   className="text-gray-600 hover:text-green-500 px-3 py-2 text-sm font-medium"
-                  onClick={handleLogout}
+                  onClick={logout}
                 >
                   Đăng xuất
                 </button>
