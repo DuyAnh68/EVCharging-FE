@@ -87,7 +87,7 @@ const Header = () => {
                   Đăng nhập
                 </button>
                 <button
-                  className="bg-green-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-600 transition-colors"
+                  className="!bg-green-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-600 transition-colors"
                   onClick={() => {
                     navigate("/auth/register");
                   }}
@@ -101,7 +101,7 @@ const Header = () => {
                   Xin chào, {user?.name || "User"}
                 </span>
                 <button
-                  className="text-gray-600 hover:text-green-500 px-3 py-2 text-sm font-medium"
+                  className="!text-gray-600 hover:text-green-500 px-3 py-2 text-sm font-medium"
                   onClick={logout}
                 >
                   Đăng xuất
