@@ -68,3 +68,79 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Custom styles for SearchForm */
+.search-form-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.search-form-container input:focus,
+.search-form-container select:focus {
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+}
+
+.search-form-container button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+}
+
+.search-form-container button:active {
+  transform: translateY(0);
+}
+
+/* Map component styles */
+.map-container {
+  min-height: 400px;
+  position: relative;
+}
+
+.map-container .station-card {
+  transition: all 0.3s ease;
+}
+
+.map-container .station-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.map-container .status-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .search-form-container {
+    margin: 0 1rem;
+    padding: 1.5rem;
+  }
+
+  .search-form-container .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .map-container {
+    height: 300px;
+  }
+
+  .map-container .station-list {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: 0;
+    max-width: 100%;
+    max-height: 200px;
+  }
+}
