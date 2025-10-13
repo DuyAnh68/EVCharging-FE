@@ -1,21 +1,29 @@
 import React from 'react'
 import { Outlet, Link } from "react-router-dom";
 import Steps from '../../components/Vehicle/Steps/Steps';
+import ContentStep from '../../components/Vehicle/ContentStep';
+import { StepperProvider } from '../../contexts/Vehicle/StepperProvider';
 
 
 function AddVehicle() {
     
   return (
-    <div className="bg-[#F6F9EE] p-10">
-        <div className="flex flex-col items-center justify-top  bg-[red]">
+    <div className="bg-[#F6F9EE] flex flex-col gap-3 p-10">
+        <div className="flex flex-col items-center mb-10">
             <div className="title text-[black] text-4xl font-bold">Logo</div>
             <div className="text-[black] text-3xl font-medium">Đăng ký xe điện của bạn</div>
         </div>
-        <div className="middle h-screen flex flex-col items-center justify-center gap-15">
-            <div className="text-[black]">
+        <div className="middle flex flex-1 flex-col items-center justify-center gap-10">
+            
+              <StepperProvider>
                 <Steps/>
-            </div>
-            <div className="bg-[#D9D9D9] h-[508px] w-[1221px] rounded-[36px]"></div>
+                <div className="w-full max-w-5xl mx-auto">
+                  <ContentStep/>
+                </div>
+                 
+              </StepperProvider>
+            
+            
         </div>
     </div>
 

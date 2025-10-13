@@ -1,28 +1,37 @@
-import React from 'react'
+import React, { useState } from 'react'
+import Stepper from './Stepper';
+import { useContext } from 'react';
+import StepperContext from '../../../contexts/Vehicle/StepperProvider';
 
 function Steps() {
     const steps = [
-        {label: 'Chọn xe điện'},
+        {label: 'Thông tin xe điện'},
         {label: 'Cấu hình sạc'},
         {label: 'Gói thuê bao'},
         {label: 'Hoàn tất'}
 
     ];
+
+    const { currentStep, setCurrentStep } = useContext(StepperContext);
   return (
     <div>
-        <div className="flex items-center justify-between h-[69px] w-[687px] mx-auto mt-3 relative">  
-            {/* <div className="absolute top-1/2 left-0 w-full h-[2px] !bg-[red] -z-10"></div>           */}
+        <div className="flex items-center justify-between h-[69px] w-[687px] mx-auto mt-3 relative">             
                 {steps.map((step, index) => (
-                   <div key={index}  className="flex flex-col items-center justify-between gap-1">
-                        <div className="w-[38px] h-[38px] flex items-center justify-center rounded-full bg-[#00b35c] text-black font-bold">
-                            {index+1}
-                        </div>
-                        <div className="text-[15px] mt-2 font-medium text-[black] ">
-                            {step.label}
-                        </div>
-                        {index < steps.length - 1 && (
-                            <div className="absolutebg-[red] w-[152px] h-[3px]"></div>
-                        )}
+                   <div key={index}  className="flex flex-col items-center justify-between gap-1 ">
+                    <Stepper
+                        index={index + 1}
+                        currentStep={currentStep}
+                        isLast={index === steps.length - 1}
+                        onClick={() => setCurrentStep(index + 1)}
+                    />
+                        
+                        <div
+            className={`text-[15px] mt-2 font-medium ${
+              currentStep === index + 1 ? 'text-[#00b35c]' : 'text-gray-600'
+            }`}
+          >
+            {step.label}
+          </div>
                    </div>
                 ))}  
         </div>
