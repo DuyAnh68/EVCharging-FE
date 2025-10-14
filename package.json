@@ -13,6 +13,7 @@
     "@googlemaps/js-api-loader": "^2.0.1",
     "@reduxjs/toolkit": "^2.9.0",
     "@tailwindcss/vite": "^4.1.14",
+    "@vis.gl/react-google-maps": "^1.5.5",
     "antd": "^5.27.4",
     "axios": "^1.12.2",
     "date-fns": "^4.1.0",
