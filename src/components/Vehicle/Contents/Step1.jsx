@@ -25,6 +25,8 @@ function VehicleInf() {
     "Volkswagen"
   ];
 
+  
+
   const { currentStep, setCurrentStep } = useContext(StepperContext);
 
   const handleNext = () => {

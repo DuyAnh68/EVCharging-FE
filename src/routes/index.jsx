@@ -13,6 +13,7 @@ import Account from "../pages/Account/Account";
 import StationBookingPage from "../pages/StationBooking/StationBookingPage.jsx";
 import ChargePage from "../pages/Charge/ChargePage.jsx";
 import PaymentPage from "../pages/Payment/PaymentPage.jsx";
+import VehicleDetail from "../components/Vehicle/VehicleDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
       { path: "booking", element: <StationBookingPage /> },
       { path: "charge", element: <ChargePage /> },
       { path: "payment", element: <PaymentPage /> },
+      { path:"/vehicle/:id", element:<VehicleDetail />}
     ],
   },
   {
