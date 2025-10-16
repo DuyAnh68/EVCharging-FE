@@ -1,0 +1,74 @@
+.qr-section {
+    .qr-container {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        max-width: 300px;
+        background-color: rgba(40, 165, 106, 0.26);
+        align-self: center;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .btn {
+        border-radius: 20px;
+    }
+}
+
+.station-detail-section {
+    height: fit-content;
+    align-self: center;
+    width: 100%;
+    gap: 24px !important;
+
+    .text-label {
+        font-weight: 500;
+        color: #000;
+    }
+}
+
+.charging-status-section {
+    .charging-progress {
+    }
+
+    .charging-info {
+        display: flex;
+        flex-flow: column nowrap;
+        gap: 8px;
+
+        .charging-info-item {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #000;
+            padding-bottom: 8px;
+        }
+    }
+
+    .btn {
+        border-radius: 20px;
+    }
+
+    th {
+        text-align: left;
+    }
+
+    tr {
+        border-bottom: 1px solid #000;
+    }
+
+    td, th {
+        padding: 8px 0;
+    }
+}
+
+.payment-section {
+    gap: 24px !important;
+
+    .btn {
+        border-radius: 20px;
+    }
+}

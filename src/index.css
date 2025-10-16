@@ -6,8 +6,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #000;
+  background-color: #fdfdfd;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -75,7 +75,11 @@ button:focus-visible {
   border: 1px solid #e2e8f0;
 }
 
-.search-form-container input:focus,
+.search-form-container input:focus {
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+}
+
 .search-form-container select:focus {
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
   border-color: #22c55e;
@@ -142,5 +146,76 @@ button:focus-visible {
     left: 0;
     max-width: 100%;
     max-height: 200px;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #009951;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  width: fit-content;
+  border: 1px solid transparent;
+
+  &:hover {
+    background-color: #00663c;
+  }
+
+  &:disabled {
+    background: rgba(20, 174, 92, 0.54);
+    cursor: not-allowed;
+  }
+}
+
+.ant-input-outlined,
+.ant-picker-outlined,
+.ant-select,
+.ant-input-number-wrapper {
+  border: 1px solid #000 !important;
+  height: 40px !important;
+}
+
+.ant-select,
+.ant-input-number-wrapper {
+  border: none !important;
+}
+
+.ant-select-selector,
+.ant-input-number-group-addon {
+  border: 1px solid #000 !important;
+}
+
+.ant-input-number-input {
+  height: 40px !important;
+}
+
+.ant-input-number {
+  border: 1px solid #000 !important;
+  border-right: none !important;
+}
+
+.ant-popover-title {
+  font-size: 24px !important;
+}
+
+.card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 16px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000;
+
+  .header {
+    font-size: 24px;
+    font-weight: 500;
+    color: #000;
   }
 }

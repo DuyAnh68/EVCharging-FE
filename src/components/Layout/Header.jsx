@@ -29,7 +29,7 @@ const Header = () => {
             </Link>
             <nav className="hidden md:flex m-auto p-auto">
               <NavLink
-                to={isAuthenticated ? "/" : "/auth"}
+                to={isAuthenticated ? "/" : "/"}
                 className={
                   isAuthenticated ? navLinkClass : navLinkClassUnauthenticated
                 }
