@@ -5,6 +5,10 @@ import useAuth from "../../hooks/useAuth";
 const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
   console.log(isAuthenticated);
 
   const navLinkClass = ({ isActive }) =>
@@ -102,7 +106,7 @@ const Header = () => {
                 </span>
                 <button
                   className="!text-gray-600 hover:text-green-500 px-3 py-2 text-sm font-medium"
-                  onClick={logout}
+                  onClick={handleLogout}
                 >
                   Đăng xuất
                 </button>
