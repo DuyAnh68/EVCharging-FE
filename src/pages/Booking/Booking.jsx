@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Booking() {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     district: "",
     chargerType: "",
@@ -13,7 +15,8 @@ function Booking() {
       id: 1,
       name: "CHUNG CƯ HÀ ĐÔ",
       address: "365 Nguyễn Hữu Thọ, P1, Quận 7, TP.HCM",
-      image: "https://example.com/hado-apartment.jpg",
+      image:
+        "https://www.bonboncar.vn/blog/content/images/2025/07/danh-sach-tram-sac-vinfast-1-1.png",
       price: 3500,
       district: "Quận 7",
       status: "Trống chỗ",
@@ -26,7 +29,7 @@ function Booking() {
       id: 2,
       name: "CHUNG CƯ VINHOMES",
       address: "720A Điện Biên Phủ, P22, Bình Thạnh, TP.HCM",
-      image: "https://example.com/vinhomes.jpg",
+      image: "https://thegioiphuongtien.vn/uploaded/H%E1%BA%A7m%20(6).jpg",
       price: 4000,
       district: "Bình Thạnh",
       status: "Hết chỗ",
@@ -36,7 +39,8 @@ function Booking() {
       id: 3,
       name: "VINCOM THỦ ĐỨC",
       address: "216 Võ Văn Ngân, Bình Thọ, Thủ Đức, TP.HCM",
-      image: "https://example.com/vincom.jpg",
+      image:
+        "https://xeotovinfast.com.vn/wp-content/uploads/2024/06/tram_sac_vinfast_o_quan_thu_duc.webp",
       price: 3800,
       district: "Thủ Đức",
       status: "Trống chỗ",
@@ -49,7 +53,7 @@ function Booking() {
       id: 4,
       name: "AEON MALL TÂN PHÚ",
       address: "30 Bờ Bao Tân Thắng, Sơn Kỳ, Tân Phú, TP.HCM",
-      image: "https://example.com/aeon.jpg",
+      image: "https://oto360.net/images/bai-viet/2023/tram_sac_vinfast.webp",
       price: 3200,
       district: "Tân Phú",
       status: "Bảo trì",
@@ -216,7 +220,16 @@ function Booking() {
                   </div>
                 ))}
               </div>
-              <button className="!bg-blue-500 !text-white px-4 py-2 rounded hover:!bg-blue-600 transition-colors">
+              <button
+                onClick={() => navigate(`/station/${station.id}`)}
+                disabled={station.status === "Bảo trì"}
+                className={`px-4 py-2 rounded transition-colors
+    ${
+      station.status === "Bảo trì"
+        ? "!bg-gray-400 !text-white cursor-not-allowed"
+        : "!bg-blue-500 text-white hover:!bg-blue-600"
+    }`}
+              >
                 ĐẶT CHỖ
               </button>
             </div>
