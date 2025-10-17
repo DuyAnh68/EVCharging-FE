@@ -1,5 +1,6 @@
 import VehicleCard from "./VehicleCard";
 import useVehicle from "../../hooks/useVehicle";
+import { useEffect } from "react";
 
 const VehicleListGrid = () => {
   const { getVehicle, vehicle, loading, error } = useVehicle();
@@ -8,7 +9,7 @@ const VehicleListGrid = () => {
     getVehicle();
   }, [getVehicle]);
 
-  if (!vehicle.length) return <p>Đang tải danh sách xe...</p>;
+  if (!vehicle) return <p>Đang tải danh sách xe...</p>;
 
   return (
     <div className="container mx-auto p-4">
