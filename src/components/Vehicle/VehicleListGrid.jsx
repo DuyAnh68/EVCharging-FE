@@ -1,15 +1,25 @@
-import React from "react";
-import mockVehicles from "../../data/mockVehicles";
 import VehicleCard from "./VehicleCard";
+import useVehicle from "../../hooks/useVehicle";
+import { useEffect } from "react";
 
-function VehicleListGrid() {
+const VehicleListGrid = () => {
+  const { getVehicle, vehicle, loading, error } = useVehicle();
+
+  useEffect(() => {
+    getVehicle();
+  }, [getVehicle]);
+
+  if (!vehicle) return <p>Đang tải danh sách xe...</p>;
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-      {mockVehicles.map((vehicle) => (
-        <VehicleCard key={vehicle.id} vehicle={vehicle} />
-      ))}
+    <div className="container mx-auto p-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {vehicle.map((v) => (
+          <VehicleCard key={v.id} data={v} />
+        ))}
+      </div>
     </div>
   );
-}
+};
 
 export default VehicleListGrid;

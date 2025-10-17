@@ -1,29 +1,73 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Battery, Plug, Car } from "lucide-react";
 
-function VehicleCard({ vehicle }) {
+const VehicleCard = ({ data }) => {
+  const vehicle = data;
+
   return (
-    <div className="bg-white rounded-lg shadow p-4 flex flex-col gap-2 hover:shadow-lg transition">
-      <img
-        src={vehicle.image}
-        alt={vehicle.name}
-        className="w-full h-40 object-cover rounded mb-2"
-      />
-      <div className="font-bold text-xl text-[#14AE5C]">{vehicle.name}</div>
-      <div className="text-gray-700">
-        Biển số: <span className="font-medium">{vehicle.licensePlate}</span>
+    <div className="max-w-sm rounded-2xl overflow-hidden shadow bg-white border border-gray-200 m-4 transition hover:shadow-lg">
+      {/* Ảnh hoặc icon xe */}
+      <div className="w-full h-40 bg-gray-100 flex items-center justify-center">
+        <Car size={48} className="text-gray-400" />
       </div>
-      <div className="text-gray-700">Loại: {vehicle.type}</div>
-      <div className="text-gray-700">Màu: {vehicle.color}</div>
-      <div className="text-gray-700">Năm: {vehicle.year}</div>
-      <Link
-        to={`/vehicle/${vehicle.id}`}
-        className="mt-2 bg-[#009951] text-white px-4 py-2 rounded hover:bg-[#00b35c] transition text-center"
-      >
-        Xem chi tiết
-      </Link>
+
+      {/* Nội dung */}
+      <div className="px-6 py-4">
+        <h2 className="font-bold text-xl mb-3 text-black">
+          {vehicle?.model?.modelName || "Unknown Model"}
+        </h2>
+
+        <div className="text-gray-700 text-base space-y-2">
+          <p>
+            <span className="font-semibold">Brand:</span>{" "}
+            {vehicle?.model?.brand || "N/A"}
+          </p>
+
+          <p>
+            <span className="font-semibold">License Plate:</span>{" "}
+            {vehicle?.licensePlate || "N/A"}
+          </p>
+
+          <div className="flex items-center">
+            <Plug size={18} className="mr-2 text-blue-600" />
+            <span>{vehicle?.model?.connector || "Unknown"}</span>
+          </div>
+
+          <div className="flex items-center">
+            <Battery size={18} className="mr-2 text-green-600" />
+            <span>
+              {(vehicle?.model?.batteryCapacity || 0).toFixed(2)} kWh
+            </span>
+          </div>
+
+          {/* Trạng thái */}
+          <div className="mt-3">
+            <span
+              className={`px-3 py-1 text-sm rounded-full ${
+                vehicle?.status === "APPROVED"
+                  ? "bg-green-100 text-green-700"
+                  : vehicle?.status === "PENDING"
+                  ? "bg-gray-100 text-gray-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {vehicle?.status || "UNKNOWN"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Nút hành động */}
+      <div className="px-6 pt-3 pb-4 flex justify-between bg-gray-50">
+        <button className="border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+          Thuê bao
+        </button>
+        <button className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm hover:bg-blue-700 transition">
+          Sạc ngay
+        </button>
+      </div>
     </div>
   );
-}
+};
 
 export default VehicleCard;
