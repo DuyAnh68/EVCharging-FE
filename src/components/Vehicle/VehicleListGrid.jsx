@@ -1,23 +1,19 @@
-import React, { useEffect, useState } from "react";
 import VehicleCard from "./VehicleCard";
-import mockVehicles from "../../data/mockVehicles";
+import useVehicle from "../../hooks/useVehicle";
 
 const VehicleListGrid = () => {
-  const [vehicles, setVehicles] = useState([]);
+  const { getVehicle, vehicle, loading, error } = useVehicle();
 
   useEffect(() => {
-    // Tạm thời giả lập API
-    setTimeout(() => {
-      setVehicles(mockVehicles);
-    }, 300);
-  }, []);
+    getVehicle();
+  }, [getVehicle]);
 
-  if (!vehicles.length) return <p>Đang tải danh sách xe...</p>;
+  if (!vehicle.length) return <p>Đang tải danh sách xe...</p>;
 
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {vehicles.map((v) => (
+        {vehicle.map((v) => (
           <VehicleCard key={v.id} data={v} />
         ))}
       </div>
