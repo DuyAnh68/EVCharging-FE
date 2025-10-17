@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import mockVehicles from "../../data/mockVehicles";
 
 const StationDetail = () => {
   const { id } = useParams();
 
   const [station, setStation] = useState(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const { vehicle } = useVehicle();
 
   useEffect(() => {
     const mockStations = [
@@ -274,7 +274,7 @@ const StationDetail = () => {
                 </label>
                 <select className="border w-full px-3 py-2 rounded-md">
                   <option value="">-- Chọn xe --</option>
-                  {mockVehicles.map((v) => (
+                  {vehicle.map((v) => (
                     <option key={v.id} value={v.id}>
                       {v.name} ({v.plate})
                     </option>
