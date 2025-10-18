@@ -7,7 +7,7 @@ const useAuth = () => {
   const [error, setError] = useState(null);
 
   // Kiểm tra isAuthenticated dựa trên user và token
-  const isAuthenticated = !!user && !!localStorage.getItem("access_token");
+  const isAuthenticated = !!localStorage.getItem("access_token");
 
   // Hàm đăng nhập giả lập
   const loginUser = async (credentials) => {
@@ -19,6 +19,7 @@ const useAuth = () => {
 
       if (response) {
         localStorage.setItem("access_token", response.result.token);
+        console.log(localStorage.access_token);
         return { success: true };
       } else {
         throw new Error("Email hoặc mật khẩu không đúng");
