@@ -5,6 +5,7 @@ const useVehicle = () => {
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [models, setModels] = useState([]);
 
   const addVehicle = async (credentials) => {
     setLoading(true);
@@ -39,11 +40,30 @@ const useVehicle = () => {
     }
   };
 
+  const getVehicleByBrand = async (brandName) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await vehicleListApi.getVehicleByBrand(brandName);
+      if(response){
+        setModels(response.result);
+        setLoading(false);
+        return response.result
+      }
+    }catch (e) {
+      setError(e.message)
+      return e.message
+    }finally{
+      setLoading(false);
+    }
+  };
+
   return {
     vehicle,
     loading,
     error,
     getVehicle,
+    getVehicleByBrand,
   };
 };
 
