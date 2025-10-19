@@ -7,14 +7,17 @@ const VehicleListGrid = () => {
 
   useEffect(() => {
     getVehicle();
-  }, [getVehicle]);
+  }, []);
 
-  if (!vehicle) return <p>Đang tải danh sách xe...</p>;
+  if (loading) return <p>Đang tải danh sách xe...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
+  if (!vehicle || vehicle.length === 0)
+    return <p>Bạn chưa có xe nào. Vui lòng thêm xe.</p>;
 
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {vehicle.map((v) => (
+        {vehicle?.map((v) => (
           <VehicleCard key={v.id} data={v} />
         ))}
       </div>
