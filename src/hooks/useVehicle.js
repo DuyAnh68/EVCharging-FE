@@ -14,6 +14,7 @@ const useVehicle = () => {
       const response = await vehicleListApi.getVehicleList();
       if (response) {
         setVehicle(response.result);
+        setLoading(false);
         return response.result;
       }
     } catch (e) {
