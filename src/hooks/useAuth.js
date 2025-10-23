@@ -32,10 +32,8 @@ const useAuth = () => {
       if (response?.result?.token) {
         const token = response.result.token;
 
-        // Lưu token vào localStorage
         localStorage.setItem("access_token", token);
 
-        // Decode token để lấy thông tin user
         const decodedUser = jwtDecode(token);
         setUser(decodedUser);
 
