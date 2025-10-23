@@ -1,84 +1,100 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Car } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
-import YearPicker from "../YearPicker";
 import StepperContext from "../../../contexts/Vehicle/StepperProvider";
 import useVehicle from "../../../hooks/useVehicle";
 
 function VehicleInf() {
   const evBrands = ["VINFAST", "BYD"];
-
   const { getVehicleByBrand, loading } = useVehicle();
+  const { currentStep, setCurrentStep, vehicleData, setVehicleData } = useContext(StepperContext);
   const [modelList, setModelList] = useState([]);
-  const [connector, setConnector] = useState("");
-  const [batteryCapacity, setBatteryCapacity] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
 
-  const { currentStep, setCurrentStep } = useContext(StepperContext);
+  // Nạp danh sách model khi brand thay đổi (kể cả khi back lại)
+  useEffect(() => {
+    const fetchModels = async () => {
+      if (vehicleData.brand) {
+        const data = await getVehicleByBrand(vehicleData.brand);
+        if (Array.isArray(data)) setModelList(data);
+      } else {
+        setModelList([]);
+      }
+    };
+    fetchModels();
+  }, [vehicleData.brand]);
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    }
+  // Hàm tiện ích cập nhật vehicleData
+  const handleChange = (field, value) => {
+    setVehicleData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleBrandChange = async (e) => {
+  // Hãng xe
+  const handleBrandChange = (e) => {
     const brand = e.target.value;
-    setSelectedBrand(brand);
-    setSelectedModel("");
-    setConnector("");
-    setBatteryCapacity("");
-
-    if (!brand) {
-      setModelList([]);
-      return;
-    }
-
-    const data = await getVehicleByBrand(brand);
-
-    if (data && Array.isArray(data)) {
-      setModelList(data);
-    }
+    handleChange("brand", brand);
+    handleChange("modelName", "");
+    handleChange("connector", "");
+    handleChange("batteryCapacity", "");
+    handleChange("modelId", "");
   };
 
+  // Mẫu xe
   const handleModelChange = (e) => {
     const modelName = e.target.value;
-    setSelectedModel(modelName);
+    handleChange("modelName", modelName);
 
     const selected = modelList.find((m) => m.modelName === modelName);
     if (selected) {
-      setConnector(selected.connector || "");
-      setBatteryCapacity(selected.batteryCapacity || "");
+      handleChange("connector", selected.connector || "");
+      handleChange("batteryCapacity", selected.batteryCapacity || "");
+      handleChange("modelId", selected.id);
     } else {
-      setConnector("");
-      setBatteryCapacity("");
+      handleChange("connector", "");
+      handleChange("batteryCapacity", "");
+      handleChange("modelId", "");
+    }
+  };
+
+  // Biển số
+  const handleLicenseChange = (e) => {
+    handleChange("licensePlate", e.target.value);
+  };
+
+  // Tiếp tục
+  const handleNext = () => {
+    if (!vehicleData.modelId || !vehicleData.licensePlate) {
+      alert("Vui lòng nhập đầy đủ thông tin xe trước khi tiếp tục!");
+      return;
+    }
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
   return (
     <div className="bg-[#D9D9D9] h-[508px] p-6 md:p-10 shadow-sm flex flex-col gap-6 rounded-[36px]">
-      <div className="flex items-center gap-3 ">
-        <div className="w-[40px] h-[40px] bg-[#009951] items-center justify-center flex rounded-full">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-[40px] h-[40px] bg-[#009951] flex items-center justify-center rounded-full">
           <Car className="text-[black]" />
         </div>
-        <div className="title text-[black] font-bold text-3xl ">
+        <div className="title text-[black] font-bold text-3xl">
           Thông tin xe điện
         </div>
       </div>
+
+      {/* Form */}
       <div className="flex flex-row justify-center">
         {/* Cột trái */}
-        <div className="ml-10 mt-5 w-1/2 flex flex-col gap-4 ">
+        <div className="ml-10 mt-5 w-1/2 flex flex-col gap-4">
           {/* Hãng xe */}
-          <div className="flex flex-col gap-1 text-[black] ">
+          <div className="flex flex-col gap-1 text-[black]">
             <label htmlFor="Brand" className="font-medium text-gray-700">
               Hãng xe:
             </label>
             <select
               id="Brand"
-              name="evBrand"
-              value={selectedBrand}
+              value={vehicleData.brand || ""}
               onChange={handleBrandChange}
               className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
               disabled={loading}
@@ -91,54 +107,62 @@ function VehicleInf() {
               ))}
             </select>
           </div>
+
+          {/* Cổng sạc */}
           <div className="flex flex-col gap-1 text-[black] mt-4">
-            {/* Cổng sạc */}
             <label htmlFor="ChargeType" className="font-medium text-gray-700">
               Loại cổng sạc:
             </label>
             <input
               id="ChargeType"
-              name="ChargeType"
-              value={connector}
+              value={vehicleData.connector || ""}
               readOnly
               className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
             />
           </div>
+
+          {/* Dung lượng */}
           <div className="flex flex-col gap-1 text-[black] mt-4">
-            {/* Dung lượng */}
             <label htmlFor="Battery" className="font-medium text-gray-700">
-              Dung lượng :
+              Dung lượng:
             </label>
             <input
               id="Battery"
-              name="BatteryCapacity"
-              value={batteryCapacity ? `${batteryCapacity} kWh` : ""}
+              value={
+                vehicleData.batteryCapacity
+                  ? `${vehicleData.batteryCapacity} kWh`
+                  : ""
+              }
               readOnly
               className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
             />
           </div>
         </div>
-        <div className="ml-10 mt-1 w-1/2 flex flex-col gap-4 ">
+
+        {/* Cột phải */}
+        <div className="ml-10 mt-1 w-1/2 flex flex-col gap-4">
+          {/* Tên xe */}
           <div className="flex flex-col gap-1 text-[black] mt-4">
             <label htmlFor="ModelName" className="font-medium text-gray-700">
               Tên xe:
             </label>
             <select
               id="ModelName"
-              name="modelName"
-              value={selectedModel}
+              value={vehicleData.modelName || ""}
               onChange={handleModelChange}
               className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
-              disabled={!modelList}
+              disabled={modelList.length === 0}
             >
               <option value="">-- Chọn mẫu xe --</option>
-              {modelList.map((model, index) => (
-                <option key={index} value={model.modelName}>
+              {modelList.map((model) => (
+                <option key={model.id} value={model.modelName}>
                   {model.modelName}
                 </option>
               ))}
             </select>
           </div>
+
+          {/* Biển số */}
           <div className="flex flex-col gap-1 text-[black] mt-4">
             <label htmlFor="LicensePlate" className="font-medium text-gray-700">
               Biển số xe:
@@ -146,17 +170,20 @@ function VehicleInf() {
             <input
               type="text"
               id="LicensePlate"
-              name="CarLicensePlate"
+              value={vehicleData.licensePlate || ""}
+              onChange={handleLicenseChange}
               placeholder="VD: 36A - 183636"
               className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
             />
           </div>
         </div>
       </div>
-      <div className="flex justify-end ">
+
+      {/* Nút Tiếp tục */}
+      <div className="flex justify-end">
         <button
           onClick={handleNext}
-          className="flex items-center justify-center !bg-[#009951] text-[white] font-bold py-3 px-6 rounded-full !hover:bg-green-600"
+          className="flex items-center justify-center bg-[#009951] text-[white] font-bold py-3 px-6 rounded-full hover:bg-green-600"
         >
           Tiếp tục
         </button>

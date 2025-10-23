@@ -19,7 +19,7 @@ function Stepper({index, currentStep, isLast, onClick}) {
       </div>
       {!isLast && (
         <div
-          className={`absolute top-1/2 left-full w-[177px] h-[3px] transform -translate-y-1/2 ${
+          className={`absolute top-1/2 left-full w-[280px] h-[3px] transform -translate-y-1/2 ${
             currentStep > index ? 'bg-[#00b35c]' : 'bg-gray-300'
           }`}
         ></div>

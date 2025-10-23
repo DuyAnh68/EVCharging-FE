@@ -16,7 +16,6 @@ const Header = () => {
       ? "relative !text-gray-900 px-4 py-3 text-sm font-medium transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-green-500 after:rounded-full"
       : "relative !text-gray-600 hover:text-gray-900 px-4 py-3 text-sm font-medium transition-colors duration-200  hover:after:bottom-0 hover:after:left-0 hover:after:right-0 hover:after:h-0.5 hover:after:bg-green-300 hover:after:rounded-full";
 
-  // Custom class cho các link khi chưa đăng nhập
   const navLinkClassUnauthenticated =
     "relative !text-gray-600 hover:text-gray-900 px-4 py-3 text-sm font-medium transition-colors duration-200 hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:right-0 hover:after:h-0.5 hover:after:bg-green-300 hover:after:rounded-full";
 

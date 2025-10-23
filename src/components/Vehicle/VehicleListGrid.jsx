@@ -9,9 +9,7 @@ const VehicleListGrid = () => {
     getVehicle();
   }, []);
 
-  if (loading) return <p>Đang tải danh sách xe...</p>;
-  if (error) return <p></p>;
-
+  if (!vehicle) return <p>Đang tải danh sách xe...</p>;
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -7,7 +7,11 @@ const StationDetail = () => {
 
   const [station, setStation] = useState(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const { vehicle } = useVehicle();
+  const { getVehicle, vehicle } = useVehicle();
+
+  useEffect(() => {
+    getVehicle();
+  }, []);
 
   useEffect(() => {
     const mockStations = [
@@ -115,40 +119,38 @@ const StationDetail = () => {
     setStation(found);
   }, [id]);
 
-  if (!station) return <p className="p-6">Đang tải dữ liệu...</p>;
-
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Cột trái */}
       <div className="lg:col-span-1 bg-white rounded-2xl shadow p-4">
         <img
-          src={station.image}
-          alt={station.name}
+          src={station?.image}
+          alt={station?.name}
           className="w-full h-52 object-cover rounded-xl"
         />
-        <h2 className="text-xl font-bold mt-3">{station.name}</h2>
-        <p className="text-gray-600">{station.address}</p>
+        <h2 className="text-xl font-bold mt-3">{station?.name}</h2>
+        <p className="text-gray-600">{station?.address}</p>
 
         <div className="flex items-center mt-2">
-          <span className="text-green-600 font-medium">{station.status}</span>
+          <span className="text-green-600 font-medium">{station?.status}</span>
           <span className="mx-2 text-gray-400">•</span>
-          <span className="text-gray-600">{station.slots} cổng sạc</span>
+          <span className="text-gray-600">{station?.slots} cổng sạc</span>
         </div>
 
         <p className="text-xs text-gray-400 mt-1">Cập nhật: 22/09/2025</p>
 
         <h3 className="font-semibold mt-4">Mô tả:</h3>
-        <p className="text-sm text-gray-700">{station.description}</p>
+        <p className="text-sm text-gray-700">{station?.description}</p>
 
         <h3 className="font-semibold mt-4">Tiện ích:</h3>
         <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-          {station.features.map((f, i) => (
+          {station?.features.map((f, i) => (
             <li key={i}>{f}</li>
           ))}
         </ul>
 
         <h3 className="font-semibold mt-4">Liên hệ:</h3>
-        <p className="text-blue-600">{station.hotline}</p>
+        <p className="text-blue-600">{station?.hotline}</p>
       </div>
 
       {/* Cột phải */}
@@ -187,7 +189,7 @@ const StationDetail = () => {
             Lịch giờ & số cổng trống (hôm nay)
           </h3>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 text-center">
-            {station.schedule.map((slot, i) => (
+            {station?.schedule.map((slot, i) => (
               <div
                 key={i}
                 className={`border rounded-md p-2 ${
@@ -217,7 +219,7 @@ const StationDetail = () => {
           <h3 className="font-semibold mb-3">Đặt chỗ của bạn</h3>
           <div className="text-sm space-y-1">
             <p>
-              <strong>Trạm sạc:</strong> {station.name}
+              <strong>Trạm sạc:</strong> {station?.name}
             </p>
             <p>
               <strong>Slot:</strong> A1 – Thời gian: 14:30 - 14:45
@@ -252,7 +254,7 @@ const StationDetail = () => {
         <div className="fixed inset-0 bg-transparent bg-opacity-40 flex items-center justify-center z-50 mt-70">
           <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg animate-fadeIn">
             <h3 className="text-lg font-semibold mb-4">
-              Đặt chỗ – {station.name}
+              Đặt chỗ – {station?.name}
             </h3>
 
             <div className="space-y-3">
@@ -275,10 +277,8 @@ const StationDetail = () => {
                 </label>
                 <select className="border w-full px-3 py-2 rounded-md">
                   <option value="">-- Chọn xe --</option>
-                  {vehicle.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.name} ({v.plate})
-                    </option>
+                  {vehicle?.map((v) => (
+                    <option key={v.id}>{v?.model?.modelName}</option>
                   ))}
                 </select>
               </div>

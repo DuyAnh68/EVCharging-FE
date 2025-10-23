@@ -10,17 +10,23 @@ const useVehicle = () => {
   const addVehicle = async (credentials) => {
     setLoading(true);
     setError(null);
+    console.log(credentials);
     try {
       const response = await vehicleListApi.addVehicle(credentials);
+      console.log(response);
       if (response) {
+        setVehicle(response.result);
         setLoading(false);
-        console.log(response);
-        return response;
+        return response.result;
       }
     } catch (error) {
+      setError(e.message);
+      return e.message;
     } finally {
+      setLoading(false);
     }
   };
+
   const getVehicle = async () => {
     setLoading(true);
     setError(null);
@@ -45,15 +51,15 @@ const useVehicle = () => {
     setError(null);
     try {
       const response = await vehicleListApi.getVehicleByBrand(brandName);
-      if(response){
+      if (response) {
         setModels(response.result);
         setLoading(false);
-        return response.result
+        return response.result;
       }
-    }catch (e) {
-      setError(e.message)
-      return e.message
-    }finally{
+    } catch (e) {
+      setError(e.message);
+      return e.message;
+    } finally {
       setLoading(false);
     }
   };
@@ -64,6 +70,8 @@ const useVehicle = () => {
     error,
     getVehicle,
     getVehicleByBrand,
+    addVehicle,
+    models,
   };
 };
 
