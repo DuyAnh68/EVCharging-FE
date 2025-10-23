@@ -20,7 +20,7 @@ const Header = () => {
     "relative !text-gray-600 hover:text-gray-900 px-4 py-3 text-sm font-medium transition-colors duration-200 hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:right-0 hover:after:h-0.5 hover:after:bg-green-300 hover:after:rounded-full";
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+    <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-50 overflow-x-hidden">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0 flex items-center gap-5">
@@ -101,7 +101,7 @@ const Header = () => {
             ) : (
               <div className="flex items-center space-x-4">
                 <span className="text-gray-700 text-sm">
-                  Xin chào, {user?.name || "User"}
+                  Xin chào, {user?.user.name || "User"}
                 </span>
                 <button
                   className="!text-gray-600 hover:text-green-500 px-3 py-2 text-sm font-medium"

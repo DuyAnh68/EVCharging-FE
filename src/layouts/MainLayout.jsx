@@ -4,13 +4,14 @@ import Header from "../components/Layout/Header.jsx";
 
 const MainLayout = () => {
   return (
-    <div className="flex flex-col bg-gray-50 overflow-x-hidden h-full">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
-      <div className="flex-1 bg-[#F6F9EE] min-w-screen min-h-screen">
-        <main className="container mt-10 mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
+      <main className="flex-1 min-h-screen bg-[#F6F9EE] min-w-screen mt-10 py-8">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

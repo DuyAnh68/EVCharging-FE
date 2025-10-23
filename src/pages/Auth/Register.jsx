@@ -43,7 +43,7 @@ function Register() {
 
     if (result.success) {
       toast.success(
-        "🎉 Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập..."
+        "🎉 Đăng ký thành công! Vui lòng check email để xác thực tài khoản."
       );
       setTimeout(() => {
         navigate("/auth/login");

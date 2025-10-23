@@ -1,123 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useVehicle from "../../hooks/useVehicle";
+import useStation from "../../hooks/useStation";
 
 const StationDetail = () => {
   const { id } = useParams();
 
-  const [station, setStation] = useState(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const { getVehicle, vehicle } = useVehicle();
+  const { station, getStationById } = useStation();
+  console.log(station);
+  const availableCount =
+    station?.spots?.filter((s) => s.status === "available").length || 0;
 
   useEffect(() => {
     getVehicle();
+    getStationById(id);
   }, []);
-
-  useEffect(() => {
-    const mockStations = [
-      {
-        id: 1,
-        name: "EcoCharge - Nguyễn Văn Cừ",
-        address: "123 Nguyễn Văn Cừ, Quận 1, TPHCM",
-        image:
-          "https://www.bonboncar.vn/blog/content/images/2025/07/danh-sach-tram-sac-vinfast-1-1.png",
-        description:
-          "Trạm sạc có hỗ trợ AC & DC fast charge. Có khu vực đỗ xe rộng, WC, và quán cà phê nhỏ.",
-        status: "Hoạt động",
-        slots: 40,
-        hotline: "0900 123 456",
-        features: [
-          "Truy cập 24/7",
-          "Thanh toán thẻ và ví điện tử",
-          "Hệ thống giám sát & bảo trì",
-        ],
-        schedule: [
-          { time: "06:00", available: 39 },
-          { time: "07:00", available: 40 },
-          { time: "08:00", available: 40 },
-          { time: "09:00", available: 36 },
-          { time: "10:00", available: 18 },
-          { time: "11:00", available: 0 },
-        ],
-      },
-      {
-        id: 2,
-        name: "CHUNG CƯ VINHOMES",
-        address: "720A Điện Biên Phủ, P22, Bình Thạnh, TP.HCM",
-        image: "https://thegioiphuongtien.vn/uploaded/H%E1%BA%A7m%20(6).jpg",
-        description:
-          "Trạm sạc ngầm trong tầng B2 khu Vinhomes Central Park, có nhiều điểm sạc AC tiêu chuẩn châu Âu.",
-        status: "Hết chỗ",
-        slots: 50,
-        hotline: "0902 222 222",
-        features: [
-          "Truy cập 24/7 bằng thẻ cư dân",
-          "Sạc AC 7kW",
-          "Hỗ trợ ví điện tử Momo, ZaloPay",
-          "Bảo vệ khu vực riêng biệt",
-        ],
-        schedule: [
-          { time: "06:00", available: 0 },
-          { time: "07:00", available: 0 },
-          { time: "08:00", available: 0 },
-          { time: "09:00", available: 0 },
-          { time: "10:00", available: 0 },
-          { time: "11:00", available: 0 },
-        ],
-      },
-      {
-        id: 3,
-        name: "VINCOM THỦ ĐỨC",
-        address: "216 Võ Văn Ngân, Bình Thọ, Thủ Đức, TP.HCM",
-        image:
-          "https://xeotovinfast.com.vn/wp-content/uploads/2024/06/tram_sac_vinfast_o_quan_thu_duc.webp",
-        description:
-          "Trạm sạc DC nhanh đặt tại tầng hầm B1 của Vincom Thủ Đức, phù hợp cho khách hàng sạc khi đi mua sắm.",
-        status: "Hoạt động",
-        slots: 20,
-        hotline: "0903 333 333",
-        features: [
-          "Sạc nhanh DC 120kW",
-          "Miễn phí 1 tiếng gửi xe",
-          "Có quán cà phê VinFast Café kế bên",
-        ],
-        schedule: [
-          { time: "06:00", available: 20 },
-          { time: "07:00", available: 18 },
-          { time: "08:00", available: 15 },
-          { time: "09:00", available: 10 },
-          { time: "10:00", available: 5 },
-          { time: "11:00", available: 0 },
-        ],
-      },
-      {
-        id: 4,
-        name: "AEON MALL TÂN PHÚ",
-        address: "30 Bờ Bao Tân Thắng, Sơn Kỳ, Tân Phú, TP.HCM",
-        image: "https://oto360.net/images/bai-viet/2023/tram_sac_vinfast.webp",
-        description:
-          "Trạm sạc DC đặt gần lối ra tầng hầm B2, thuận tiện cho khách đi siêu thị hoặc xem phim.",
-        status: "Bảo trì",
-        slots: 35,
-        hotline: "0904 444 444",
-        features: [
-          "Khu vực có mái che",
-          "Nhân viên hỗ trợ kỹ thuật tại chỗ",
-          "Có Wi-Fi miễn phí",
-        ],
-        schedule: [
-          { time: "06:00", available: 0 },
-          { time: "07:00", available: 0 },
-          { time: "08:00", available: 0 },
-          { time: "09:00", available: 0 },
-          { time: "10:00", available: 0 },
-          { time: "11:00", available: 0 },
-        ],
-      },
-    ];
-    const found = mockStations.find((s) => s.id === Number(id));
-    setStation(found);
-  }, [id]);
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -129,22 +28,24 @@ const StationDetail = () => {
           className="w-full h-52 object-cover rounded-xl"
         />
         <h2 className="text-xl font-bold mt-3">{station?.name}</h2>
-        <p className="text-gray-600">{station?.address}</p>
+        <p className="text-gray-600">{station?.location}</p>
 
         <div className="flex items-center mt-2">
-          <span className="text-green-600 font-medium">{station?.status}</span>
+          <span className="text-green-600 font-medium">
+            {station?.availableSpots > 0 ? "Còn trống" : "Hết chỗ"}
+          </span>
           <span className="mx-2 text-gray-400">•</span>
-          <span className="text-gray-600">{station?.slots} cổng sạc</span>
+          <span className="text-gray-600">
+            {availableCount} / {station?.spots?.length || 0} cổng sạc
+          </span>
         </div>
-
-        <p className="text-xs text-gray-400 mt-1">Cập nhật: 22/09/2025</p>
 
         <h3 className="font-semibold mt-4">Mô tả:</h3>
         <p className="text-sm text-gray-700">{station?.description}</p>
 
         <h3 className="font-semibold mt-4">Tiện ích:</h3>
         <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-          {station?.features.map((f, i) => (
+          {station?.features?.map((f, i) => (
             <li key={i}>{f}</li>
           ))}
         </ul>
@@ -189,7 +90,7 @@ const StationDetail = () => {
             Lịch giờ & số cổng trống (hôm nay)
           </h3>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 text-center">
-            {station?.schedule.map((slot, i) => (
+            {station?.schedule?.map((slot, i) => (
               <div
                 key={i}
                 className={`border rounded-md p-2 ${

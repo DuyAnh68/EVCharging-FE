@@ -15,6 +15,7 @@ import ChargePage from "../pages/Charge/ChargePage.jsx";
 import PaymentPage from "../pages/Payment/PaymentPage.jsx";
 import VehicleDetail from "../components/Vehicle/VehicleDetail.jsx";
 import StationDetail from "../pages/Booking/BookingDetail.jsx";
+import VerifySuccess from "../pages/Success/VerifySuccess.jsx";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: "payment", element: <PaymentPage /> },
       { path: "/vehicle/:id", element: <VehicleDetail /> },
       { path: "/station/:id", element: <StationDetail /> },
+      { path: "/verifySuccess", element: <VerifySuccess /> },
     ],
   },
   {
