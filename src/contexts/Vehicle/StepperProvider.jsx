@@ -5,6 +5,11 @@ const StepperContext = createContext();
 export const StepperProvider = ({ children }) => {
   const savedStep = localStorage.getItem('currentStep');
   const [currentStep, setCurrentStep] = useState(savedStep ? Number(savedStep) : 1);
+  const [vehicleData, setVehicleData] = useState({
+    modelId:"",
+    subscriptionId:"",
+    licensePlate:"",
+  });
 
   useEffect(() => {
     localStorage.setItem('currentStep', currentStep);
@@ -12,7 +17,9 @@ export const StepperProvider = ({ children }) => {
  
   const value = {
     currentStep,
-    setCurrentStep
+    setCurrentStep,
+    vehicleData,
+    setVehicleData
   }
   return (
     <StepperContext.Provider value={value}>{children}</StepperContext.Provider>

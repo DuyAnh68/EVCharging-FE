@@ -35,23 +35,21 @@ const VehicleCard = ({ data }) => {
 
           <div className="flex items-center">
             <Battery size={18} className="mr-2 text-green-600" />
-            <span>
-              {(vehicle?.model?.batteryCapacity || 0).toFixed(2)} kWh
-            </span>
+            <span>{(vehicle?.model?.batteryCapacity || 0).toFixed(2)} kWh</span>
           </div>
 
           {/* Trạng thái */}
           <div className="mt-3">
             <span
               className={`px-3 py-1 text-sm rounded-full ${
-                vehicle?.status === "APPROVED"
+                vehicle?.vehicleSubscriptionResponse?.status === "ACTIVE"
                   ? "bg-green-100 text-green-700"
                   : vehicle?.status === "PENDING"
                   ? "bg-gray-100 text-gray-700"
                   : "bg-red-100 text-red-700"
               }`}
             >
-              {vehicle?.status || "UNKNOWN"}
+              {vehicle?.vehicleSubscriptionResponse?.status || "UNKNOWN"}
             </span>
           </div>
         </div>
