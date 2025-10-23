@@ -1,0 +1,1 @@
+export const ENDPOINT_GET_STATIONS = "api/chargingStation/search";

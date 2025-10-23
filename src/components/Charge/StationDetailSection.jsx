@@ -1,27 +1,27 @@
-const StationDetailSection = () => {
+const  StationDetailSection = () => {
     return (
         <div className="station-detail-section card">
             <div className="flex flex-col gap-2">
-                <div className="header">Station Detail Section</div>
-                <div>After scanning — display the charging station, the charging speed, and the connection status.</div>
+                <div className="header">Thông tin trạm sạc</div>
+                <div>Sau khi quét - hiển thị trạm sạc, tốc độ và tình trạng kết nối</div>
             </div>
             <div className="grid grid-cols-2">
                 <div>
-                    <div className="text-label">Port</div>
+                    <div className="text-label">Trạm số</div>
                     <div>___</div>
                 </div>
                 <div>
-                    <div className="text-label">Price (VND/kWh)</div>
+                    <div className="text-label">Giá (đ/kWh)</div>
                     <div>___</div>
                 </div>
             </div>
             <div className="grid grid-cols-2">
                 <div>
-                    <div className="text-label">Connection Status</div>
+                    <div className="text-label">Tình trạng kết nối</div>
                     <div>___</div>
                 </div>
                 <div>
-                    <div className="text-label">Charging Speed</div>
+                    <div className="text-label">Tốc độ sạc</div>
                     <div>___</div>
                 </div>
             </div>

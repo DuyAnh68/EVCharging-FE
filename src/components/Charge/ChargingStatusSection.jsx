@@ -10,41 +10,41 @@ const ChargingStatusSection = () => {
                 </div>
                 <div className="col-span-2 charging-info">
                     <div className="charging-info-item">
-                        <div>Charging Speed</div>
+                        <div>Tốc độ sạc</div>
                         <strong>___ kW</strong>
                     </div>
                     <div className="charging-info-item">
-                        <div>Battery</div>
+                        <div>Mức pin</div>
                         <strong>0%</strong>
                     </div>
                     <div className="charging-info-item">
-                        <div>Remaining Time</div>
+                        <div>Thời gian còn</div>
                         <strong>___</strong>
                     </div>
                     <div className="charging-info-item">
-                        <div>Status</div>
-                        <strong>Not Charging</strong>
+                        <div>Trạng thái</div>
+                        <strong>Chưa sạc</strong>
                     </div>
                     <div className="flex flex-row gap-2">
-                        <button disabled className="btn">Pause</button>
-                        <button disabled className="btn">Stop</button>
+                        <button disabled className="btn">Tạm dừng</button>
+                        <button disabled className="btn">Ngắt</button>
                     </div>
                 </div>
             </div>
 
             <div className="power-info">
-                <div>Power charging details</div>
+                <div>Chi tiết điện năng</div>
                 <table className="w-full">
                     <thead>
                     <tr>
-                        <th>Charged (kWh)</th>
-                        <th>Price (VND)</th>
-                        <th>Time</th>
+                        <th>Đã sạc (kWh)</th>
+                        <th>Giá (đ)</th>
+                        <th>Thời gian</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td colSpan={3} className="text-center">No transaction</td>
+                        <td colSpan={3} className="text-center">Chưa có giao dịch </td>
                     </tr>
                     </tbody>
                 </table>

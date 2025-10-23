@@ -3,15 +3,15 @@ import "./style.css";
 const QRSection = () => {
     return (
         <div className="qr-section card">
-            <div className="header">Scan QR</div>
-            <div>Open camera and scan the QR code of station</div>
+            <div className="header">Quét QR / Camera</div>
+            <div>Mở camera và quét QR trên tạm sạc</div>
             <div className="qr-container">
-                <span>Camera not connected</span>
-                <span>(or try “QR Simulation”)</span>
+                <span>Camera chưa kết nối</span>
+                <span>(hoặc thử “Mô phỏng QR”)</span>
             </div>
             <div className="flex flex-row gap-2 justify-center">
-                <button disabled className="btn">Open camera</button>
-                <button disabled className="btn">QR Simulation</button>
+                <button disabled className="btn">Mở camera</button>
+                <button disabled className="btn">Mô phỏng QR</button>
             </div>
         </div>
     );

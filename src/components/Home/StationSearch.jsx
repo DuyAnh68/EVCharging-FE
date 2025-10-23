@@ -3,30 +3,31 @@ import "./style.css";
 import { Input, Select, DatePicker } from 'antd';
 import {LocationIcon, SearchIcon} from "../../assets/icons/index.jsx";
 
-const StationSearch = () => {
+const StationSearch = ({value = "", onChange = () => {}, onSearch = () => {}}) => {
 
     return <div className="station-search">
-        <h1 className="title">Find nearby charging stations</h1>
-        <div className="desc">Explore charging stations over the country</div>
+        <h1 className="title">Tìm trạm sạc gần bạn</h1>
+        <div className="desc">Khám phá và đặt chỗ tại hàng nghìn trạm sạc xe điện trên toàn quốc</div>
         <div className="search-box">
             <div className="search-filters grid grid-cols-3 gap-4">
-                <Input placeholder="Enter address or station name" prefix={<LocationIcon />} />
+                <Input value={value} onChange={(e) => onChange(e.target?.value)} placeholder="Nhập địa chỉ hoặc tên trạm sạc" prefix={<LocationIcon />} />
                 <DatePicker
                     showTime
                     onChange={(value, dateString) => console.log(value, dateString)}
                     onOk={() => {}}
+                    placeholder="Chọn thời gian"
                 />
                 <Select
-                    placeholder="Select station type"
+                    placeholder="Chọn loại sạc"
                     onChange={() => {}}
                     options={[
-                        { value: '1', label: 'Type 01' },
-                        { value: '2', label: 'Type 02' },
-                        { value: '3', label: 'Type 03' },
+                        { value: '1', label: 'Loại 01' },
+                        { value: '2', label: 'Loại 02' },
+                        { value: '3', label: 'Loại 03' },
                     ]}
                 />
             </div>
-            <button className="search-btn"><SearchIcon/>Search</button>
+            <button className="search-btn" onClick={() => onSearch(value)}><SearchIcon/>Tìm trạm sạc</button>
         </div>
 
     </div>
