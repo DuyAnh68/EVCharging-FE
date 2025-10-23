@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useVehicle from "../../hooks/useVehicle";
 import useStation from "../../hooks/useStation";
+import useSpots from "../../hooks/useSpot";
 
 const StationDetail = () => {
   const { id } = useParams();
@@ -9,14 +10,15 @@ const StationDetail = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const { getVehicle, vehicle } = useVehicle();
   const { station, getStationById } = useStation();
-  console.log(station);
-  const availableCount =
-    station?.spots?.filter((s) => s.status === "available").length || 0;
+  const { spots, loading, error, getSpotsByStationId } = useSpots();
 
   useEffect(() => {
     getVehicle();
     getStationById(id);
-  }, []);
+    getSpotsByStationId(id);
+  }, [station?.id]);
+
+  console.log(spots);
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -36,22 +38,14 @@ const StationDetail = () => {
           </span>
           <span className="mx-2 text-gray-400">•</span>
           <span className="text-gray-600">
-            {availableCount} / {station?.spots?.length || 0} cổng sạc
+            {station?.bookingAvailable} /{" "}
+            {station?.bookingAvailable + station?.availableSpots} cổng sạc
           </span>
         </div>
 
-        <h3 className="font-semibold mt-4">Mô tả:</h3>
-        <p className="text-sm text-gray-700">{station?.description}</p>
-
-        <h3 className="font-semibold mt-4">Tiện ích:</h3>
-        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-          {station?.features?.map((f, i) => (
-            <li key={i}>{f}</li>
-          ))}
-        </ul>
-
-        <h3 className="font-semibold mt-4">Liên hệ:</h3>
-        <p className="text-blue-600">{station?.hotline}</p>
+        <h3 className="font-semibold mt-4">
+          Công suất: <span>{station?.powerCapacity} kW</span>
+        </h3>
       </div>
 
       {/* Cột phải */}
@@ -68,18 +62,38 @@ const StationDetail = () => {
           <div>
             <h3 className="font-semibold mb-2">Tình trạng hiện tại</h3>
             <div className="space-y-1 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                Cổng A1 – Sẵn sàng
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-                Cổng A2 – Đang dùng (15 phút còn lại)
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                Cổng A3 – Lỗi
-              </div>
+              {loading && <p>Đang tải...</p>}
+              {error && <p className="text-red-500">Không thể tải dữ liệu</p>}
+
+              {!loading &&
+                !error &&
+                spots
+                  ?.filter((spot) => spot.spotType === "BOOKING")
+                  ?.map((spot) => {
+                    // Màu sắc trạng thái theo status
+                    let colorClass = "bg-gray-400";
+                    if (spot.status === "AVAILABLE")
+                      colorClass = "bg-green-500";
+                    else if (spot.status === "IN_USE")
+                      colorClass = "bg-yellow-400";
+                    else if (spot.status === "ERROR") colorClass = "bg-red-500";
+
+                    return (
+                      <div key={spot.id} className="flex items-center gap-2">
+                        <span
+                          className={`w-3 h-3 rounded-full ${colorClass}`}
+                        ></span>
+                        {spot.spotName} –{" "}
+                        <span className="capitalize">
+                          {spot.status.toLowerCase()}
+                        </span>
+                      </div>
+                    );
+                  })}
+
+              {!loading && !error && spots?.length === 0 && (
+                <p className="text-gray-500">Không có trụ sạc khả dụng</p>
+              )}
             </div>
           </div>
         </div>

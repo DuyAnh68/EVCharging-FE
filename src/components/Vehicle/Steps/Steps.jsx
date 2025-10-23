@@ -6,7 +6,6 @@ import StepperContext from '../../../contexts/Vehicle/StepperProvider';
 function Steps() {
     const steps = [
         {label: 'Thông tin xe điện'},
-        {label: 'Cấu hình sạc'},
         {label: 'Gói thuê bao'},
         {label: 'Hoàn tất'}
 
