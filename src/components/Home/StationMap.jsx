@@ -1,7 +1,6 @@
 import React from "react";
 import "./style.css";
 import {APIProvider, Map} from '@vis.gl/react-google-maps';
-import {useNavigate} from "react-router-dom";
 import {GOOGLE_MAP_API_KEY} from "../../constants/index.js";
 
 const mockData = [
@@ -43,11 +42,9 @@ const mockData = [
 ];
 
 const StationMap = () => {
-    const navigate = useNavigate();
-
     return (
         <div className="station-map">
-            <h1 className="title">Charging Station Map</h1>
+            <h1 className="title">Bản đồ trạm sạc</h1>
             <div className="grid grid-cols-5 gap-4">
                 <div className="list col-span-2">
                     {mockData.map((item) => (
@@ -58,7 +55,7 @@ const StationMap = () => {
                             </div>
 
                             <div>
-                                <p className="distance-header">Distance:</p>
+                                <p className="distance-header">Khoảng cách:</p>
                                 <p className="distance-value">{item.distance}</p>
                             </div>
                         </div>
@@ -76,35 +73,6 @@ const StationMap = () => {
                     </APIProvider>
                 </div>
             </div>
-
-
-            <h1 className="title">Nearby Charging Stations</h1>
-            <div className="grid grid-cols-3 gap-6">
-                {
-                    mockData?.slice(0, 3)?.map((item) => (
-                        <div key={item.id} className="nearby-station-list-item">
-                            <div className="station-img">
-                                <img src={item?.image} alt="vinfast chargin station"/>
-                            </div>
-                            <div className="flex flex-col gap-3 p-5 pt-0">
-                                <h2 className="name">{item.name}</h2>
-                                <p className="address">{item.address}</p>
-                                <div className="flex flex-row justify-between">
-                                    <p className="distance">{item.distance}</p>
-                                    <p className="distance">150kW</p>
-                                </div>
-
-                                <div className="flex flex-row justify-between">
-                                    <p className="distance">8/12 Available</p>
-                                    <p className="distance">3,500 VND/kWh</p>
-                                </div>
-                                <button className="action" onClick={() => navigate("/booking")}>Book Now</button>
-                            </div>
-                        </div>
-                    ))
-                }
-            </div>
-
         </div>
     );
 };

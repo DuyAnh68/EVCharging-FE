@@ -49,12 +49,33 @@
     }
 }
 
-.station-map {
+.station-map, .station-list {
     background: #F0F2EB;
     padding: 24px;
     display: flex;
     flex-flow: column nowrap;
     gap: 40px;
+
+    .station-list-item {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+
+        .name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #000;
+            text-transform: uppercase;
+        }
+
+        .address {
+            font-size: 14px;
+            font-weight: 400;
+            color: #808080;
+        }
+    }
 
     .title {
         font-size: 40px;
@@ -70,32 +91,27 @@
         display: flex;
         flex-flow: column nowrap;
         gap: 24px;
+    }
+}
 
-        .station-list-item {
-            display: flex;
-            flex-flow: row nowrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
+.station-map {
+    .station-list-item {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
 
-            .name {
-                font-size: 16px;
-                font-weight: 500;
-                color: #000;
-                text-transform: uppercase;
-            }
+        .distance-header {
+            font-size: 14px;
+            font-weight: 400;
+            color: #808080;
+        }
 
-            .address, .distance-header {
-                font-size: 14px;
-                font-weight: 400;
-                color: #808080;
-            }
-
-            .distance-value {
-                font-size: 14px;
-                font-weight: 500;
-                color: #000;
-            }
+        .distance-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #000;
         }
     }
 
@@ -103,7 +119,9 @@
         border-radius: 20px;
         overflow: hidden;
     }
+}
 
+.station-list {
     .nearby-station-list-item {
         background: #fff;
         border-radius: 10px;
