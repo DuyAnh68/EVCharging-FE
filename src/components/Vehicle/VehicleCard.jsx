@@ -7,7 +7,7 @@ const VehicleCard = ({ data }) => {
   return (
     <div className="max-w-sm rounded-2xl overflow-hidden shadow bg-white border border-gray-200 m-4 transition hover:shadow-lg">
       {/* Ảnh hoặc icon xe */}
-      <div className="w-full h-40 bg-gray-100 flex items-center justify-center">
+      <div className="w-full h-40 !bg-gray-100 flex items-center justify-center">
         <Car size={48} className="text-gray-400" />
       </div>
 

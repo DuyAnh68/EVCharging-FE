@@ -2,10 +2,19 @@ import React, { useMemo, useState } from "react";
 import { Search, MapPin, Clock, Zap } from "lucide-react";
 import useStation from "../../hooks/useStation";
 import MapView from "../../components/Map/MapView";
+import { useNavigate } from "react-router-dom";
+import Carousel from "react-bootstrap/Carousel";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const HomePage = () => {
   const { stations, loading } = useStation();
   const [selectedStation, setSelectedStation] = useState(null);
+  const navigate = useNavigate();
+  const [index, setIndex] = useState(0);
+
+  const handleSelect = (selectedIndex) => {
+    setIndex(selectedIndex);
+  };
 
   // --- Trạng thái bộ lọc ---
   const [filters, setFilters] = useState({
@@ -45,7 +54,7 @@ const HomePage = () => {
         {/* SEARCH BOX */}
         <div className="bg-white shadow-lg rounded-lg px-6 py-6 max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className="relative">
+            <div className="relative text-left">
               <label className="block text-left text-sm font-medium text-gray-700 mb-2">
                 Vị trí
               </label>
@@ -63,7 +72,7 @@ const HomePage = () => {
               </div>
             </div>
 
-            <div>
+            <div className="text-left">
               <label className="block text-left text-sm font-medium text-gray-700 mb-2">
                 Loại sạc
               </label>
@@ -84,7 +93,10 @@ const HomePage = () => {
             </div>
           </div>
 
-          <button className="w-full !bg-green-600 !text-white py-3 rounded-md hover:!bg-green-700 transition font-medium flex items-center justify-center gap-2">
+          <button
+            onClick={() => navigate("/booking")}
+            className="w-full !bg-green-600 !text-white py-3 rounded-md hover:!bg-green-700 transition font-medium flex items-center justify-center gap-2"
+          >
             <Search className="w-5 h-5" />
             Tìm trạm sạc
           </button>
@@ -162,58 +174,77 @@ const HomePage = () => {
         <h2 className="text-2xl font-bold mb-6 text-gray-800">
           Trạm sạc gần bạn
         </h2>
+
         {loading ? (
           <p className="text-gray-500 text-center">Đang tải...</p>
         ) : stations.length === 0 ? (
           <p className="text-gray-500 text-center">Không có trạm sạc nào</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stations.map((s) => (
-              <div
-                key={s.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition cursor-pointer overflow-hidden"
-                onClick={() => setSelectedStation(s.id)}
-              >
-                <div className="relative">
-                  <span className="absolute top-3 left-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    {s.distance}
-                  </span>
-                  <img
-                    src={
-                      s.image ||
-                      "https://images.pexels.com/photos/110844/pexels-photo-110844.jpeg?auto=compress&cs=tinysrgb&w=800"
-                    }
-                    alt={s.name}
-                    className="w-full h-[200px] object-cover"
-                  />
-                </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-gray-800 text-lg mb-2">
-                    {s.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-3 flex items-start gap-1">
-                    <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    {s.location}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-                    <span className="flex items-center gap-1">
-                      <Zap className="w-4 h-4" />
-                      {s.powerCapacity} kW
-                    </span>
-                    <span>
-                      🅿 {s.availableSpots}/{s.totalSpots}
-                    </span>
-                    <span className="text-green-600 font-semibold">
-                      {s.pricePerKwh?.toLocaleString("vi-VN")} VNĐ
-                    </span>
-                  </div>
-                  <button className="w-full !bg-green-600 text-white py-2.5 rounded-md hover:!bg-green-700 transition font-medium">
-                    Đặt chỗ ngay
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Carousel
+            interval={3000}
+            indicators={true}
+            controls={true}
+            activeIndex={index}
+            onSelect={handleSelect}
+          >
+            {/* Chia mảng thành nhóm 3 phần tử */}
+            {Array.from({ length: Math.ceil(stations.length / 3) }).map(
+              (_, i) => {
+                const group = stations.slice(i * 3, i * 3 + 3);
+                return (
+                  <Carousel.Item key={i}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {group.map((s) => (
+                        <div
+                          key={s.id}
+                          className="bg-white rounded-xl shadow-md hover:shadow-xl transition cursor-pointer overflow-hidden"
+                          onClick={() => setSelectedStation(s.id)}
+                        >
+                          <div className="relative">
+                            <span className="absolute top-3 left-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                              {s.distance || "Gần bạn"}
+                            </span>
+                            <img
+                              src={
+                                s.image ||
+                                "https://images.pexels.com/photos/110844/pexels-photo-110844.jpeg?auto=compress&cs=tinysrgb&w=800"
+                              }
+                              alt={s.name}
+                              className="w-full h-[200px] object-cover"
+                            />
+                          </div>
+                          <div className="p-5">
+                            <h3 className="font-bold text-gray-800 text-lg mb-2">
+                              {s.name}
+                            </h3>
+                            <p className="text-sm text-gray-600 mb-3 flex items-start gap-1">
+                              <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                              {s.location}
+                            </p>
+                            <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+                              <span className="flex items-center gap-1">
+                                <Zap className="w-4 h-4" />
+                                {s.powerCapacity} kW
+                              </span>
+                              <span>
+                                🅿 {s.availableSpots}/{s.totalSpots}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => navigate(`/station/${s.id}`)}
+                              className="w-full !bg-green-600 text-white py-2.5 rounded-md hover:!bg-green-700 transition font-medium"
+                            >
+                              Đặt chỗ ngay
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Carousel.Item>
+                );
+              }
+            )}
+          </Carousel>
         )}
       </section>
     </div>
