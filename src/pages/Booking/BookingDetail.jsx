@@ -11,14 +11,21 @@ const StationDetail = () => {
   const { getVehicle, vehicle } = useVehicle();
   const { station, getStationById } = useStation();
   const { spots, loading, error, getSpotsByStationId } = useSpots();
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const handleBooking = () => {
+    if (!selectedVehicle) {
+      alert("Vui lòng chọn xe trước khi đặt chỗ!");
+      return;
+    }
+    console.log("Xe được chọn:", selectedVehicle);
+    setIsBookingOpen(false);
+  };
 
   useEffect(() => {
     getVehicle();
     getStationById(id);
     getSpotsByStationId(id);
   }, [station?.id]);
-
-  console.log(spots);
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -136,11 +143,9 @@ const StationDetail = () => {
             <p>
               <strong>Trạm sạc:</strong> {station?.name}
             </p>
+
             <p>
-              <strong>Slot:</strong> A1 – Thời gian: 14:30 - 14:45
-            </p>
-            <p>
-              <strong>Xe:</strong> (chưa nhập)
+              <strong>Xe:</strong>
             </p>
           </div>
 
@@ -190,10 +195,16 @@ const StationDetail = () => {
                 <label className="text-sm font-medium block mb-1">
                   Chọn xe của bạn
                 </label>
-                <select className="border w-full px-3 py-2 rounded-md">
+                <select
+                  className="border w-full px-3 py-2 rounded-md"
+                  onChange={(e) => setSelectedVehicle(e.target.value)} // ✅ lấy target value
+                  value={selectedVehicle}
+                >
                   <option value="">-- Chọn xe --</option>
                   {vehicle?.map((v) => (
-                    <option key={v.id}>{v?.model?.modelName}</option>
+                    <option key={v.id} value={v.licensePlate}>
+                      {v?.model?.modelName} - {v?.licensePlate}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -219,7 +230,10 @@ const StationDetail = () => {
               >
                 Hủy
               </button>
-              <button className="px-4 py-2 !bg-green-600 text-white rounded-md hover:!bg-green-700">
+              <button
+                onClick={handleBooking}
+                className="px-4 py-2 !bg-green-600 text-white rounded-md hover:!bg-green-700"
+              >
                 Đặt chỗ
               </button>
             </div>

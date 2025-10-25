@@ -6,18 +6,18 @@ function VehicleList() {
   return (
     <div className="bg-[#F6F9EE] min-h-screen flex flex-col px-6 py-8">
       <div className="top flex justify-between">
-        <div className="title text-[#14AE5C] text-4xl font-bold">
+        <div className="title !text-[#14AE5C] text-4xl font-bold">
           Danh sách xe của bạn
         </div>
 
         <div className="button">
-          <Link to="/AddVehicle"
-            className="bg-[#009951] !text-white border border-[1] border-black px-4 py-2 rounded-lg hover:bg-[#00b35c] transition"
+          <Link
+            to="/AddVehicle"
+            className="!bg-[#009951] !text-white border border-[1] !border-black px-4 py-2 rounded-lg hover:!bg-[#00b35c] transition"
           >
-          Thêm xe
+            Thêm xe
           </Link>
         </div>
-
       </div>
       <div className="middle ">
         <VehicleListGrid />

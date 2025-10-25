@@ -68,7 +68,7 @@ function Booking() {
                 className={`px-4 py-2 rounded transition-colors ${
                   station.status !== "Hoạt động"
                     ? "!bg-gray-400 !text-white cursor-not-allowed"
-                    : "!bg-blue-500 text-white hover:!bg-blue-600"
+                    : "!bg-[#0F9456] text-white hover:!bg-[#109857]"
                 }`}
               >
                 ĐẶT CHỖ
