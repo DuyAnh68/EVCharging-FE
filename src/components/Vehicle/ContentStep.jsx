@@ -17,7 +17,9 @@ function ContentStep() {
             case 2:  
                 return <div><Step3/></div>
             case 3:  
-                return <div><Step4/></div>       
+                return <div><Step4/></div>    
+            default:
+                return <Step1/>;    
         }
     };
   return (

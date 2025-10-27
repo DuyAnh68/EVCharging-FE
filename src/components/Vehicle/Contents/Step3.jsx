@@ -6,7 +6,7 @@ import useSubscription from "../../../hooks/useSubscription";
 import useVehicle from "../../../hooks/useVehicle";
 import Popup from "./Popup";
 import usePayment from "../../../hooks/usePayment";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 function Step3() {
   const { currentStep, setCurrentStep, vehicleData, setVehicleData } =
@@ -18,24 +18,16 @@ function Step3() {
   const [popupMessage, setPopupMessage] = useState("");
   const { createPayment } = usePayment();
   const [paymentId, setPaymentId] = useState(null);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     getSubscriptions();
   }, []);
 
   const handelSelectPlan = (planId) => {
-    console.log("planid", planId);
     setSelectedPlan(planId);
-
     setVehicleData((prev) => ({ ...prev, subscriptionId: planId }));
   };
-
-  // setVehicle({
-  //     modelId: vehicleData.modelId,
-  //     licensePlate: vehicleData.licensePlate,
-  //     subscriptionPlanId: vehicleData.subscriptionId,
-  //   });
 
   const handleNext = async () => {
     if (!selectedPlan) {
@@ -43,14 +35,12 @@ function Step3() {
       return;
     }
 
-    console.log("first");
     try {
       const response = await addVehicle({
         modelId: vehicleData.modelId,
         licensePlate: vehicleData.licensePlate,
         subscriptionPlanId: selectedPlan,
       });
-      console.log("response: ", response);
       if (response) {
         setPaymentId(response.paymentTransactionId);
         setPopupMessage(`Xe đã được thêm thành công!`);
@@ -60,8 +50,7 @@ function Step3() {
         setShowPopup(true);
       }
     } catch (e) {
-      console.log("e: ", e.message);
-      setPopupMessage("Đã xảy ra lỗi trong quá trình thêm xe!");
+      setPopupMessage("Đã xảy ra lỗi trong quá trình thêm xe!", e.message);
       setShowPopup(true);
     }
   };
@@ -75,74 +64,90 @@ function Step3() {
   const handlePayment = async () => {
     try {
       const response = await createPayment(paymentId);
-
-      console.log("url:", response);
       if (response) {
         window.open(response.paymentUrl, "_blank");
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+  const handleCloseWithoutPayment = () => {
+    const msg =
+      "Xe của bạn đã được thêm nhưng chưa thanh toán gói thuê bao, hãy thanh toán để sử dụng xe";
+    setVehicleData((prev) => ({
+      ...prev,
+      unpaidMessage:
+        msg,
+    }));
+    setShowPopup(false);
+    setCurrentStep(3);
   };
 
   return (
     <div>
-      <div className="bg-[#D9D9D9] h-[690px] p-6 md:p-10 shadow-sm flex flex-col gap-6 rounded-[36px]">
-        <div className="flex items-center gap-3 ">
-          <div className="w-[40px] h-[40px] bg-[#009951] items-center justify-center flex rounded-full">
-            <CreditCard className="text-[black] items-center justify-center flex " />
+      <div className="bg-[#D9D9D9] p-6 md:p-8 shadow-sm flex flex-col gap-6 rounded-[24px]">
+        <div className="flex items-center gap-3">
+          <div className="w-[36px] h-[36px] bg-[#009951] flex items-center justify-center rounded-full">
+            <CreditCard className="text-[black]" />
           </div>
-          <div className="title text-[black] font-bold text-3xl ">
+          <div className="title text-[black] font-bold text-xl md:text-2xl">
             Gói thuê bao
           </div>
         </div>
-        <div className="ml-10">
-          <p className="text-[black]">
-            Chọn gói phù hợp với nhu cầu sạc xe của bạn
-          </p>
-        </div>
-        <div className="flex flex-grow justify-center gap-[20px]">
+
+        <p className="text-[black] max-w-2xl">
+          Chọn gói phù hợp với nhu cầu sạc xe của bạn
+        </p>
+
+        <div className="w-full">
           {loading ? (
             <p>Đang tải gói thuê bao...</p>
           ) : error ? (
             <p className="text-red-600">Lỗi: {error}</p>
           ) : (
-            subscriptions?.map((s) => (
-              <SubscriptionCard
-                key={s.id}
-                data={s}
-                selectedPlan={selectedPlan}
-                onSelect={() => handelSelectPlan(s.id)}
-              />
-            ))
+            <div className="flex flex-wrap justify-center gap-4">
+              {subscriptions?.map((s) => (
+                <SubscriptionCard
+                  key={s.id}
+                  data={s}
+                  selectedPlan={selectedPlan}
+                  onSelect={() => handelSelectPlan(s.id)}
+                />
+              ))}
+            </div>
           )}
         </div>
-        <div className="flex justify-between">
+
+        <div className="flex justify-between items-center gap-4">
           <button
             onClick={handleBack}
-            className="flex items-center justify-center !bg-[#3C3C43] text-[white] font-bold py-3 px-6 rounded-full !hover:bg-green-600"
+            className="bg-[#3C3C43] text-white font-medium py-2 px-4 text-sm rounded-md hover:bg-[#343436] transition"
           >
             Quay lại
           </button>
+
+          <div className="flex-1" />
+
           <button
             onClick={handleNext}
-            className="flex items-center justify-center !bg-[#009951] text-[white] font-bold py-3 px-6 rounded-full !hover:bg-green-600"
+            className="bg-[#009951] text-white font-medium py-2 px-4 text-sm rounded-md hover:bg-green-600 transition"
           >
             Tiếp tục
           </button>
-          {showPopup && (
-            <Popup message={popupMessage} onClose={handlePayment} />
-          )}
         </div>
+
+        {showPopup && <Popup message={popupMessage} onClose={handlePayment} onCloseAlt={handleCloseWithoutPayment}/>}
       </div>
-      <div className="flex flex-col bg-[white] mt-5 shadow-sm">
-        <div className="flex justify-left items-start gap-3 pl-3 pt-1">
-          <div className="w-[30px] h-[30px] bg-[#009951] items-center justify-center flex rounded-full">
-            <CreditCard className="text-[black] items-center justify-center flex " />
+
+      <div className="flex flex-col bg-white mt-5 shadow-sm rounded-md">
+        <div className="flex items-start gap-3 pl-3 pt-3">
+          <div className="w-[28px] h-[28px] bg-[#009951] flex items-center justify-center rounded-full">
+            <CreditCard className="text-[black]" />
           </div>
-          <div className="text-[black] font-medium text-xl ">
-            Thông tin thanh toán
-          </div>
+          <div className="text-[black] font-medium text-lg">Thông tin thanh toán</div>
         </div>
-        <div className="pl-12 pt-2 pb-7 text-[black]">
+        <div className="pl-12 pt-2 pb-5 text-[black]">
           Bạn có thể đổi hoặc hủy gói bất kỳ lúc nào. Phí sạc thực tế sẽ được
           tính dựa trên mức giá ưu đãi của gói đã chọn
         </div>

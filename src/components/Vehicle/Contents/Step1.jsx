@@ -1,8 +1,10 @@
+// ...existing code...
 import React, { useContext, useEffect, useState } from "react";
 import { Car } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import StepperContext from "../../../contexts/Vehicle/StepperProvider";
 import useVehicle from "../../../hooks/useVehicle";
+// ...existing code...
 
 function VehicleInf() {
   const evBrands = ["VINFAST", "BYD"];
@@ -72,21 +74,21 @@ function VehicleInf() {
   };
 
   return (
-    <div className="bg-[#D9D9D9] h-[508px] p-6 md:p-10 shadow-sm flex flex-col gap-6 rounded-[36px]">
+    <div className="bg-[#D9D9D9] p-6 md:p-10 shadow-sm rounded-[36px] max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 mb-4">
         <div className="w-[40px] h-[40px] bg-[#009951] flex items-center justify-center rounded-full">
           <Car className="text-[black]" />
         </div>
-        <div className="title text-[black] font-bold text-3xl">
+        <div className="title text-[black] font-bold text-2xl md:text-3xl">
           Thông tin xe điện
         </div>
       </div>
 
-      {/* Form */}
-      <div className="flex flex-row justify-center">
+      {/* Form: responsive grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Cột trái */}
-        <div className="ml-10 mt-5 w-1/2 flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           {/* Hãng xe */}
           <div className="flex flex-col gap-1 text-[black]">
             <label htmlFor="Brand" className="font-medium text-gray-700">
@@ -96,7 +98,7 @@ function VehicleInf() {
               id="Brand"
               value={vehicleData.brand || ""}
               onChange={handleBrandChange}
-              className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
+              className="w-full border rounded-md px-3 py-2 border-black bg-white"
               disabled={loading}
             >
               <option value="">-- Chọn hãng xe điện --</option>
@@ -109,7 +111,7 @@ function VehicleInf() {
           </div>
 
           {/* Cổng sạc */}
-          <div className="flex flex-col gap-1 text-[black] mt-4">
+          <div className="flex flex-col gap-1 text-[black]">
             <label htmlFor="ChargeType" className="font-medium text-gray-700">
               Loại cổng sạc:
             </label>
@@ -117,12 +119,12 @@ function VehicleInf() {
               id="ChargeType"
               value={vehicleData.connector || ""}
               readOnly
-              className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
+              className="w-full border rounded-md px-3 py-2 border-black bg-white"
             />
           </div>
 
           {/* Dung lượng */}
-          <div className="flex flex-col gap-1 text-[black] mt-4">
+          <div className="flex flex-col gap-1 text-[black]">
             <label htmlFor="Battery" className="font-medium text-gray-700">
               Dung lượng:
             </label>
@@ -134,15 +136,15 @@ function VehicleInf() {
                   : ""
               }
               readOnly
-              className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
+              className="w-full border rounded-md px-3 py-2 border-black bg-white"
             />
           </div>
         </div>
 
         {/* Cột phải */}
-        <div className="ml-10 mt-1 w-1/2 flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           {/* Tên xe */}
-          <div className="flex flex-col gap-1 text-[black] mt-4">
+          <div className="flex flex-col gap-1 text-[black]">
             <label htmlFor="ModelName" className="font-medium text-gray-700">
               Tên xe:
             </label>
@@ -150,7 +152,7 @@ function VehicleInf() {
               id="ModelName"
               value={vehicleData.modelName || ""}
               onChange={handleModelChange}
-              className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
+              className="w-full border rounded-md px-3 py-2 border-black bg-white"
               disabled={modelList.length === 0}
             >
               <option value="">-- Chọn mẫu xe --</option>
@@ -163,7 +165,7 @@ function VehicleInf() {
           </div>
 
           {/* Biển số */}
-          <div className="flex flex-col gap-1 text-[black] mt-4">
+          <div className="flex flex-col gap-1 text-[black]">
             <label htmlFor="LicensePlate" className="font-medium text-gray-700">
               Biển số xe:
             </label>
@@ -173,17 +175,20 @@ function VehicleInf() {
               value={vehicleData.licensePlate || ""}
               onChange={handleLicenseChange}
               placeholder="VD: 36A - 183636"
-              className="w-full border rounded-md px-3 py-2 border-[black] bg-[white]"
+              className="w-full border rounded-md px-3 py-2 border-black bg-white"
             />
           </div>
+
+          {/* spacer để nút căn dưới cột phải trên màn nhỏ */}
+          <div className="flex-1" />
         </div>
       </div>
 
       {/* Nút Tiếp tục */}
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-6">
         <button
           onClick={handleNext}
-          className="flex items-center justify-center bg-[#009951] text-[white] font-bold py-3 px-6 rounded-full hover:bg-green-600"
+          className="flex items-center justify-center bg-[#009951] text-white font-bold py-3 px-6 rounded-full hover:bg-green-600"
         >
           Tiếp tục
         </button>

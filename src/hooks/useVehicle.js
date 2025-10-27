@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {  useState } from "react";
 import vehicleListApi from "../api/vehicleListApi";
 
 const useVehicle = () => {
@@ -6,6 +6,7 @@ const useVehicle = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [models, setModels] = useState([]);
+  const [vehicelById, setVehicleById] = useState(null);
 
   const addVehicle = async (credentials) => {
     setLoading(true);
@@ -20,8 +21,8 @@ const useVehicle = () => {
         return response.result;
       }
     } catch (error) {
-      setError(e.message);
-      return e.message;
+      setError(error.message);
+      return error.message;
     } finally {
       setLoading(false);
     }
@@ -64,6 +65,25 @@ const useVehicle = () => {
     }
   };
 
+  const getVehicleById = async (id) => {
+    setLoading(true);
+    setError(null);
+    try{
+      const response = await vehicleListApi.getVehicleById(id);
+      console.log("response:", response.result);
+      if(response){
+        setVehicleById(response.result);
+        setLoading(false);
+        return response.result
+      }
+    }catch(e){
+      setError(e.message);
+      return e.message
+    }finally{
+      setLoading(false);
+    }
+  }
+
   return {
     vehicle,
     loading,
@@ -71,7 +91,9 @@ const useVehicle = () => {
     getVehicle,
     getVehicleByBrand,
     addVehicle,
+    getVehicleById,
     models,
+    vehicelById
   };
 };
 
