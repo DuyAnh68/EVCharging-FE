@@ -7,43 +7,50 @@ const SubscriptionCard = ({ data, selectedPlan, onSelect }) => {
   const formattedPrice = price.toLocaleString("vi-VN") + " đ/tháng";
 
   return (
-    <div
+    <article
+      role="button"
+      aria-pressed={isSelected}
       onClick={() => onSelect(id)}
-      className={`w-[300px] cursor-pointer bg-white rounded-xl p-6 border-2 transition-all m-4 
-        ${isSelected ? "border-[#009951] shadow-lg scale-105" : "border-gray-300 hover:border-[#009951]"}
+      className={`w-full max-w-[320px] flex-shrink-0 cursor-pointer bg-white rounded-xl p-5 border-2 transition-all
+        ${isSelected ? "border-[#009951] shadow-lg scale-105" : "border-gray-200 hover:border-[#009951] hover:shadow-sm"}
       `}
     >
-      <h2 className="text-xl font-bold text-center mb-1">{name}</h2>
+      <div className="flex flex-col h-full">
+        <header className="mb-2 overflow-hidden">
+          <h2 className="text-sm md:text-base font-bold text-center text-gray-900 truncate whitespace-nowrap">
+            {name}
+          </h2>
+        </header>
 
-      <p className="text-center text-2xl font-bold text-[#009951] mb-2">
-        {formattedPrice}
-      </p>
+        <div className="flex flex-col items-center mb-3">
+          <p className="text-xl md:text-2xl font-extrabold text-[#009951]">{formattedPrice}</p>
+          <p className="text-sm text-gray-600">Giới hạn: {limitValue} kWh</p>
+        </div>
 
-      <p className="text-center text-gray-600 mb-4">
-        Giới hạn: {limitValue} kWh
-      </p>
+        <ul className="flex-1 space-y-2 mb-4 px-2">
+          {description?.map((feature, index) => (
+            <li key={index} className="flex items-center gap-2 text-gray-700">
+              <Check size={16} className="text-[#009951] flex-shrink-0" />
+              <span className="text-sm">{feature}</span>
+            </li>
+          ))}
+        </ul>
 
-      <ul className="space-y-2 mb-6">
-        {description?.map((feature, index) => (
-          <li key={index} className="flex items-center gap-2 text-gray-700">
-            <Check className="text-[#009951]" size={18} />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
-
-      <button
-        onClick={(e) => {
-          e.stopPropagation(); 
-          onSelect(id);
-        }}
-        className={`w-full py-2 rounded-lg font-semibold transition 
-          ${isSelected ? "!bg-[#009951] text-white" : "!bg-gray-200 text-black hover:bg-[#009951] hover:text-white"}
-        `}
-      >
-        {isSelected ? "Đã chọn" : "Chọn gói này"}
-      </button>
-    </div>
+        <div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(id);
+            }}
+            className={`w-full py-1.5 px-3 rounded-lg font-semibold text-sm transition
+              ${isSelected ? "bg-[#009951] text-white" : "bg-gray-100 text-gray-900 hover:bg-[#009951] hover:text-white"}
+            `}
+          >
+            {isSelected ? "Đã chọn" : "Chọn gói này"}
+          </button>
+        </div>
+      </div>
+    </article>
   );
 };
 
