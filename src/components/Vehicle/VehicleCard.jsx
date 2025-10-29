@@ -4,13 +4,33 @@
   import 'reactjs-popup/dist/index.css';
   import useVehicle from "../../hooks/useVehicle";
   import VehicleDetail from "./VehicleDetail";
+  import usePayment from "../../hooks/usePayment";
 
   const VehicleCard = ({ data }) => {
     const vehicle = data;
     const { getVehicleById } = useVehicle();
+    const {createPayment, getPayment} = usePayment();
     const [vehicleDetail, setVehicleDetail] = useState(null);
     const [open, setOpen] = useState(false);
     
+    const handlePayment = async() =>{
+      try{
+        console.log("id:", vehicle?.vehicleSubscriptionResponse?.id);
+        const response = await getPayment(vehicle?.vehicleSubscriptionResponse?.id)
+        console.log("url:", response);
+        if(response){
+          const paymentid = await createPayment(response.id)
+
+          if(paymentid){
+            window.open(paymentid.paymentUrl, "_blank");
+          }        
+        }
+      }catch(e){
+        console.log("Error:", e.message);
+      }
+    };
+
+
 
     const handleDetail = async () => {
       try{
@@ -65,10 +85,11 @@
                 className={`px-3 py-1 text-sm rounded-full ${
                   vehicle?.vehicleSubscriptionResponse?.status === "ACTIVE"
                     ? "bg-green-100 text-green-700"
-                    : vehicle?.status === "PENDING"
-                    ? "bg-gray-100 text-gray-700"
+                    : vehicle?.vehicleSubscriptionResponse?.status === "PENDING"
+                    ? "bg-red-100 text-red-700"
                     : "bg-red-100 text-red-700"
                 }`}
+                onClick={vehicle?.vehicleSubscriptionResponse?.status === "PENDING" ? () => handlePayment() : undefined}
               >
                 {vehicle?.vehicleSubscriptionResponse?.status || "UNKNOWN"}
               </span>
