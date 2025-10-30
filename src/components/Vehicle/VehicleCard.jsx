@@ -6,6 +6,7 @@ import useVehicle from "../../hooks/useVehicle";
 import VehicleDetail from "./VehicleDetail";
 import usePayment from "../../hooks/usePayment";
 import { useNavigate } from "react-router-dom";
+import ModelCar from "../../assets/icons/modelCar";
 
 
 const VehicleCard = ({ data, onDeleted }) => {
@@ -92,7 +93,7 @@ const VehicleCard = ({ data, onDeleted }) => {
       className="max-w-sm rounded-2xl overflow-hidden shadow bg-white border border-gray-200 m-4 transition hover:shadow-lg cursor-pointer focus:outline-none"
     >
       <div className="w-full h-40 !bg-gray-100 flex items-center justify-center">
-        <Car size={48} className="text-gray-400" />
+        <ModelCar imageUrl={vehicle?.model?.url} modelName={data.modelName} />
       </div>
 
       <div className="px-6 py-4">
@@ -103,7 +104,7 @@ const VehicleCard = ({ data, onDeleted }) => {
         <div className="text-gray-700 text-base space-y-2">
           <p>
             <span className="font-semibold">Brand:</span>{" "}
-            {vehicle?.model?.brand || "N/A"}
+            {vehicle?.model?.brandName || "N/A"}
           </p>
 
           <p>
