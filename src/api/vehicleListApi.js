@@ -1,10 +1,13 @@
 import axiosClient from "./axiosClient";
 
 const vehicleListApi = {
-    getVehicleList: () => axiosClient.get("/vehicle/forUser"),
+    getVehicleList: () => axiosClient.get("/vehicle/for-user"),
     addVehicle: (credentials) => axiosClient.post("/vehicle", credentials),
-    getVehicleByBrand: (brandName) => axiosClient.get("/model", { params: {brand: brandName}}),
-    getVehicleById: (id) => axiosClient.get(`/vehicle/${id}`)  
+    getVehicleByBrand: (id) => axiosClient.get(`/model/by-brand`, {
+      params: { id: id }
+    }),
+    getVehicleById: (id) => axiosClient.get(`/vehicle/${id}`),
+    deleteVehicle: (id) => axiosClient.delete(`/vehicle/${id}`)
 };
 
 export default vehicleListApi

@@ -12,6 +12,7 @@ const Reset = () => {
 
     
     setVehicleData({
+      brandId: null,
       modelId: null,
       licensePlate: "",
       subscriptionId: null,
