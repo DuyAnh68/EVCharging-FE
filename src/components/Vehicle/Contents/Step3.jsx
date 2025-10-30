@@ -37,11 +37,12 @@ function Step3() {
     }
 
     try {
-      const response = await addVehicle({
+      const response = await addVehicle({       
         modelId: vehicleData.modelId,
         licensePlate: vehicleData.licensePlate,
         subscriptionPlanId: selectedPlan,
       });
+      console.log("vehicleData", response);
       if (response) {
         const subID = response.vehicleSubscriptionResponse.id;
         setSubscriptionId(subID);
