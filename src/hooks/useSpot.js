@@ -13,7 +13,6 @@ const useSpots = () => {
 
     try {
       const response = await spotApi.getSpotsByStationId(stationId);
-      console.log("res", response.data);
       setSpots(response);
     } catch (err) {
       console.error("Failed to fetch spots:", err);
