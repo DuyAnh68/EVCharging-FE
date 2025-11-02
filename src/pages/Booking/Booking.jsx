@@ -46,14 +46,14 @@ function Booking() {
                 <span className="mx-2">•</span>
                 <span
                   className={`text-sm ${
-                    station.status === "Active"
+                    station.status === "AVAILABLE"
                       ? "text-green-500"
                       : station.status === "maintenance"
                       ? "text-yellow-500"
                       : "text-red-500"
                   }`}
                 >
-                  {station.status === "Active"
+                  {station.status === "AVAILABLE"
                     ? "Đang hoạt động"
                     : "Ngưng hoạt động"}
                 </span>
@@ -63,9 +63,9 @@ function Booking() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate(`/station/${station.id}`)}
-                disabled={station.status !== "Active"}
+                disabled={station.status !== "AVAILABLE"}
                 className={`px-4 py-2 rounded transition-colors ${
-                  station.status !== "Active"
+                  station.status !== "AVAILABLE"
                     ? "!bg-gray-400 !text-white cursor-not-allowed"
                     : "!bg-[#0F9456] text-white hover:!bg-[#109857]"
                 }`}

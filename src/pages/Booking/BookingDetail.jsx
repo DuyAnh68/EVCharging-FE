@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useVehicle from "../../hooks/useVehicle";
 import useStation from "../../hooks/useStation";
 import useSpots from "../../hooks/useSpot";
@@ -10,6 +10,8 @@ const StationDetail = () => {
   const { station, getStationById } = useStation();
   const { spots, loading, error, getSpotsByStationId } = useSpots();
   const [distance, setDistance] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const navigate = useNavigate();
 
   function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     const R = 6371;
@@ -169,8 +171,75 @@ const StationDetail = () => {
               </div>
             ))}
           </div>
+          {vehicle?.length > 0 ? (
+            <div className="">
+              <label className="block text-sm font-semibold mb-2">
+                Chọn xe của bạn:
+              </label>
+              <select
+                className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500"
+                value={selectedVehicle?.id || ""}
+                onChange={(e) =>
+                  setSelectedVehicle(
+                    vehicle.find((v) => v.id === Number(e.target.value))
+                  )
+                }
+              >
+                <option value="">-- Chọn xe --</option>
+                {vehicle.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.model.brandName} {v.model.modelName} – {v.licensePlate}
+                  </option>
+                ))}
+              </select>
 
-          <button className="mt-4 !bg-green-600 text-white px-4 py-2 rounded-md hover:!bg-green-700 transition">
+              {selectedVehicle && (
+                <div className="mt-3 text-sm text-gray-600">
+                  <p>
+                    Gói:{" "}
+                    {
+                      selectedVehicle.vehicleSubscriptionResponse
+                        .subscriptionPlanResponse.name
+                    }{" "}
+                    (
+                    {
+                      selectedVehicle.vehicleSubscriptionResponse
+                        .subscriptionPlanResponse.price
+                    }
+                    ₫)
+                  </p>
+                  <p>
+                    Trạng thái:{" "}
+                    <span className="font-medium text-green-600">
+                      {selectedVehicle.vehicleSubscriptionResponse.status}
+                    </span>
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="mt-5 text-gray-500">
+              Bạn chưa có xe nào trong hệ thống.
+            </p>
+          )}
+
+          <button
+            onClick={() =>
+              navigate("/bookingSchedule", {
+                state: { vehicle: selectedVehicle, stationId: id },
+              })
+            }
+            disabled={
+              !selectedVehicle ||
+              selectedVehicle.vehicleSubscriptionResponse.status !== "AVAILABLE"
+            }
+            className={`mt-4 px-4 py-2 rounded-md transition ${
+              !selectedVehicle ||
+              selectedVehicle.vehicleSubscriptionResponse.status !== "ACTIVE"
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-green-600 text-white hover:bg-green-700"
+            }`}
+          >
             Bắt đầu đặt chỗ
           </button>
         </div>
@@ -183,7 +252,12 @@ const StationDetail = () => {
             </p>
 
             <p>
-              <strong>Xe:</strong>
+              <strong>
+                Xe:{" "}
+                {selectedVehicle
+                  ? `${selectedVehicle.model.brandName} ${selectedVehicle.model.modelName} - ${selectedVehicle.licensePlate}`
+                  : "chưa có"}
+              </strong>
             </p>
           </div>
 

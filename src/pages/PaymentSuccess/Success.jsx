@@ -21,7 +21,7 @@ const Success = () => {
         </p>
 
         <button
-          onClick={() => navigate("/vehicles")}
+          onClick={() => navigate("/vehicle")}
           className="w-full bg-[#009951] text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors"
         >
           Quay lại danh sách xe

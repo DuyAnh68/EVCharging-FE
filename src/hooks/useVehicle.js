@@ -8,6 +8,28 @@ const useVehicle = () => {
   const [models, setModels] = useState([]);
   const [vehicelById, setVehicleById] = useState(null);
 
+  const deleteVehicle = async(vehicleId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res= await vehicleListApi.deleteVehicle(vehicleId);
+      console.log("res:", res);
+      if (res.result === "Vehicle has been deleted") {
+        setLoading(false) 
+        setError(null)
+        return {deleteSuccess: true}
+      } else {
+        return {deleteSuccess: false}
+      }
+    } catch (error) {
+      setError(error.message)
+      return {deleteSuccess: false}
+    } finally {
+      setLoading(false)
+    }
+      
+  }
+
   const addVehicle = async (credentials) => {
     setLoading(true);
     setError(null);
@@ -47,11 +69,12 @@ const useVehicle = () => {
     }
   };
 
-  const getVehicleByBrand = async (brandName) => {
+  const getVehicleByBrand = async (id) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await vehicleListApi.getVehicleByBrand(brandName);
+      const response = await vehicleListApi.getVehicleByBrand(id);
+      console.log("Response11", response);
       if (response) {
         setModels(response.result);
         setLoading(false);
@@ -93,7 +116,8 @@ const useVehicle = () => {
     addVehicle,
     getVehicleById,
     models,
-    vehicelById
+    vehicelById,
+    deleteVehicle
   };
 };
 
