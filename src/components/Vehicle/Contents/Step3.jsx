@@ -47,11 +47,11 @@ function Step3() {
         const subID = response.vehicleSubscriptionResponse.id;
         setSubscriptionId(subID);
 
-        const paymentid = await getPayment(subID);
+        const paymentid = await createPayment(subID);
         console.log("getPayment return:", paymentid);
         if(paymentid){                   
-          setPaymentId(paymentid.id)
-          console.log("paymentid", paymentid.id);
+          setPaymentId(paymentid)
+          console.log("paymentid", paymentid);
         }
         
         setPopupMessage(`Xe đã được thêm thành công!`);

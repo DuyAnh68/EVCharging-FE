@@ -6,7 +6,6 @@ const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
   const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user.name);
   const handleLogout = () => {
     logout();
     navigate("/");

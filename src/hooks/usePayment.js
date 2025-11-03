@@ -11,8 +11,9 @@ const usePayment = () => {
     setError(null);
     try{
       const response = await paymentApi.getPaymentBySubscription(subscriptionId);
+      console.log("response", response);
       if(response){
-        setLoading(false);
+        setLoading(false);  
         return response.result;
       }
     }catch (e) {

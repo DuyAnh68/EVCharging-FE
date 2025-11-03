@@ -18,7 +18,7 @@ const StationList = ({data = [], loading = false}) => {
                         <div key={item.id} className="nearby-station-list-item">
                             <div className="station-img">
                                 <img
-                                    src={item?.image || "https://t4.ftcdn.net/jpg/01/93/90/27/360_F_193902732_Rdkidq0xZ0TT6Tdt0kuQUUsue6PQOV5g.jpg"}
+                                    src={item?.imageUrl || "https://t4.ftcdn.net/jpg/01/93/90/27/360_F_193902732_Rdkidq0xZ0TT6Tdt0kuQUUsue6PQOV5g.jpg"}
                                     alt="vinfast chargin station"/>
                             </div>
                             <div className="flex flex-col gap-3 p-5 pt-0">
