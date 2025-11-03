@@ -1,8 +1,8 @@
 import axiosClient from "./axiosClient"; 
 
 const subscriptionListApi = {
-    getSubscriptions: () => axiosClient.get("/subscription-plan"),
-    getSubscriptionById: (subscriptionId) => axiosClient.get("/subscription-plan/", { params: {id: subscriptionId }})
+    getSubscriptions: () => axiosClient.get("/admin/subscription-plan"),
+    getSubscriptionById: (subscriptionId) => axiosClient.get(`/admin/subscription-plan/${subscriptionId}`)
 };
 
 export default subscriptionListApi;
