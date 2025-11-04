@@ -18,6 +18,7 @@ import StationDetail from "../pages/Booking/BookingDetail.jsx";
 import VerifySuccess from "../pages/Success/VerifySuccess.jsx";
 import Success from "../pages/PaymentSuccess/Success.jsx";
 import Fail from "../pages/PaymentSuccess/Fail.jsx";
+import StationManagementPage from "../pages/Admin/StationManagement/StationManagementPage.jsx";
 import BookingSchedule from "../pages/Booking/BookingSchedule.jsx";
 import ChargingSession from "../pages/ChargingSession/ChargingSession.jsx";
 import SessionDetail from "../pages/ChargingSession/SessionDetail.jsx";
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
       { path: "/verifySuccess", element: <VerifySuccess /> },
       { path: "/success", element: <Success /> },
       { path: "/fail", element: <Fail /> },
+      { path: "/admin/station", element: <StationManagementPage /> },
       { path: "/bookingSchedule", element: <BookingSchedule /> },
       { path: "/chargingSession", element: <ChargingSession /> },
       { path: "/session-detail/:id", element: <SessionDetail /> },
