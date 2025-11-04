@@ -1,43 +1,69 @@
 // ...existing code...
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { Car } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import StepperContext from "../../../contexts/Vehicle/StepperProvider";
 import useVehicle from "../../../hooks/useVehicle";
-// ...existing code...
+import useBrand from "../../../hooks/useBrand";
 
 function VehicleInf() {
-  const evBrands = ["VINFAST", "BYD"];
   const { getVehicleByBrand, loading } = useVehicle();
+  const { getBrands } = useBrand();
   const { currentStep, setCurrentStep, vehicleData, setVehicleData } = useContext(StepperContext);
+
+  const [brandsData, setBrandsData] = useState([]); 
   const [modelList, setModelList] = useState([]);
 
-  // Nạp danh sách model khi brand thay đổi (kể cả khi back lại)
   useEffect(() => {
-    const fetchModels = async () => {
-      if (vehicleData.brand) {
-        const data = await getVehicleByBrand(vehicleData.brand);
-        if (Array.isArray(data)) setModelList(data);
-      } else {
-        setModelList([]);
+    const fetch = async () => {
+      try {
+        const res = await getBrands();
+        console.log("res", res);
+        if (res) {
+          setBrandsData(res)
+
+          // nếu đã có brandId chọn sẵn (back navigation), khởi tạo modelList tương ứng
+          if (vehicleData?.brandId) {
+            const models = await getVehicleByBrand(vehicleData.brandId);
+            setModelList(models || []);
+          }
+        }
+      } catch (e) {
+        console.error("fetch brands error", e);
       }
     };
-    fetchModels();
-  }, [vehicleData.brand]);
+    fetch();
+  }, []); // chỉ gọi 1 lần khi mount
 
   // Hàm tiện ích cập nhật vehicleData
   const handleChange = (field, value) => {
     setVehicleData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Hãng xe
-  const handleBrandChange = (e) => {
-    const brand = e.target.value;
-    handleChange("brand", brand);
+  // Hãng xe: khi chọn, gọi API lấy models theo brandId rồi lưu brandId vào vehicleData
+  const handleBrandChange = async(e) => {
+    const brandId = e.target.value;
+    const brandObj = brandsData.find((b) => String(b.id) === String(brandId) || String(b.brand || b.name) === String(brandId));  
+    handleChange("brandId", brandId || null);
+    handleChange("brand", brandObj ? (brandObj.name ?? brandObj.brand) : "");
     handleChange("modelName", "");
     handleChange("connector", "");
     handleChange("batteryCapacity", "");
     handleChange("modelId", "");
+    if (!brandId) {
+      setModelList([]);
+      return;
+    }
+
+    try {
+      const models = await getVehicleByBrand(brandId);
+      // nếu API trả về { result: [...] } chuẩn hoá
+      const list = Array.isArray(models) ? models : models?.result ?? [];
+      setModelList(list);
+    } catch (err) {
+      console.error("Lỗi load models theo brand:", err);
+      setModelList([]);
+    }
   };
 
   // Mẫu xe
@@ -45,11 +71,12 @@ function VehicleInf() {
     const modelName = e.target.value;
     handleChange("modelName", modelName);
 
-    const selected = modelList.find((m) => m.modelName === modelName);
+    const selected = modelList.find((m) => m.modelName === modelName || m.name === modelName);
     if (selected) {
+      // một số API trả id là id, một số trả modelId -> cố gắng dùng cả hai
       handleChange("connector", selected.connector || "");
       handleChange("batteryCapacity", selected.batteryCapacity || "");
-      handleChange("modelId", selected.id);
+      handleChange("modelId", selected.id ?? selected.modelId ?? null);
     } else {
       handleChange("connector", "");
       handleChange("batteryCapacity", "");
@@ -72,6 +99,7 @@ function VehicleInf() {
       setCurrentStep(currentStep + 1);
     }
   };
+
 
   return (
     <div className="bg-[#D9D9D9] p-6 md:p-10 shadow-sm rounded-[36px] max-w-5xl mx-auto">
@@ -96,15 +124,15 @@ function VehicleInf() {
             </label>
             <select
               id="Brand"
-              value={vehicleData.brand || ""}
+              value={vehicleData.brandId || ""}
               onChange={handleBrandChange}
               className="w-full border rounded-md px-3 py-2 border-black bg-white"
               disabled={loading}
             >
               <option value="">-- Chọn hãng xe điện --</option>
-              {evBrands.map((brand, index) => (
-                <option key={index} value={brand}>
-                  {brand}
+              {brandsData.map((brand) => (
+                <option key={brand.id ?? brand.name} value={brand.id ?? brand.name}>
+                  {brand.name ?? brand.brand}
                 </option>
               ))}
             </select>
@@ -157,8 +185,8 @@ function VehicleInf() {
             >
               <option value="">-- Chọn mẫu xe --</option>
               {modelList.map((model) => (
-                <option key={model.id} value={model.modelName}>
-                  {model.modelName}
+                <option key={model.id ?? model.modelId} value={model.modelName ?? model.name}>
+                  {model.modelName ?? model.name}
                 </option>
               ))}
             </select>

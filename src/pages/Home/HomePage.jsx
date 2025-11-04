@@ -142,7 +142,6 @@ const HomePage = () => {
                         <Zap className="w-4 h-4" />
                         {s.powerCapacity} kW
                       </span>
-                      <span>🅿 {s.availableSpots || 0}</span>
                     </div>
                   </div>
                 ))}
@@ -206,7 +205,7 @@ const HomePage = () => {
                             </span>
                             <img
                               src={
-                                s.image ||
+                                s.imageUrl ||
                                 "https://images.pexels.com/photos/110844/pexels-photo-110844.jpeg?auto=compress&cs=tinysrgb&w=800"
                               }
                               alt={s.name}
@@ -214,28 +213,29 @@ const HomePage = () => {
                             />
                           </div>
                           <div className="p-5">
-                            <h3 className="font-bold text-gray-800 text-lg mb-2">
-                              {s.name}
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-3 flex items-start gap-1">
-                              <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                              {s.location}
-                            </p>
-                            <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-                              <span className="flex items-center gap-1">
-                                <Zap className="w-4 h-4" />
-                                {s.powerCapacity} kW
-                              </span>
-                              <span>
-                                🅿 {s.availableSpots}/{s.totalSpots}
-                              </span>
+                            <div className="flex flex-col gap-5">
+                              <div className="h-40">
+                                <h3 className="font-bold text-gray-800 text-lg mb-2">
+                                  {s.name}
+                                </h3>
+                                <p className="text-sm text-gray-600 mb-3 flex items-start gap-1">
+                                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                  {s.location}
+                                </p>
+                                <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+                                  <span className="flex items-center gap-1">
+                                    <Zap className="w-4 h-4" />
+                                    {s.powerCapacity} kW
+                                  </span>
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => navigate(`/station/${s.id}`)}
+                                className="w-full !bg-green-600 text-white py-2.5 rounded-md hover:!bg-green-700 transition font-medium"
+                              >
+                                Đặt chỗ ngay
+                              </button>
                             </div>
-                            <button
-                              onClick={() => navigate(`/station/${s.id}`)}
-                              className="w-full !bg-green-600 text-white py-2.5 rounded-md hover:!bg-green-700 transition font-medium"
-                            >
-                              Đặt chỗ ngay
-                            </button>
                           </div>
                         </div>
                       ))}

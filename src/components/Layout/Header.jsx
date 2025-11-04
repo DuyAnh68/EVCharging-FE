@@ -4,12 +4,12 @@ import useAuth from "../../hooks/useAuth";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
+  const user = JSON.parse(localStorage.getItem("user"));
   const handleLogout = () => {
     logout();
     navigate("/");
   };
-  console.log(isAuthenticated);
 
   const navLinkClass = ({ isActive }) =>
     isActive
@@ -101,7 +101,7 @@ const Header = () => {
             ) : (
               <div className="flex items-center space-x-4">
                 <span className="text-gray-700 text-sm">
-                  Xin chào, {user?.user.name || "User"}
+                  Xin chào, {user?.name || "User"}
                 </span>
                 <button
                   className="!text-gray-600 hover:text-green-500 px-3 py-2 text-sm font-medium"

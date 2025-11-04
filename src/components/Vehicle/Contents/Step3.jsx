@@ -16,8 +16,9 @@ function Step3() {
   const { addVehicle } = useVehicle();
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
-  const { createPayment } = usePayment();
+  const { createPayment, getPayment } = usePayment();
   const [paymentId, setPaymentId] = useState(null);
+  const [subscriptionId, setSubscriptionId] = useState(null);
   // const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,13 +37,23 @@ function Step3() {
     }
 
     try {
-      const response = await addVehicle({
+      const response = await addVehicle({       
         modelId: vehicleData.modelId,
         licensePlate: vehicleData.licensePlate,
         subscriptionPlanId: selectedPlan,
       });
+      console.log("vehicleData", response);
       if (response) {
-        setPaymentId(response.paymentTransactionId);
+        const subID = response.vehicleSubscriptionResponse.id;
+        setSubscriptionId(subID);
+
+        const paymentid = await createPayment(subID);
+        console.log("getPayment return:", paymentid);
+        if(paymentid){                   
+          setPaymentId(paymentid)
+          console.log("paymentid", paymentid);
+        }
+        
         setPopupMessage(`Xe đã được thêm thành công!`);
         setShowPopup(true);
       } else {

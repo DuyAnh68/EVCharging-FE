@@ -1,6 +1,5 @@
 import { useState } from "react";
 import authApi from "../api/authApi";
-import { jwtDecode } from "jwt-decode"; // npm install jwt-decode
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -10,18 +9,6 @@ const useAuth = () => {
   const token = localStorage.getItem("access_token");
   const isAuthenticated = !!token;
 
-  // Nếu có token thì tự decode để giữ trạng thái user khi reload trang
-  if (isAuthenticated && !user) {
-    try {
-      const decoded = jwtDecode(token);
-      setUser(decoded);
-    } catch (err) {
-      console.error("Token không hợp lệ:", err);
-      localStorage.removeItem("access_token");
-    }
-  }
-
-  // Hàm đăng nhập giả lập
   const loginUser = async (credentials) => {
     setLoading(true);
     setError(null);
@@ -33,13 +20,9 @@ const useAuth = () => {
         const token = response.result.token;
 
         localStorage.setItem("access_token", token);
+        localStorage.setItem("user", JSON.stringify(response.result.user));
 
-        const decodedUser = jwtDecode(token);
-        setUser(decodedUser);
-
-        console.log("User decoded từ token:", decodedUser);
-
-        return { success: true, user: decodedUser };
+        return { success: true, user: response.result.user };
       } else {
         throw new Error("Email hoặc mật khẩu không đúng");
       }
