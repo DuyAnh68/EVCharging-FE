@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {  useState } from "react";
 import { Battery, Plug, X } from "lucide-react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
@@ -18,6 +18,7 @@ const VehicleCard = ({ data, onDeleted }) => {
   const [open, setOpen] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
   const navigate = useNavigate();
+  
 
   const handleDelete = async (e) => {
     e.stopPropagation();

@@ -1,36 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import useSession from '../../hooks/useSession';
 
 function ChargeHistory({ vehicleId, onClose }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sessionData, setSessionData] = useState(null);
+  const { getVehicleSession } = useSession();
 
+  const handleGetSession = async () => {
+    try{
+      const response = await getVehicleSession(vehicleId);
+      console.log("session", response);
+      if(response){
+        setSessionData(response);
+      }
+
+    }catch(e){
+      console.log("Error:", e.message);
+    }    
+  };
   // Giả lập API
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
+      try{
+        await handleGetSession();
+      }catch(e){
+        console.log("Error:", e.message);
+      }
       setLoading(true);
       // Giả lập call API
       setTimeout(() => {
-        setHistory([
-          {
-            datetime: "2025-10-31T14:23:00Z",
-            station: "VinFast Station - Q1",
-            connector: "CCS2",
-            energy_kwh: 23.45,
-            duration_min: 48,
-            cost_vnd: 120000,
-            status: "Completed",
-          },
-          {
-            datetime: "2025-10-29T18:50:00Z",
-            station: "GreenCharge - Q7",
-            connector: "CCS2",
-            energy_kwh: 18.2,
-            duration_min: 38,
-            cost_vnd: 90000,
-            status: "Completed",
-          },
-        ]);
+        setHistory(sessionData || []);
         setLoading(false);
       }, 800);
     }
@@ -43,7 +44,7 @@ function ChargeHistory({ vehicleId, onClose }) {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Lịch sử sạc xe #{vehicleId}</h2>
+        <h2 className="text-xl font-semibold">Lịch sử sạc xe</h2>
         <button
           onClick={onClose}
           className="text-gray-500 hover:text-black"

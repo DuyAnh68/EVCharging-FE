@@ -28,7 +28,7 @@ const usePayment = () => {
     setError(null);
     try {
       const response = await paymentApi.setPayment(paymentTransactionId);
-      // console.log("url12:", response);
+      console.log("url12:", response);
       if (response) {
         
         setLoading(false);

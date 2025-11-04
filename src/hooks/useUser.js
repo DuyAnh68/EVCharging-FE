@@ -25,15 +25,26 @@ const useUser = () => {
         }
     };
 
-    // const updateUser = async (userData) => {
-    //     setLoading(true);
-    //     setError(null);
-    //     try{
-    //         const response = await userApi.updateUser(userData);
-    //         if(response){
-
+    const updateUser = async (userData) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await userApi.updateUser(userData);
+            if (response) {
+                setUser(response.result);
+                setLoading(false);
+                return response.result;
+            }
+        }catch (e) {
+            setError(e.message);
+            return e.message;
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return {
+        updateUser,
         getUser,
         loading,
         error,
