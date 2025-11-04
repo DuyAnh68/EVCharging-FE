@@ -34,6 +34,7 @@ const useBooking = () => {
     setError(null);
     try {
       const res = await bookingApi.postBooking(bookingData);
+      console.log("booking:", res);
       if (res) {
         console.log(res);
         setBookingInfo(res);
