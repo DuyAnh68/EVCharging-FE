@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import { useState } from "react";
 import paymentApi from "../api/paymentApi";
 
 const usePayment = () => {
@@ -42,12 +41,33 @@ const usePayment = () => {
       setLoading(false);
     }
   };
+
+  const getPaymentHistory = async () => {
+  setLoading(true);
+  setError(null);
+  try{
+    const response = await paymentApi.getPaymentHistory();
+    console.log("paymentHistory..", response);
+    if(response){
+      setLoading(false);
+      return response.result;
+    }
+  }catch (e) {
+    setError(e.message);
+    return e.message;
+  } finally {
+    setLoading(false);
+  }
+}
   return {
+    getPaymentHistory,
     loading,
     error,
     createPayment,
     getPayment
   };
 };
+
+
 
 export default usePayment;
