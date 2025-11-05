@@ -59,7 +59,7 @@ const HomePage = () => {
         </p>
 
         <motion.div
-          className="bg-white shadow-xl rounded-xl px-6 py-6 max-w-7xl mx-auto"
+          className="bg-white shadow-xl rounded-xl px-6 py-6 max-w-6xl mx-auto"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 200 }}
         >

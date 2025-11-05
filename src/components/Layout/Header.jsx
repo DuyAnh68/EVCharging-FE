@@ -17,7 +17,7 @@ const Header = () => {
       : "relative !text-gray-600 hover:!text-green-500 px-4 py-2 text-sm font-medium transition duration-200 hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:right-0 hover:after:h-0.5 hover:after:bg-green-300 hover:after:rounded-full";
 
   const navLinkClassUnauthenticated =
-    "relative text-gray-600 hover:text-green-500 px-4 py-2 text-sm font-medium transition duration-200 hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:right-0 hover:after:h-0.5 hover:after:bg-green-300 hover:after:rounded-full";
+    "relative !text-gray-600 hover:!text-green-500 px-4 py-2 text-sm font-medium transition duration-200 hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:right-0 hover:after:h-0.5 hover:after:bg-green-300 hover:after:rounded-full";
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-sm z-50">

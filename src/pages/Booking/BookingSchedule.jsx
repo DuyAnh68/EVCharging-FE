@@ -15,7 +15,8 @@ const BookingSchedule = () => {
   } = useBooking();
   const { getStationById, station } = useStation();
 
-  const user = localStorage.getItem("user");
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const location = useLocation();
   const { stationId, vehicle } = location.state;
   const [selectedDate, setSelectedDate] = useState(
@@ -147,22 +148,26 @@ const BookingSchedule = () => {
         <div className="bg-white rounded-3xl shadow-xl p-8 mb-6 border border-emerald-100">
           <div className="flex items-center justify-center gap-4 mb-2">
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-2xl">⚡</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={512}
+                height={512}
+                viewBox="0 0 512 512"
+              >
+                <path fill="white" d="M376 211H256V16L136 301h120v195z"></path>
+              </svg>
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Đặt lịch sạc xe điện
             </h2>
           </div>
-          <p className="text-center text-gray-600 text-lg">
-            {vehicle?.model.modelName || "Xe của bạn"}
-          </p>
         </div>
 
         {/* Date Picker Card */}
         <div className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-emerald-100">
           <div className="flex items-center justify-center gap-3">
             <span className="text-gray-700 font-semibold text-lg">
-              📅 Chọn ngày:
+              Chọn ngày:
             </span>
             <input
               type="date"
@@ -237,7 +242,7 @@ const BookingSchedule = () => {
                     </span>
                   </p>
                   <p className="text-gray-600 mt-1">
-                    📅{" "}
+                    {" "}
                     {new Date(selectedDate).toLocaleDateString("vi-VN", {
                       weekday: "long",
                       year: "numeric",
@@ -248,7 +253,6 @@ const BookingSchedule = () => {
                 </div>
 
                 <div className="flex items-center justify-center gap-2 text-teal-700">
-                  <span className="text-3xl">⏱️</span>
                   <p className="text-lg font-semibold">
                     Tổng thời lượng: {selectedSlots.length * 30} phút (
                     {(selectedSlots.length * 0.5).toFixed(1)} giờ)
@@ -260,7 +264,7 @@ const BookingSchedule = () => {
                   className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
                   disabled={selectedSlots.length === 0}
                 >
-                  🚀 Tiến hành đặt chỗ
+                  Tiến hành đặt chỗ
                 </button>
               </div>
             </div>
