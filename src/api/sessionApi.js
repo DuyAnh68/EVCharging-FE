@@ -1,5 +1,7 @@
+import axiosClient from "./axiosClient";
+
 const sessionApi = {
-    getSessionsByVehicleId: (vehicleId) => `/api/charging-sessions/vehicle/${vehicleId}`,
+    getSessionsByVehicleId: (vehicleId) => axiosClient.get(`/api/charging-sessions/vehicle/${vehicleId}`),
 };
 
 export default sessionApi;

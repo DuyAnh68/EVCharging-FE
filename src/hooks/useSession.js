@@ -5,13 +5,16 @@ const useSession = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const getVehicleSession = async (vehicleId) => {
+    const getVehicleSession = async(vehicleId) => {
         setLoading(true);
+        setError(null);
         try{
             const response = await sessionApi.getSessionsByVehicleId(vehicleId);
+            console.log("object", vehicleId);
+            console.log("responseSession", response);
             if(response){
                 setLoading(false);
-                return response.result;              
+                return response;              
             }
                 
         }catch(e){

@@ -13,7 +13,6 @@ const useStation = () => {
 
     try {
       const response = await stationApi.getStation();
-      console.log("station", response);
       setStations(response?.data || response);
     } catch (err) {
       console.error("Fetch stations failed:", err);
@@ -27,7 +26,6 @@ const useStation = () => {
     try {
       setLoading(true);
       const res = await stationApi.getStationById(id);
-      console.log("res", res);
       setStation(res);
     } catch (err) {
       setError(err.message);

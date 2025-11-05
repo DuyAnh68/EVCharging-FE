@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { User, Mail, AtSign, Edit2, CreditCard } from "lucide-react";
+import { User, Mail, AtSign, Edit2, CreditCard, Link, CalendarCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import useUser from "../../hooks/useUser";
 import usePayment from "../../hooks/usePayment";
 
 const Account = () => {
   const { getUser, loading, error, updateUser } = useUser();
   const { getPaymentHistory } = usePayment();
-
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [filterType, setFilterType] = useState("ALL");
+  const [sortOrder, setSortOrder] = useState("DESC");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,7 +61,12 @@ const Account = () => {
 
   const filteredTransactions = transactions
     .filter((t) => t.status === "SUCCESS")
-    .filter((t) => (filterType === "ALL" ? true : t.type === filterType));
+    .filter((t) => (filterType === "ALL" ? true : t.type === filterType))
+    .sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    return sortOrder === "ASC" ? dateA - dateB : dateB - dateA;
+    });
 
   if (loading)
     return (
@@ -80,12 +88,30 @@ const Account = () => {
     );
 
   return (
-    <div className="bg-[#F6F9EE] min-h-screen px-6 py-10">
-      <div className="max-w-7xl mx-auto mb">
+    <div className="min-h-screen px-6 py-10">
+      <div className="max-w-7xl mx-auto mb-3">
         {/* Header */}
+      <div className="top flex justify-between max-w-7xl mx-auto mb-3">
         <h1 className="title !text-[#14AE5C] !text-4xl !font-bold !mb-5">
           Tài khoản của bạn
         </h1>
+
+        {/* <button
+          onClick={() => navigate("/chargingSession")}
+          className="!bg-[#009951] !text-white border border-[1] !border-black px-4 py-2 rounded-lg hover:!bg-[#00b35c] transition"
+        >
+          Đặt chỗ
+        </button> */}
+
+        {/* <div className="button">
+          <Link
+            to="/chargingSession"
+            className="!bg-[#009951] !text-white border border-[1] !border-black px-4 py-2 rounded-lg hover:!bg-[#00b35c] transition"
+          >
+            Đặt chỗ của bạn
+          </Link>
+      </div>  */}
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Card */}
@@ -105,10 +131,10 @@ const Account = () => {
                   Thông tin cá nhân
                 </h3>
                 <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="text-[#008236] hover:text-[#00B35C] transition"
+                  onClick={() => navigate("/chargingSession")}
+                  className="text-[white] bg-[#00B35C] hover:bg-[#00b35c] transition"
                 >
-                  <Edit2 size={18} />
+                  <CalendarCheck size={18} />
                 </button>
               </div>
 
@@ -198,7 +224,8 @@ const Account = () => {
                   Lịch sử giao dịch
                 </h3>
               </div>
-              <select
+              <div className="flex items-center gap-4">
+                <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
@@ -207,6 +234,16 @@ const Account = () => {
                 <option value="VEHICLE SUBSCRIPTION">Đăng ký xe</option>
                 <option value="BOOKING">Đặt chỗ</option>
               </select>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
+              >
+                <option value="DESC">Mới nhất trước</option>
+                <option value="ASC">Cũ nhất trước</option>
+              </select>
+              </div>
+              
             </div>
 
             {filteredTransactions.length === 0 ? (
