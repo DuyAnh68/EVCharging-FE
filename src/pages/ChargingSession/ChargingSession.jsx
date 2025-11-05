@@ -29,10 +29,33 @@ const ChargingSession = () => {
     }
   }, []);
 
+  // helper: derived status for display (ONGOING if now between timeToCharge and endTime, COMPLETED if endTime passed)
+  const getDerivedStatus = (b) => {
+    try {
+      const now = new Date();
+      const start = b.timeToCharge ? new Date(b.timeToCharge) : null;
+      const end = b.endTime ? new Date(b.endTime) : null;
+
+      if (end && end < now) return "COMPLETED";
+      if (start && end && start <= now && now < end) return "ONGOING";
+      return b.status ?? "PENDING";
+    } catch {
+      return b.status ?? "PENDING";
+    }
+  };
+
+  // helper: status used for counting and filtering - map ONGOING -> CONFIRMED (in-progress considered confirmed), expired -> COMPLETED
+  const getEffectiveStatusForFilter = (b) => {
+    const derived = getDerivedStatus(b);
+    if (derived === "COMPLETED") return "COMPLETED";
+    if (derived === "ONGOING") return "CONFIRMED";
+    return b.status ?? "PENDING";
+  };
+
   const counts = useMemo(() => {
     const c = { ALL: bookings.length, PENDING: 0, CONFIRMED: 0, COMPLETED: 0 };
     bookings.forEach((b) => {
-      const s = b.status ?? "";
+      const s = getEffectiveStatusForFilter(b);
       if (s === "PENDING") c.PENDING++;
       else if (s === "CONFIRMED") c.CONFIRMED++;
       else if (s === "COMPLETED") c.COMPLETED++;
@@ -42,7 +65,9 @@ const ChargingSession = () => {
 
   const filteredBookings = useMemo(() => {
     if (filterStatus === "ALL") return bookings;
-    return bookings.filter((b) => b.status === filterStatus);
+    return bookings.filter(
+      (b) => getEffectiveStatusForFilter(b) === filterStatus
+    );
   }, [bookings, filterStatus]);
 
   if (loading)
@@ -56,7 +81,32 @@ const ChargingSession = () => {
 
   const renderActionButton = (b) => {
     const id = getBookingId(b);
-    if (b.status === "PENDING") {
+    const derived = getDerivedStatus(b);
+
+    if (derived === "COMPLETED") {
+      return (
+        <button
+          onClick={() => navigate(`/session-detail/${id}`)}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+        >
+          Xem chi tiết
+        </button>
+      );
+    }
+
+    if (derived === "ONGOING") {
+      return (
+        <button
+          onClick={() => navigate(`/session-detail/${id}`)}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+        >
+          Đến giờ
+        </button>
+      );
+    }
+
+    // Not started yet
+    if ((b.status ?? "PENDING") === "PENDING") {
       return (
         <button
           onClick={() => navigate(`/payment/${id}`)}
@@ -67,6 +117,7 @@ const ChargingSession = () => {
       );
     }
 
+    // CONFIRMED but not started
     return (
       <button
         onClick={() => navigate(`/session-detail/${id}`)}
@@ -77,14 +128,14 @@ const ChargingSession = () => {
     );
   };
 
-  const displayStatus = (s) =>
-    s === "COMPLETED"
-      ? "Hoàn thành"
-      : s === "PENDING"
-      ? "Chờ thanh toán"
-      : s === "CONFIRMED"
-      ? "Đã thanh toán"
-      : s;
+  const displayStatus = (b) => {
+    const s = getDerivedStatus(b);
+    if (s === "COMPLETED") return "Hoàn thành";
+    if (s === "ONGOING") return "Đến giờ";
+    if (b.status === "PENDING") return "Chờ thanh toán";
+    if (b.status === "CONFIRMED") return "Đã thanh toán";
+    return b.status ?? "-";
+  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -99,7 +150,6 @@ const ChargingSession = () => {
         </span>
       </div>
 
-      {/* Bộ lọc trạng thái */}
       <div className="mt-6 flex flex-wrap items-center gap-3">
         {["ALL", "PENDING", "CONFIRMED", "COMPLETED"].map((s) => (
           <button
@@ -143,11 +193,10 @@ const ChargingSession = () => {
               <tr className="text-gray-600 uppercase text-xs font-semibold">
                 <th className="px-6 py-4 text-left">Mã đặt</th>
                 <th className="px-15 py-4 text-left">Trạng thái</th>
-                <th className="px-6 py-4 text-left">Bắt đầu</th>
+                <th className="px-6 py-4 text-left">Mốc thời gian</th>
                 <th className="px-6 py-4 text-left">Kết thúc</th>
                 <th className="px-6 py-4 text-left">Thời gian sạc</th>
                 <th className="px-6 py-4 text-left">Phí đặt chỗ</th>
-                <th className="px-6 py-4 text-left">Tổng chi phí</th>
                 <th className="px-6 py-4 text-center">Hành động</th>
               </tr>
             </thead>
@@ -168,14 +217,16 @@ const ChargingSession = () => {
                     <td className="px-6 py-4">
                       <span
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide ${
-                          b.status === "COMPLETED"
+                          getDerivedStatus(b) === "COMPLETED"
                             ? "bg-green-100 text-green-700"
+                            : getDerivedStatus(b) === "ONGOING"
+                            ? "bg-blue-100 text-blue-700"
                             : b.status === "CONFIRMED"
                             ? "bg-yellow-100 text-yellow-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {displayStatus(b.status)}
+                        {displayStatus(b)}
                       </span>
                     </td>
 
@@ -190,8 +241,7 @@ const ChargingSession = () => {
                         : "-"}
                     </td>
 
-                    <td className="px-6 py-4 flex items-center gap-1 text-gray-600">
-                      <Clock size={16} className="text-gray-400" />
+                    <td className="px-6 py-4 ">
                       {b.timeToCharge
                         ? dayjs(b.timeToCharge).format("HH:mm DD/MM")
                         : "-"}
@@ -202,28 +252,9 @@ const ChargingSession = () => {
                         ? `${b.reservationFee.toLocaleString()}₫`
                         : "-"}
                     </td>
-                    <td className="px-6 py-4 font-semibold text-gray-800">
-                      {b.totalCost ? `${b.totalCost.toLocaleString()}₫` : "-"}
-                    </td>
 
                     <td className="px-6 py-4 text-center">
-                      {b.status === "PENDING" ? (
-                        <button
-                          onClick={() => navigate(`/payment/${bookingId}`)}
-                          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
-                        >
-                          Thanh toán
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            navigate(`/session-detail/${bookingId}`)
-                          }
-                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
-                        >
-                          Xem chi tiết
-                        </button>
-                      )}
+                      {renderActionButton(b)}
                     </td>
                   </tr>
                 );
