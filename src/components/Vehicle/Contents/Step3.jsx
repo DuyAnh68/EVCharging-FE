@@ -46,12 +46,13 @@ function Step3() {
       if (response) {
         const subID = response.vehicleSubscriptionResponse.id;
         setSubscriptionId(subID);
+        console.log("sub", subID);
 
-        const paymentid = await createPayment(subID);
+        const paymentid = await getPayment(subID);
         console.log("getPayment return:", paymentid);
         if(paymentid){                   
-          setPaymentId(paymentid)
-          console.log("paymentid", paymentid);
+          setPaymentId(paymentid.id)
+          console.log("paymentid", paymentid.id);
         }
         
         setPopupMessage(`Xe đã được thêm thành công!`);
@@ -75,6 +76,7 @@ function Step3() {
   const handlePayment = async () => {
     try {
       const response = await createPayment(paymentId);
+      console.log("url", response);
       if (response) {
         window.open(response.paymentUrl, "_blank");
       }
