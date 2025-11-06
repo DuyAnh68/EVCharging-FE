@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import vehicleListApi from "../api/vehicleListApi";
 
 const useVehicle = () => {
@@ -6,29 +6,28 @@ const useVehicle = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [models, setModels] = useState([]);
-  const [vehicelById, setVehicleById] = useState(null);
+  const [vehicleById, setVehicleById] = useState(null);
 
-  const deleteVehicle = async(vehicleId) => {
+  const deleteVehicle = async (vehicleId) => {
     setLoading(true);
     setError(null);
     try {
-      const res= await vehicleListApi.deleteVehicle(vehicleId);
+      const res = await vehicleListApi.deleteVehicle(vehicleId);
       console.log("res:", res);
       if (res.result === "Vehicle has been deleted") {
-        setLoading(false) 
-        setError(null)
-        return {deleteSuccess: true}
+        setLoading(false);
+        setError(null);
+        return { deleteSuccess: true };
       } else {
-        return {deleteSuccess: false}
+        return { deleteSuccess: false };
       }
     } catch (error) {
-      setError(error.message)
-      return {deleteSuccess: false}
+      setError(error.message);
+      return { deleteSuccess: false };
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-      
-  }
+  };
 
   const addVehicle = async (credentials) => {
     setLoading(true);
@@ -91,21 +90,20 @@ const useVehicle = () => {
   const getVehicleById = async (id) => {
     setLoading(true);
     setError(null);
-    try{
+    try {
       const response = await vehicleListApi.getVehicleById(id);
       console.log("response:", response.result);
-      if(response){
+      if (response) {
         setVehicleById(response.result);
         setLoading(false);
-        return response.result
       }
-    }catch(e){
+    } catch (e) {
       setError(e.message);
-      return e.message
-    }finally{
+      return e.message;
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   return {
     vehicle,
@@ -116,8 +114,8 @@ const useVehicle = () => {
     addVehicle,
     getVehicleById,
     models,
-    vehicelById,
-    deleteVehicle
+    vehicleById,
+    deleteVehicle,
   };
 };
 
