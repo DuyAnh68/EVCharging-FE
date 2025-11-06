@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import useUser from "../../hooks/useUser";
 import usePayment from "../../hooks/usePayment";
+import InvoiceDetail from "../../components/Payment/InvoiceDetail";
 
 const Account = () => {
   const { getUser, loading, error, updateUser } = useUser();
@@ -14,6 +15,7 @@ const Account = () => {
   const [transactions, setTransactions] = useState([]);
   const [filterType, setFilterType] = useState("ALL");
   const [sortOrder, setSortOrder] = useState("DESC");
+  // const [showInvoiceTable, setShowInvoiceTable] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,16 +48,6 @@ const Account = () => {
       minute: "2-digit",
     });
 
-  // const handleUpdateUser = async () => {
-  //   try {
-  //     const updatedUser = await updateUser({ name: user.name, password: user.password });
-  //     setUser(updatedUser);
-  //     setIsEditing(false);
-  //   } catch (err) {
-  //     console.error("Error updating user:", err);     
-  //   }
-  // };
-
   const formatMoney = (amount) =>
     amount.toLocaleString("vi-VN") + " đ";
 
@@ -63,9 +55,9 @@ const Account = () => {
     .filter((t) => t.status === "SUCCESS")
     .filter((t) => (filterType === "ALL" ? true : t.type === filterType))
     .sort((a, b) => {
-    const dateA = new Date(a.createdAt);
-    const dateB = new Date(b.createdAt);
-    return sortOrder === "ASC" ? dateA - dateB : dateB - dateA;
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder === "ASC" ? dateA - dateB : dateB - dateA;
     });
 
   if (loading)

@@ -62,7 +62,25 @@ const BookingSchedule = () => {
     return bookingsAtSameTime >= station.totalSpotsOnline;
   };
 
+  // New: check if a slot (date + time) is in the past
+  const isSlotInPast = (slotTime) => {
+    try {
+      const slotDateTime = new Date(`${selectedDate}T${slotTime}:00`);
+      const now = new Date();
+      return slotDateTime < now;
+    } catch {
+      return false;
+    }
+  };
+
   const handleSelectSlot = (time) => {
+    // prevent selecting past slots
+    if (isSlotInPast(time)) {
+      // optional: show a small notification instead of alert
+      alert("Không thể chọn khung giờ đã ở quá khứ.");
+      return;
+    }
+
     if (selectedSlots.length === 0) {
       setSelectedSlots([time]);
       return;
@@ -99,9 +117,24 @@ const BookingSchedule = () => {
   };
 
   const handleBooking = async () => {
-    const { start, end } = getStartEndTime();
-    console.log(new Date(`${selectedDate}T${start}:00`).toISOString());
-    console.log(end);
+    const period = getStartEndTime();
+    if (!period) {
+      alert("Vui lòng chọn khung giờ trước khi đặt.");
+      return;
+    }
+    const { start, end } = period;
+
+    const startDateTime = new Date(`${selectedDate}T${start}:00`);
+    const now = new Date();
+    if (startDateTime < now) {
+      alert(
+        "Thời gian bắt đầu không được là quá khứ. Vui lòng chọn khung giờ khác."
+      );
+      return;
+    }
+
+    console.log("time", `${selectedDate}T${start}:00`);
+
     const bookingData = {
       userId: user.id,
       stationId: Number(stationId),
@@ -200,21 +233,28 @@ const BookingSchedule = () => {
                 <div className="w-4 h-4 rounded border-2 border-gray-300"></div>
                 <span className="text-gray-600">Còn trống</span>
               </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-gray-300"></div>
+                <span className="text-gray-600">Quá khứ (không chọn được)</span>
+              </div>
             </div>
           </div>
 
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2">
             {slots.map((time, idx) => {
               const booked = isSlotBooked(time);
+              const past = isSlotInPast(time);
               const isSelected = selectedSlots.includes(time);
               return (
                 <button
                   key={idx}
-                  disabled={booked}
+                  disabled={booked || past}
                   onClick={() => handleSelectSlot(time)}
                   className={`relative border-2 rounded-xl py-3 px-2 text-sm font-semibold transition-all duration-200 transform
                     ${
                       booked
+                        ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                        : past
                         ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
                         : isSelected
                         ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-emerald-600 shadow-lg scale-105 hover:scale-110"
@@ -262,7 +302,13 @@ const BookingSchedule = () => {
                 <button
                   onClick={handleBooking}
                   className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
-                  disabled={selectedSlots.length === 0}
+                  disabled={
+                    selectedSlots.length === 0 ||
+                    (getStartEndTime() &&
+                      new Date(
+                        `${selectedDate}T${getStartEndTime().start}:00`
+                      ) < new Date())
+                  }
                 >
                   Tiến hành đặt chỗ
                 </button>

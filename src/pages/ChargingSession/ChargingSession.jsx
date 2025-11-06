@@ -2,14 +2,21 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import useBooking from "../../hooks/useBooking";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { Clock, BatteryCharging, Info } from "lucide-react";
+import usePayment from "../../hooks/usePayment";
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const VN_TZ = "Asia/Ho_Chi_Minh";
 
 const ChargingSession = () => {
-  const { getBookingByUserId } = useBooking();
+  const { getBookingByUserId, bookingPayment } = useBooking();
+  const { createPayment } = usePayment();
   const user = JSON.parse(localStorage.getItem("user"));
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("ALL"); // ALL | PENDING | CONFIRMED | COMPLETED
+  const [filterStatus, setFilterStatus] = useState("PENDING"); // mặc định vào tab Chờ thanh toán
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,27 +36,48 @@ const ChargingSession = () => {
     }
   }, []);
 
-  // helper: derived status for display (ONGOING if now between timeToCharge and endTime, COMPLETED if endTime passed)
+  console.log(bookings);
+
   const getDerivedStatus = (b) => {
     try {
-      const now = new Date();
-      const start = b.timeToCharge ? new Date(b.timeToCharge) : null;
-      const end = b.endTime ? new Date(b.endTime) : null;
+      const now = dayjs().tz(VN_TZ);
+      const start = b.timeToCharge ? dayjs(b.timeToCharge).tz(VN_TZ) : null;
+      const end = b.endTime ? dayjs(b.endTime).tz(VN_TZ) : null;
 
-      if (end && end < now) return "COMPLETED";
-      if (start && end && start <= now && now < end) return "ONGOING";
+      // Nếu đã qua thời điểm kết thúc
+      if (end && end.isBefore(now)) {
+        // nếu đã thanh toán / confirmed -> hoàn thành
+        if ((b.status ?? "PENDING") !== "PENDING") return "COMPLETED";
+        // nếu vẫn PENDING -> quá hạn (OUTDATED)
+        return "OUTDATED";
+      }
+
+      // Đang trong khoảng sạc (start <= now < end)
+      if (
+        start &&
+        end &&
+        (now.isAfter(start) || now.isSame(start)) &&
+        now.isBefore(end)
+      ) {
+        // nếu vẫn PENDING -> giữ PENDING (chờ thanh toán)
+        if ((b.status ?? "PENDING") === "PENDING") return "PENDING";
+        return "ONGOING";
+      }
+
+      // Mặc định trả trạng thái hiện tại
       return b.status ?? "PENDING";
     } catch {
       return b.status ?? "PENDING";
     }
   };
 
-  // helper: status used for counting and filtering - map ONGOING -> CONFIRMED (in-progress considered confirmed), expired -> COMPLETED
+  // Nếu muốn lọc/đếm: dùng derived value để hiển thị chính xác
   const getEffectiveStatusForFilter = (b) => {
-    const derived = getDerivedStatus(b);
-    if (derived === "COMPLETED") return "COMPLETED";
-    if (derived === "ONGOING") return "CONFIRMED";
-    return b.status ?? "PENDING";
+    const d = getDerivedStatus(b);
+    if (d === "OUTDATED") return "OUTDATED"; // nếu muốn hiển thị 1 nhóm riêng
+    if (d === "ONGOING") return "CONFIRMED";
+    if (d === "COMPLETED") return "COMPLETED";
+    return d; // PENDING hoặc nguyên trạng
   };
 
   const counts = useMemo(() => {
@@ -62,6 +90,24 @@ const ChargingSession = () => {
     });
     return c;
   }, [bookings]);
+
+  // nếu đang ở tab PENDING mà không có booking PENDING thì chuyển sang CONFIRMED
+  useEffect(() => {
+    if (
+      filterStatus === "PENDING" &&
+      counts.PENDING === 0 &&
+      bookings.length > 0
+    ) {
+      setFilterStatus("CONFIRMED");
+    }
+  }, [counts, filterStatus, bookings.length]);
+
+  const handlePayment = async (bookingId) => {
+    const paymentRes = await bookingPayment(bookingId);
+    const paymentVNPayUrl = await createPayment(paymentRes.result.id);
+    alert("Chuyển qua thanh toán!");
+    window.open(paymentVNPayUrl.paymentUrl, "_blank");
+  };
 
   const filteredBookings = useMemo(() => {
     if (filterStatus === "ALL") return bookings;
@@ -79,21 +125,28 @@ const ChargingSession = () => {
 
   const getBookingId = (b) => b.id ?? b.bookingId;
 
+  // Hiển thị text
+  const displayStatus = (b) => {
+    const s = getDerivedStatus(b);
+    if (s === "COMPLETED") return "Hoàn thành";
+    if (s === "ONGOING") return "Đang sạc";
+    if (s === "OUTDATED") return "Quá hạn";
+    if (s === "PENDING") return "Chờ thanh toán";
+    return s ?? "-";
+  };
+
+  // Khi render nút, dùng getDerivedStatus(b) thay vì b.status
   const renderActionButton = (b) => {
     const id = getBookingId(b);
     const derived = getDerivedStatus(b);
 
     if (derived === "COMPLETED") {
       return (
-        <button
-          onClick={() => navigate(`/session-detail/${id}`)}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-        >
-          Xem chi tiết
+        <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+          Đã hoàn thành
         </button>
       );
     }
-
     if (derived === "ONGOING") {
       return (
         <button
@@ -104,37 +157,32 @@ const ChargingSession = () => {
         </button>
       );
     }
-
-    // Not started yet
-    if ((b.status ?? "PENDING") === "PENDING") {
+    if (derived === "OUTDATED") {
       return (
-        <button
-          onClick={() => navigate(`/payment/${id}`)}
-          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-        >
-          Thanh toán
+        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+          Quá hạn
         </button>
       );
     }
-
-    // CONFIRMED but not started
+    if (derived === "CONFIRMED") {
+      return (
+        <button
+          onClick={() => navigate(`/session-detail/${id}`)}
+          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+        >
+          Xem chi tiết
+        </button>
+      );
+    }
+    // PENDING
     return (
       <button
-        onClick={() => navigate(`/session-detail/${id}`)}
-        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+        onClick={() => handlePayment(b.bookingId)}
+        className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
       >
-        Xem chi tiết
+        Thanh toán
       </button>
     );
-  };
-
-  const displayStatus = (b) => {
-    const s = getDerivedStatus(b);
-    if (s === "COMPLETED") return "Hoàn thành";
-    if (s === "ONGOING") return "Đến giờ";
-    if (b.status === "PENDING") return "Chờ thanh toán";
-    if (b.status === "CONFIRMED") return "Đã thanh toán";
-    return b.status ?? "-";
   };
 
   return (
@@ -151,7 +199,7 @@ const ChargingSession = () => {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        {["ALL", "PENDING", "CONFIRMED", "COMPLETED"].map((s) => (
+        {["PENDING", "CONFIRMED", "COMPLETED", "OUTDATED"].map((s) => (
           <button
             key={s}
             onClick={() => setFilterStatus(s)}
@@ -166,7 +214,14 @@ const ChargingSession = () => {
               : s === "PENDING"
               ? `Chờ thanh toán (${counts.PENDING})`
               : s === "CONFIRMED"
-              ? `Đã thanh toán (${counts.CONFIRMED})`
+              ? `Sẵn sàng sạc (${counts.CONFIRMED})`
+              : s === "OUTDATED"
+              ? `Quá hạn (${
+                  bookings.length -
+                  counts.COMPLETED -
+                  counts.CONFIRMED -
+                  counts.PENDING
+                })`
               : `Hoàn thành (${counts.COMPLETED})`}
           </button>
         ))}
@@ -223,6 +278,8 @@ const ChargingSession = () => {
                             ? "bg-blue-100 text-blue-700"
                             : b.status === "CONFIRMED"
                             ? "bg-yellow-100 text-yellow-700"
+                            : getDerivedStatus(b) === "PENDING"
+                            ? "bg-amber-100 text-amber-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >

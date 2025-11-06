@@ -31,13 +31,24 @@ const useBooking = () => {
     setLoading(true);
     setError(null);
 
+    console.log("bookingData", bookingData);
+
     try {
       // Format datetime to match Java LocalDateTime format yyyy-MM-dd'T'HH:mm:ss
-      const formatDateTime = (date) => {
-        const d = new Date(date);
-        return d.toISOString().slice(0, 19); // Cắt bỏ phần milliseconds và timezone
+      // Use local getters to avoid toISOString() -> UTC conversion
+      const formatDateTime = (dateInput) => {
+        const d = dateInput instanceof Date ? dateInput : new Date(dateInput);
+        const pad = (n) => String(n).padStart(2, "0");
+        const year = d.getFullYear();
+        const month = pad(d.getMonth() + 1);
+        const day = pad(d.getDate());
+        const hours = pad(d.getHours());
+        const minutes = pad(d.getMinutes());
+        const seconds = pad(d.getSeconds());
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
       };
 
+      console.log("format data", formatDateTime(bookingData.timeToCharge));
       // Format dữ liệu trước khi gửi
       const formattedData = {
         userId: bookingData.userId,
