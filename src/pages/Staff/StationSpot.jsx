@@ -6,9 +6,10 @@ import useSpots from "../../hooks/useSpot";
 const StationSpot = () => {
   const { id } = useParams();
   const { stationSpots, loading, error, getSpotsByStationId } = useSpots();
-
   const [filteredSpots, setFilteredSpots] = useState([]);
   const [filterType, setFilterType] = useState("ALL");
+  const [showPopover, setShowPopover] = useState(false);
+
 
   useEffect(() => {
     const fetchSpots = async () => {
@@ -118,14 +119,29 @@ const StationSpot = () => {
                         {spot.status === "AVAILABLE" ? "Sẵn sàng" : "Đang bận / Bảo trì"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        className="flex items-center gap-2 mx-auto bg-[#14AE5C] hover:bg-[#0f954f] text-white px-4 py-2 rounded-lg shadow transition"
-                      >
-                        <PlugZap size={16} />
-                        Bắt đầu sạc
-                      </button>
-                    </td>
+<td className="px-6 py-4 text-center">
+  {spot.spotType === "WALK_IN" && (
+    <div className="relative inline-block">
+      <button
+        onClick={() => {
+          setShowPopover(true);
+          setTimeout(() => setShowPopover(false), 2000);
+        }}
+        className="flex items-center gap-2 bg-[#14AE5C] hover:bg-[#0f954f] text-white px-4 py-2 rounded-lg shadow transition"
+      >
+        <PlugZap size={16} />
+        Bắt đầu sạc
+      </button>
+
+      {showPopover && (
+        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10 text-sm text-gray-700 p-3">
+          <p>🔋 Đang chuẩn bị sạc...</p>
+        </div>
+      )}
+    </div>
+  )}
+</td>
+
                   </tr>
                 ))}
               </tbody>
