@@ -22,6 +22,9 @@ import StationManagementPage from "../pages/Admin/StationManagement/StationManag
 import BookingSchedule from "../pages/Booking/BookingSchedule.jsx";
 import ChargingSession from "../pages/ChargingSession/ChargingSession.jsx";
 import SessionDetail from "../pages/ChargingSession/SessionDetail.jsx";
+import StaffStation from "../pages/Staff/StaffStation.jsx";
+import StationSpot from "../pages/Staff/StationSpot.jsx";
+import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +49,9 @@ const router = createBrowserRouter([
       { path: "/bookingSchedule", element: <BookingSchedule /> },
       { path: "/chargingSession", element: <ChargingSession /> },
       { path: "/session-detail/:id", element: <SessionDetail /> },
+      { path: "/staff/station", element: <StaffStation /> },
+      { path: "/staff/station/spot/:id", element: <StationSpot /> },
+      { path: "/payment/invoice/:id", element: <InvoiceDetail /> },
     ],
   },
   {
