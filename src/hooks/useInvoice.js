@@ -38,10 +38,27 @@ const useInvoice = () => {
     }
   };
 
+  const getInvoiceByUserId = async (userId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await invoiceApi.getInvoiceByUserId(userId);
+      if (response) {
+        return response;
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching invoice by user ID:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     error,
     invoice,
+    getInvoiceByUserId,
     getInvoiceBySessionId,
     postInvoiceById,
   };
