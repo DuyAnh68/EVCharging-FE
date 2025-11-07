@@ -16,7 +16,7 @@ const ChargingSession = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("PENDING"); // mặc định vào tab Chờ thanh toán
+  const [filterStatus, setFilterStatus] = useState("PENDING");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,15 +44,12 @@ const ChargingSession = () => {
       const start = b.timeToCharge ? dayjs(b.timeToCharge).tz(VN_TZ) : null;
       const end = b.endTime ? dayjs(b.endTime).tz(VN_TZ) : null;
 
-      // Nếu đã qua thời điểm kết thúc
       if (end && end.isBefore(now)) {
-        // nếu đã thanh toán / confirmed -> hoàn thành
         if ((b.status ?? "PENDING") !== "PENDING") return "COMPLETED";
-        // nếu vẫn PENDING -> quá hạn (OUTDATED)
+
         return "OUTDATED";
       }
 
-      // Đang trong khoảng sạc (start <= now < end)
       if (
         start &&
         end &&
@@ -71,36 +68,32 @@ const ChargingSession = () => {
     }
   };
 
-  // Nếu muốn lọc/đếm: dùng derived value để hiển thị chính xác
   const getEffectiveStatusForFilter = (b) => {
     const d = getDerivedStatus(b);
-    if (d === "OUTDATED") return "OUTDATED"; // nếu muốn hiển thị 1 nhóm riêng
+    if (d === "OUTDATED") return "OUTDATED";
     if (d === "ONGOING") return "CONFIRMED";
     if (d === "COMPLETED") return "COMPLETED";
-    return d; // PENDING hoặc nguyên trạng
+    return d;
   };
 
+  // Update the counts calculation
   const counts = useMemo(() => {
-    const c = { ALL: bookings.length, PENDING: 0, CONFIRMED: 0, COMPLETED: 0 };
+    const c = {
+      ALL: bookings.length,
+      PENDING: 0,
+      CONFIRMED: 0,
+      COMPLETED: 0,
+      OUTDATED: 0,
+    };
     bookings.forEach((b) => {
       const s = getEffectiveStatusForFilter(b);
       if (s === "PENDING") c.PENDING++;
       else if (s === "CONFIRMED") c.CONFIRMED++;
       else if (s === "COMPLETED") c.COMPLETED++;
+      else if (s === "OUTDATED") c.OUTDATED++;
     });
     return c;
   }, [bookings]);
-
-  // nếu đang ở tab PENDING mà không có booking PENDING thì chuyển sang CONFIRMED
-  useEffect(() => {
-    if (
-      filterStatus === "PENDING" &&
-      counts.PENDING === 0 &&
-      bookings.length > 0
-    ) {
-      setFilterStatus("CONFIRMED");
-    }
-  }, [counts, filterStatus, bookings.length]);
 
   const handlePayment = async (bookingId) => {
     const paymentRes = await bookingPayment(bookingId);
@@ -209,19 +202,12 @@ const ChargingSession = () => {
                 : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
             }`}
           >
-            {s === "ALL"
-              ? `Tất cả (${counts.ALL})`
-              : s === "PENDING"
+            {s === "PENDING"
               ? `Chờ thanh toán (${counts.PENDING})`
               : s === "CONFIRMED"
               ? `Sẵn sàng sạc (${counts.CONFIRMED})`
               : s === "OUTDATED"
-              ? `Quá hạn (${
-                  bookings.length -
-                  counts.COMPLETED -
-                  counts.CONFIRMED -
-                  counts.PENDING
-                })`
+              ? `Quá hạn (${counts.OUTDATED})`
               : `Hoàn thành (${counts.COMPLETED})`}
           </button>
         ))}

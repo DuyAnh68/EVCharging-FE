@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import useBooking from "../../hooks/useBooking";
 import usePayment from "../../hooks/usePayment";
@@ -174,11 +175,49 @@ const BookingSchedule = () => {
       </div>
     );
 
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const cardVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  const slotVariants = {
+    initial: { scale: 0.8, opacity: 0 },
+    animate: {
+      scale: 1,
+      opacity: 1,
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+    <motion.div
+      className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 py-8 px-4"
+      initial="initial"
+      animate="animate"
+      variants={pageVariants}
+    >
+      <motion.div className="max-w-6xl mx-auto">
         {/* Header Card */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 mb-6 border border-emerald-100">
+        <motion.div
+          className="bg-white rounded-3xl shadow-xl p-8 mb-6 border border-emerald-100"
+          variants={cardVariants}
+        >
           <div className="flex items-center justify-center gap-4 mb-2">
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
               <svg
@@ -194,10 +233,13 @@ const BookingSchedule = () => {
               Đặt lịch sạc xe điện
             </h2>
           </div>
-        </div>
+        </motion.div>
 
         {/* Date Picker Card */}
-        <div className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-emerald-100">
+        <motion.div
+          className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-emerald-100"
+          variants={cardVariants}
+        >
           <div className="flex items-center justify-center gap-3">
             <span className="text-gray-700 font-semibold text-lg">
               Chọn ngày:
@@ -212,10 +254,13 @@ const BookingSchedule = () => {
               }}
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Time Slots Card */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-emerald-100">
+        <motion.div
+          className="bg-white rounded-3xl shadow-xl p-8 border border-emerald-100"
+          variants={cardVariants}
+        >
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-2">
               Chọn khung giờ sạc
@@ -246,8 +291,11 @@ const BookingSchedule = () => {
               const past = isSlotInPast(time);
               const isSelected = selectedSlots.includes(time);
               return (
-                <button
+                <motion.button
                   key={idx}
+                  variants={slotVariants}
+                  whileHover={!booked && !past ? { scale: 1.05 } : {}}
+                  whileTap={!booked && !past ? { scale: 0.95 } : {}}
                   disabled={booked || past}
                   onClick={() => handleSelectSlot(time)}
                   className={`relative border-2 rounded-xl py-3 px-2 text-sm font-semibold transition-all duration-200 transform
@@ -257,22 +305,31 @@ const BookingSchedule = () => {
                         : past
                         ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
                         : isSelected
-                        ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-emerald-600 shadow-lg scale-105 hover:scale-110"
-                        : "bg-white text-gray-700 border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 hover:scale-105 shadow-sm hover:shadow-md"
+                        ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-emerald-600 shadow-lg"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 shadow-sm hover:shadow-md"
                     }`}
                 >
                   {time}
                   {isSelected && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"></div>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"
+                    />
                   )}
-                </button>
+                </motion.button>
               );
             })}
           </div>
 
           {/* Summary Card */}
           {selectedSlots.length > 0 && (
-            <div className="mt-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-emerald-200">
+            <motion.div
+              className="mt-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-emerald-200"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
               <div className="text-center space-y-3">
                 <div className="inline-block bg-white px-6 py-3 rounded-xl shadow-md">
                   <p className="text-gray-700 text-lg">
@@ -299,9 +356,11 @@ const BookingSchedule = () => {
                   </p>
                 </div>
 
-                <button
+                <motion.button
                   onClick={handleBooking}
-                  className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
                   disabled={
                     selectedSlots.length === 0 ||
                     (getStartEndTime() &&
@@ -311,13 +370,13 @@ const BookingSchedule = () => {
                   }
                 >
                   Tiến hành đặt chỗ
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

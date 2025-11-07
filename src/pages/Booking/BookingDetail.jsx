@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import useVehicle from "../../hooks/useVehicle";
 import useStation from "../../hooks/useStation";
 import useSpots from "../../hooks/useSpot";
@@ -12,6 +13,43 @@ const StationDetail = () => {
   const [distance, setDistance] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const navigate = useNavigate();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const imageVariants = {
+    hidden: { scale: 0.8, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+      },
+    },
+  };
 
   const filterVehiclesBySubscriptionStatus = (vehicles) => {
     return vehicles?.filter(
@@ -81,13 +119,21 @@ const StationDetail = () => {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <motion.div
+      className="min-h-screen py-8 px-4"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Station Info */}
-        <div className="lg:col-span-1 space-y-6">
+        <motion.div className="lg:col-span-1 space-y-6" variants={cardVariants}>
           {/* Station Card */}
-          <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
-            <div className="relative">
+          <motion.div
+            className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200"
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+          >
+            <motion.div className="relative" variants={imageVariants}>
               <img
                 src={
                   station?.image ||
@@ -107,7 +153,7 @@ const StationDetail = () => {
                   {station?.status === "AVAILABLE" ? "● Hoạt động" : "● Ngưng"}
                 </span>
               </div>
-            </div>
+            </motion.div>
 
             <div className="p-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -147,10 +193,14 @@ const StationDetail = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Operating Hours Card */}
-          <div className="bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
+          <motion.div
+            className="bg-white rounded-3xl shadow-xl p-6 border border-slate-200"
+            variants={cardVariants}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+          >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-gradient-to-tr from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
                 <svg
@@ -187,8 +237,8 @@ const StationDetail = () => {
                 </span>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Right Column - Details */}
         <div className="lg:col-span-2 space-y-6">
@@ -196,7 +246,11 @@ const StationDetail = () => {
 
           {/* Schedule & Booking Section */}
           {/* Schedule & Booking Section */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border border-slate-200 relative overflow-hidden">
+          <motion.div
+            className="bg-white rounded-3xl shadow-2xl p-8 border border-slate-200 relative overflow-hidden"
+            variants={cardVariants}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+          >
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-md">
@@ -282,7 +336,7 @@ const StationDetail = () => {
 
             {/* Step 3: Confirm Button */}
             <div className="mt-8">
-              <button
+              <motion.button
                 onClick={() =>
                   navigate("/bookingSchedule", {
                     state: { vehicle: selectedVehicle, stationId: id },
@@ -298,17 +352,23 @@ const StationDetail = () => {
                   selectedVehicle.vehicleSubscriptionResponse.status !==
                     "ACTIVE"
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 hover:shadow-xl scale-105"
+                    : "bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700"
                 }`}
+                whileHover={{ scale: selectedVehicle ? 1.02 : 1 }}
+                whileTap={{ scale: selectedVehicle ? 0.98 : 1 }}
               >
                 {selectedVehicle ? "Bắt đầu đặt chỗ" : "Chọn xe để tiếp tục"}
-              </button>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Booking Summary */}
           {/* Booking Summary (New Design) */}
-          <div className="bg-white rounded-3xl shadow-xl p-6 border border-slate-200 relative overflow-hidden">
+          <motion.div
+            className="bg-white rounded-3xl shadow-xl p-6 border border-slate-200 relative overflow-hidden"
+            variants={cardVariants}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+          >
             {/* Background gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-sky-50 opacity-60 pointer-events-none"></div>
 
@@ -397,11 +457,16 @@ const StationDetail = () => {
                 </div>
 
                 <div className="flex-1 mx-4 border-t-2 border-dashed border-gray-300 relative">
-                  <div className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white px-3 py-1 rounded-full border border-gray-300 shadow-sm">
+                  <motion.div
+                    className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white px-3 py-1 rounded-full border border-gray-300 shadow-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 1 }}
+                  >
                     <span className="text-xs font-bold text-indigo-600">
                       {distance ? `${distance.toFixed(2)} km` : "Đang tính..."}
                     </span>
-                  </div>
+                  </motion.div>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -417,10 +482,10 @@ const StationDetail = () => {
                 nhất
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
