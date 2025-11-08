@@ -26,8 +26,8 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /*display: flex;*/
+  /*place-items: center;*/
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
@@ -47,9 +47,6 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
 }
 button:focus,
 button:focus-visible {
@@ -172,7 +169,7 @@ button:focus-visible {
 .ant-picker-outlined,
 .ant-select,
 .ant-input-number-wrapper {
-  border: 1px solid #000 !important;
+  /*border: 1px solid #000 !important;*/
   height: 40px !important;
 }
 
@@ -183,7 +180,7 @@ button:focus-visible {
 
 .ant-select-selector,
 .ant-input-number-group-addon {
-  border: 1px solid #000 !important;
+  /*border: 1px solid #000 !important;*/
 }
 
 .ant-input-number-input {
@@ -215,4 +212,13 @@ button:focus-visible {
     font-weight: 500;
     color: #000;
   }
+}
+
+.ant-pagination {
+  display: flex;
+  align-items: center;
+}
+
+.ant-menu {
+  border-inline-end: none !important;
 }

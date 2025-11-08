@@ -72,7 +72,7 @@ const StationFormModal = ({
                 {/* Address */}
                 <Form.Item
                     label="Địa chỉ *"
-                    name="address"
+                    name="location"
                     rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
                 >
                     <Input placeholder="VD: 123 Nguyễn Huệ, Quận 1, TP.HCM" />
