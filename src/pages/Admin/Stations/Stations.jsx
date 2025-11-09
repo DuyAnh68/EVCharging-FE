@@ -1,9 +1,20 @@
-import React, {useState} from "react";
-import {Table, Button, Input, Pagination, Tag} from "antd";
-import {DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined} from "@ant-design/icons";
-import {mockStations} from "../../../data/mockStations.js";
-import StationFormModal from "../../../components/Admin/StationManagement/StationFormModal.jsx";
-import ConfirmModal from "../../../components/Admin/StationManagement/ConfirmModal.jsx";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Input, Typography, Tag, message } from "antd";
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import StationFormModal from "../../../components/Admin/StationManagement/StationFormModal";
+import ConfirmModal from "../../../components/Modal/ConfirmModal";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { 
+  selectAllStations, 
+  fetchStations, 
+  createStation, 
+  updateStation, 
+  deleteStation,
+  selectStationsStatus,
+  selectStationsError
+} from "../../../store/slices/chargingStationSlice.js";
+
+const { Title } = Typography;
 
 const Stations = () => {
   const [search, setSearch] = useState("");
@@ -13,8 +24,21 @@ const Stations = () => {
   const [modalMode, setModalMode] = useState("add");
   const [editingStation, setEditingStation] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [selectedStation, setSelectedStation] = useState(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  
+  const dispatch = useAppDispatch();
+  const stations = useAppSelector(selectAllStations);
+  const status = useAppSelector(selectStationsStatus);
+  const error = useAppSelector(selectStationsError);
+
+  useEffect(() => {
+    dispatch(fetchStations());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+    }
+  }, [error]);
 
   const handleOpenAddModal = () => {
     setModalMode("add");
@@ -22,9 +46,20 @@ const Stations = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = (values) => {
-    console.log("Submitted:", values);
-    setModalOpen(false);
+  const handleSubmit = async (values) => {
+    try {
+      if (modalMode === "add") {
+        await dispatch(createStation(values)).unwrap();
+        message.success("Thêm trạm sạc thành công");
+      } else {
+        await dispatch(updateStation(values)).unwrap();
+        message.success("Cập nhật trạm sạc thành công");
+      }
+    } catch (error) {
+      message.error(error || "Đã xảy ra lỗi");
+    } finally {
+      setModalOpen(false);
+    }
   };
 
   const handleEdit = (station) => {
@@ -34,16 +69,18 @@ const Stations = () => {
   };
 
   const handleDelete = (station) => {
-    setSelectedStation(station);
+    setEditingStation(station);
     setConfirmOpen(true);
   };
 
   const confirmDelete = async () => {
-    console.log("Deleted station:", selectedStation);
-    setDeleteLoading(true);
-    setConfirmOpen(false);
-    setSelectedStation(null);
-    setDeleteLoading(false);
+    try {
+      await dispatch(deleteStation(editingStation.id)).unwrap();
+      message.success("Xóa trạm sạc thành công");
+      setConfirmOpen(false);
+    } catch (error) {
+      message.error(error || "Đã xảy ra lỗi khi xóa trạm sạc");
+    }
   };
 
   const onSearchChange = (e) => {
@@ -58,115 +95,137 @@ const Stations = () => {
       key: "name",
     },
     {
-      title: "Mã trạm",
-      dataIndex: "code",
-      key: "code",
-    },
-    {
       title: "Địa chỉ",
       dataIndex: "location",
       key: "location",
     },
     {
-      title: "Loại",
-      dataIndex: "type",
-      key: "type",
-      render: (type) =>
-          type === "AC" ? (
-              <Tag color="orange">AC (Sạc chậm)</Tag>
-          ) : (
-              <Tag color="blue">DC (Sạc nhanh)</Tag>
-          ),
+      title: "Công suất tối đa",
+      dataIndex: "powerCapacity",
+      key: "powerCapacity",
+      render: (power) => `${power} kW`,
     },
     {
-      title: "Số lượng cổng sạc",
-      dataIndex: "spots",
-      key: "spots",
-      render: (spots) => <span>{spots.length}</span>,
+      title: "Giá mỗi kWh",
+      dataIndex: "pricePerKwh",
+      key: "pricePerKwh",
+      render: (price) => `${price?.toLocaleString()} VND`,
+    },
+    {
+      title: "Số cổng sạc",
+      dataIndex: "totalSpots",
+      key: "totalSpots",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Tag color={status === "AVAILABLE" ? "green" : "red"}>
+          {status === "AVAILABLE" ? "Hoạt động" : "Bảo trì"}
+        </Tag>
+      ),
     },
     {
       key: "actions",
       render: (_, record) => (
-          <div className="flex">
-            <Button type="link" onClick={() => handleEdit(record)}><EditOutlined/></Button>
-            <Button type="link" danger onClick={() => handleDelete(record)}>
-              <DeleteOutlined/>
-            </Button>
-          </div>
+        <div className="flex">
+          <Button
+            type="text"
+            onClick={() => handleEdit(record)}
+            icon={<EditOutlined />}
+            title="Chỉnh sửa"
+          />
+          <Button
+            type="text"
+            danger 
+            onClick={() => handleDelete(record)}
+            icon={<DeleteOutlined />}
+            title="Xóa"
+          />
+        </div>
       ),
     },
   ];
 
-  const filteredStations = mockStations.filter((station) => {
-    return station.name.toLowerCase().includes(search.toLowerCase());
+  const filteredStations = stations?.filter((station) => {
+    if (!station) return false;
+    return (
+      station.name?.toLowerCase().includes(search.toLowerCase()) ||
+      station.location?.toLowerCase().includes(search.toLowerCase()) ||
+      station.status?.toLowerCase().includes(search.toLowerCase())
+    );
   });
 
+  const pagination = {
+    current: page,
+    pageSize: pageSize,
+    total: filteredStations?.length || 0,
+    showSizeChanger: true,
+    pageSizeOptions: ["10", "20", "50", "100"],
+    showTotal: (total) => `Tổng ${total} trạm sạc`,
+    onChange: (page, pageSize) => {
+      setPage(page);
+      setPageSize(pageSize);
+    },
+  };
+
   return (
-      <div>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold">Quản lý trạm sạc</h1>
-        </div>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <Title level={2} className="mb-0 text-gray-800">Quản lý trạm sạc</Title>
+      </div>
 
-
-        {/* Search */}
-        <div className="flex items-center justify-between gap-2 mb-4">
+      <div className="bg-white p-6 pb-0 rounded-lg shadow">
+        <div className="flex justify-between items-center mb-6">
           <Input
-              allowClear
-              prefix={<SearchOutlined />}
-              placeholder="Tìm kiếm..."
-              value={search}
-              onChange={onSearchChange}
-              className="max-w-xs"
+            placeholder="Tìm kiếm trạm sạc..."
+            prefix={<SearchOutlined />}
+            style={{ width: 300 }}
+            value={search}
+            onChange={onSearchChange}
+            allowClear
           />
-          <Button type="primary" onClick={handleOpenAddModal} icon={<PlusOutlined />}>Thêm trạm sạc</Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleOpenAddModal}
+            loading={status === 'loading'}
+          >
+            Thêm trạm sạc
+          </Button>
         </div>
 
-        {/* Table */}
         <Table
-            bordered
-            rowKey="id"
-            columns={columns}
-            dataSource={filteredStations.slice((page - 1) * pageSize, page * pageSize)}
-            pagination={false}
-        />
-
-        {/* Pagination */}
-        <div className="flex justify-end mt-4 items-center">
-          <div className="text-sm text-gray-600 flex items-center px-3">Tổng {filteredStations.length} trạm sạc</div>
-          <Pagination
-              current={page}
-              pageSize={pageSize}
-              onChange={(p) => setPage(p)}
-              onShowSizeChange={(current, size) => {
-                setPageSize(size);
-                setPage(1);
-              }}
-              total={filteredStations.length}
-              showSizeChanger
-          />
-        </div>
-
-        {/* Station Form Modal */}
-        <StationFormModal
-            open={modalOpen}
-            mode={modalMode}
-            initialValues={editingStation}
-            onCancel={() => setModalOpen(false)}
-            onSubmit={handleSubmit}
-        />
-
-        <ConfirmModal
-            open={confirmOpen}
-            onCancel={() => setConfirmOpen(false)}
-            onConfirm={confirmDelete}
-            loading={deleteLoading}
-            title="Xóa trạm?"
-            message={`Bạn chắc chắn muốn xóa trạm "${selectedStation?.name}" không?`}
-            okText="Xóa"
-            cancelText="Hủy"
+          columns={columns}
+          dataSource={filteredStations}
+          rowKey="id"
+          loading={status === 'loading'}
+          pagination={pagination}
+          scroll={{ x: true }}
         />
       </div>
+
+      <StationFormModal
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        onSubmit={handleSubmit}
+        mode={modalMode}
+        initialValues={editingStation}
+        loading={status === 'loading'}
+      />
+
+      <ConfirmModal
+        open={confirmOpen}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Xác nhận xóa"
+        content={`Bạn có chắc chắn muốn xóa trạm sạc "${editingStation?.name}" không?`}
+        okText="Xóa"
+        cancelText="Hủy"
+        confirmLoading={status === 'loading'}
+      />
+    </div>
   );
 };
 

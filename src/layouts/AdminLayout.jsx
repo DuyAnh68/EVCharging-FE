@@ -1,18 +1,59 @@
-import { useState } from 'react';
-import {Button, Layout, Menu} from 'antd';
+import React, { useState } from 'react';
+import { Layout, Menu, Button } from 'antd';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   DashboardOutlined,
-  ControlOutlined
+  CarOutlined,
+  HomeOutlined,
+  ThunderboltOutlined,
 } from '@ant-design/icons';
-import { Link, Outlet } from 'react-router-dom';
 import Logo from "../assets/Images/Logo.png";
 
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+
+  const menuItems = [
+    {
+      key: '1',
+      icon: <DashboardOutlined />,
+      label: <Link to="/admin">Dashboard</Link>,
+    },
+    {
+      key: '2',
+      icon: <HomeOutlined />,
+      label: <Link to="/admin/stations">Trạm sạc</Link>,
+    },
+    {
+      key: '3',
+      icon: <ThunderboltOutlined />,
+      label: <Link to="/admin/spots">Cổng sạc</Link>,
+    },
+    {
+      key: '4',
+      icon: <CarOutlined />,
+      label: <Link to="/admin/vehicle-models">Mẫu xe</Link>,
+    },
+    {
+      key: '5',
+      icon: <CarOutlined />,
+      label: <Link to="/admin/vehicle-brands">Hãng xe</Link>,
+    }
+  ];
+
+  const selectedKey = () => {
+    const path = location.pathname;
+    if (path === '/admin') return '1';
+    if (path.startsWith('/admin/stations')) return '2';
+    if (path.startsWith('/admin/spots')) return '3';
+    if (path.startsWith('/admin/vehicle-models')) return '4';
+    if (path.startsWith('/admin/vehicle-brands')) return '5';
+    return '1';
+  };
 
   return (
     <Layout className="min-h-screen">
@@ -37,19 +78,8 @@ const AdminLayout = () => {
         <Menu
           theme="light"
           mode="inline"
-          defaultSelectedKeys={["1"]}
-          items={[
-            {
-              key: '1',
-              icon: <DashboardOutlined />,
-              label: <Link to="/admin">Dashboard</Link>,
-            },
-            {
-              key: '2',
-              icon: <ControlOutlined />,
-              label: <Link to="/admin/stations">Stations</Link>,
-            },
-          ]}
+          defaultSelectedKeys={[selectedKey()]}
+          items={menuItems}
         />
       </Sider>
       <Layout>
@@ -57,12 +87,15 @@ const AdminLayout = () => {
           className="bg-white flex items-center"
         >
           <Button
-            type="default"
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
-            size={"large"}
-          >
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          </Button>
+            style={{
+              fontSize: '16px',
+              width: 40,
+              height: 40,
+            }}
+          />
         </Header>
         <Content
             className="min-h-screen py-6 px-12 bg-gray-50"

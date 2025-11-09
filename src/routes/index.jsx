@@ -24,6 +24,9 @@ import ChargingSession from "../pages/ChargingSession/ChargingSession.jsx";
 import SessionDetail from "../pages/ChargingSession/SessionDetail.jsx";
 import Dashboard from "../pages/Admin/Dashboard/Dashboard";
 import Stations from "../pages/Admin/Stations/Stations";
+import VehicleModels from "../pages/Admin/VehicleModels/VehicleModels.jsx";
+import Spots from "../pages/Admin/Spots/Spots.jsx";
+import VehicleBrands from "../pages/Admin/VehicleBrands/VehicleBrands.jsx";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +58,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Dashboard /> },
       { path: "stations", element: <Stations /> },
+      { path: "vehicle-models", element: <VehicleModels /> },
+      { path: "spots", element: <Spots />},
+      { path: "vehicle-brands", element: <VehicleBrands />}
     ],
   },
   {
