@@ -2,13 +2,48 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PlugZap } from "lucide-react"; // icon đẹp từ lucide-react
 import useSpots from "../../hooks/useSpot";
+import useStaff from "../../hooks/useStaff";
 
 const StationSpot = () => {
   const { id } = useParams();
   const { stationSpots, loading, error, getSpotsByStationId } = useSpots();
-
   const [filteredSpots, setFilteredSpots] = useState([]);
   const [filterType, setFilterType] = useState("ALL");
+  const [showPopover, setShowPopover] = useState(false);
+
+  const { startSessionStaff, endSessionStaff } = useStaff();
+  const [sessionStart, setSessionStart] = useState(null);
+  const [sessionEnd, setSessionEnd] = useState(null);
+  const [activePopoverId, setActivePopoverId] = useState(null);
+  const [batteryLevels, setBatteryLevels] = useState({});
+
+  const handleStartSession = async (startData) => {
+    try {
+      const response = await startSessionStaff(startData);
+      console.log("data", startData);
+      console.log("response", response);
+      if (response) {
+        // Handle successful start session
+        setSessionStart((prev) => ({ ...prev, [startData.spotId]: response }));
+      }
+    } catch (error) {
+      console.error("Error starting session:", error);
+    }
+  };
+
+  const handleEndSession = async (sessionId, endData) => {
+    console.log("sessionId");
+    console.log("end data", endData);
+    try {
+      const response = await endSessionStaff(sessionId, endData);
+      if (response) {
+        // Handle successful end session
+        setSessionEnd(response);
+      }
+    } catch (error) {
+      console.error("Error ending session:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchSpots = async () => {
@@ -28,7 +63,9 @@ const StationSpot = () => {
   }, [stationSpots, filterType]);
 
   if (loading)
-    return <div className="text-center mt-10 text-gray-600">Đang tải dữ liệu...</div>;
+    return (
+      <div className="text-center mt-10 text-gray-600">Đang tải dữ liệu...</div>
+    );
   if (error)
     return (
       <div className="text-center text-red-500 mt-10">
@@ -76,11 +113,21 @@ const StationSpot = () => {
               <thead className="bg-[#14AE5C] text-white text-sm uppercase">
                 <tr>
                   <th className="px-6 py-3 text-left font-semibold">ID</th>
-                  <th className="px-6 py-3 text-left font-semibold">Tên Spot</th>
-                  <th className="px-6 py-3 text-center font-semibold">Công suất (kW)</th>
-                  <th className="px-6 py-3 text-center font-semibold">Loại Spot</th>
-                  <th className="px-6 py-3 text-center font-semibold">Trạng thái</th>
-                  <th className="px-6 py-3 text-center font-semibold">Hành động</th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Tên Spot
+                  </th>
+                  <th className="px-6 py-3 text-center font-semibold">
+                    Công suất (kW)
+                  </th>
+                  <th className="px-6 py-3 text-center font-semibold">
+                    Loại Spot
+                  </th>
+                  <th className="px-6 py-3 text-center font-semibold">
+                    Trạng thái
+                  </th>
+                  <th className="px-6 py-3 text-center font-semibold">
+                    Hành động
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -95,7 +142,9 @@ const StationSpot = () => {
                     <td className="px-6 py-4 font-semibold text-gray-800">
                       {spot.spotName}
                     </td>
-                    <td className="px-6 py-4 text-center">{spot.powerOutput}</td>
+                    <td className="px-6 py-4 text-center">
+                      {spot.powerOutput}
+                    </td>
                     <td className="px-6 py-4 text-center">
                       <span
                         className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
@@ -115,16 +164,96 @@ const StationSpot = () => {
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {spot.status === "AVAILABLE" ? "Sẵn sàng" : "Đang bận / Bảo trì"}
+                        {spot.status === "AVAILABLE"
+                          ? "Sẵn sàng"
+                          : "Đang bận / Bảo trì"}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <button
-                        className="flex items-center gap-2 mx-auto bg-[#14AE5C] hover:bg-[#0f954f] text-white px-4 py-2 rounded-lg shadow transition"
-                      >
-                        <PlugZap size={16} />
-                        Bắt đầu sạc
-                      </button>
+                      {spot.spotType === "WALK_IN" && (
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() => {
+                              if (!batteryLevels[spot.id]) {
+                                const randomBattery =
+                                  Math.floor(Math.random() * (60 - 5 + 1)) + 5; // random 5–60
+                                setBatteryLevels((prev) => ({
+                                  ...prev,
+                                  [spot.id]: randomBattery,
+                                }));
+                              }
+                              setActivePopoverId(spot.id);
+                              setTimeout(() => setActivePopoverId(null), 2000);
+                            }}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow transition ${
+                              spot.status === "OCCUPIED"
+                                ? "bg-red-600 hover:bg-red-700 text-white"
+                                : "bg-[#14AE5C] hover:bg-[#0f954f] text-white"
+                            }`}
+                          >
+                            <PlugZap size={16} />
+                            {spot.status === "OCCUPIED"
+                              ? "Dừng"
+                              : "Bắt đầu sạc"}
+                          </button>
+
+                          {activePopoverId === spot.id && (
+                            <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10 text-sm text-gray-700 p-3">
+                              <p>Thông tin sạc</p>
+                              <div>
+                                <p>
+                                  Pin hiện tại của xe:{" "}
+                                  <span className="font-bold text-green-700">
+                                    {batteryLevels[spot.id] || "..."}
+                                  </span>
+                                  %
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  if (spot.status === "OCCUPIED") {
+                                    // Dừng session
+                                    const session = sessionStart[spot.id];
+                                    if (!session) return;
+
+                                    const endData = {
+                                      ratePerKWh: 4500,
+                                      batteryCapacity: 80,
+                                      percentBefore:
+                                        batteryLevels[spot.id] || 10,
+                                    };
+                                    handleEndSession(
+                                      session.sessionId,
+                                      endData
+                                    );
+
+                                    setSessionStart((prev) => ({
+                                      ...prev,
+                                      [spot.id]: null,
+                                    }));
+                                  } else {
+                                    const startData = {
+                                      spotId: spot.id,
+                                      percentBefore:
+                                        batteryLevels[spot.id] || 10,
+                                    };
+                                    handleStartSession(startData);
+                                  }
+                                }}
+                                className={`mt-2 w-full py-1 rounded-lg text-sm ${
+                                  spot.status === "OCCUPIED"
+                                    ? "bg-red-600 text-white hover:bg-red-700"
+                                    : "bg-[#008236] text-white hover:bg-[#006b1b]"
+                                }`}
+                              >
+                                {spot.status === "OCCUPIED"
+                                  ? "Dừng sạc"
+                                  : "Sạc ngay"}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

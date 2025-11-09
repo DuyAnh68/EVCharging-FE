@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { User, Mail, AtSign, Edit2, CreditCard, Link, CalendarCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import './index.css';
 
 import useUser from "../../hooks/useUser";
 import usePayment from "../../hooks/usePayment";
+import InvoiceDetail from "../../components/Payment/InvoiceDetail";
+import useInvoice from "../../hooks/useInvoice";
+import InvoiceTable from "./InvoiceTable";
 
 const Account = () => {
   const { getUser, loading, error, updateUser } = useUser();
@@ -14,6 +18,10 @@ const Account = () => {
   const [transactions, setTransactions] = useState([]);
   const [filterType, setFilterType] = useState("ALL");
   const [sortOrder, setSortOrder] = useState("DESC");
+  const {getInvoiceByUserId} = useInvoice();
+  const [invoices, setInvoices] = useState([]);
+  const [invoiceStatusFilter, setInvoiceStatusFilter] = useState("ALL");
+  // const [showInvoiceTable, setShowInvoiceTable] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +45,25 @@ const Account = () => {
     fetchData();
   }, []);
 
+  const handleInvoiceList = async () => {
+    try{
+      const response = await getInvoiceByUserId(user.id);
+      console.log("response invoices:", response);
+      if(response){
+        setInvoices(response);
+      }
+    }catch(e){
+      console.error("Error fetching invoices:", e);
+    }
+  };
+
+  useEffect(() => {
+  if (user && user.id) {
+    handleInvoiceList();
+  }
+}, [user]);
+
+
   const formatDate = (isoDate) =>
     new Date(isoDate).toLocaleString("vi-VN", {
       year: "numeric",
@@ -46,16 +73,6 @@ const Account = () => {
       minute: "2-digit",
     });
 
-  // const handleUpdateUser = async () => {
-  //   try {
-  //     const updatedUser = await updateUser({ name: user.name, password: user.password });
-  //     setUser(updatedUser);
-  //     setIsEditing(false);
-  //   } catch (err) {
-  //     console.error("Error updating user:", err);     
-  //   }
-  // };
-
   const formatMoney = (amount) =>
     amount.toLocaleString("vi-VN") + " đ";
 
@@ -63,9 +80,9 @@ const Account = () => {
     .filter((t) => t.status === "SUCCESS")
     .filter((t) => (filterType === "ALL" ? true : t.type === filterType))
     .sort((a, b) => {
-    const dateA = new Date(a.createdAt);
-    const dateB = new Date(b.createdAt);
-    return sortOrder === "ASC" ? dateA - dateB : dateB - dateA;
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder === "ASC" ? dateA - dateB : dateB - dateA;
     });
 
   if (loading)
@@ -132,6 +149,7 @@ const Account = () => {
                 </h3>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
+                  // onClick={handleInvoiceList}
                   className="text-[#00B35C] transition"
                   
                 >
@@ -273,7 +291,7 @@ const Account = () => {
       <p>Không có giao dịch nào</p>
     </div>
   ) : (
-    <div className="overflow-x-auto rounded-lg border border-gray-100">
+    <div className="overflow-x-auto rounded-lg border border-gray-100 mt-10 max-h-[400px] overflow-y-auto">
       <table className="w-full text-sm text-gray-700">
         <thead className="bg-[#00B35C] text-white">
           <tr>
@@ -323,7 +341,35 @@ const Account = () => {
       </table>
     </div>
   )}
+            <div className="mt-10">
+  <div className="flex items-center mb-6">
+    <CalendarCheck size={26} className="text-[#008236] mr-3" />
+    <h3 className="text-2xl font-semibold text-gray-900">
+      Lịch sử sạc
+    </h3>
+  </div>
+
+  <div className="flex items-right mb-4 gap-3">
+  <select
+    value={invoiceStatusFilter}
+    onChange={(e) => setInvoiceStatusFilter(e.target.value)}
+    className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
+  >
+    <option value="ALL">Tất cả</option>
+    <option value="PAID">Đã thanh toán</option>
+    <option value="PENDING">Đang chờ</option>
+  </select>
 </div>
+
+  <InvoiceTable
+  invoices={invoices.filter((inv) => {
+  if (invoiceStatusFilter === "ALL") return true;
+  return inv.status === invoiceStatusFilter;
+})}
+  type="charging"
+/>
+</div>
+      </div>
 
         </div>
       </div>
