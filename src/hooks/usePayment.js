@@ -28,10 +28,10 @@ const usePayment = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log("có nhận api này");
       const response = await paymentApi.setPayment(paymentTransactionId);
       console.log("url12:", response);
-      if (response) {
-        
+      if (response) {       
         setLoading(false);
         return response.result;
       }

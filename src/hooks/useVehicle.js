@@ -96,6 +96,7 @@ const useVehicle = () => {
       if (response) {
         setVehicleById(response.result);
         setLoading(false);
+        return response.result;
       }
     } catch (e) {
       setError(e.message);

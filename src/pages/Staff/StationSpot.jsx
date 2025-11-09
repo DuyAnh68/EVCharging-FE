@@ -195,7 +195,7 @@ const StationSpot = () => {
   onClick={() => {
     if (spot.status === "OCCUPIED") {
       // Dừng session
-    const session = sessionStart[spot.id];
+    const session = sessionStart[spot.id  ``];
 if (!session) return; // kiểm tra phòng trường hợp null
 
 const endData = {
