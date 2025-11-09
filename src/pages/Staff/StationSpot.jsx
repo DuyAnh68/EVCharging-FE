@@ -196,6 +196,100 @@ const StationSpot = () => {
                               ? "Dừng"
                               : "Bắt đầu sạc"}
                           </button>
+                          <td className="px-6 py-4 text-center">
+                            {spot.spotType === "WALK_IN" && (
+                              <div className="relative inline-block">
+                                <button
+                                  onClick={() => {
+                                    if (!batteryLevels[spot.id]) {
+                                      const randomBattery =
+                                        Math.floor(
+                                          Math.random() * (60 - 5 + 1)
+                                        ) + 5; // random 5–60
+                                      setBatteryLevels((prev) => ({
+                                        ...prev,
+                                        [spot.id]: randomBattery,
+                                      }));
+                                    }
+                                    setActivePopoverId(spot.id);
+                                    setTimeout(
+                                      () => setActivePopoverId(null),
+                                      2000
+                                    );
+                                  }}
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow transition ${
+                                    spot.status === "OCCUPIED"
+                                      ? "bg-red-600 hover:bg-red-700 text-white"
+                                      : "bg-[#14AE5C] hover:bg-[#0f954f] text-white"
+                                  }`}
+                                >
+                                  <PlugZap size={16} />
+                                  {spot.status === "OCCUPIED"
+                                    ? "Dừng"
+                                    : "Bắt đầu sạc"}
+                                </button>
+
+                                {activePopoverId === spot.id && (
+                                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10 text-sm text-gray-700 p-3">
+                                    <p>Thông tin sạc</p>
+                                    <div>
+                                      <p>
+                                        Pin hiện tại của xe:{" "}
+                                        <span className="font-bold text-green-700">
+                                          {batteryLevels[spot.id] || "..."}
+                                        </span>
+                                        %
+                                      </p>
+                                    </div>
+                                    <button
+                                      onClick={() => {
+                                        if (spot.status === "OCCUPIED") {
+                                          // Dừng session
+                                          const session =
+                                            sessionStart[spot.id``];
+                                          if (!session) return; // kiểm tra phòng trường hợp null
+
+                                          const endData = {
+                                            ratePerKWh: 4500,
+                                            batteryCapacity: 80,
+                                            percentBefore:
+                                              batteryLevels[spot.id] || 10,
+                                          };
+                                          handleEndSession(
+                                            session.sessionId,
+                                            endData
+                                          );
+
+                                          // xóa session khi kết thúc
+                                          setSessionStart((prev) => ({
+                                            ...prev,
+                                            [spot.id]: null,
+                                          }));
+                                        } else {
+                                          // Bắt đầu session
+                                          const startData = {
+                                            spotId: spot.id,
+                                            percentBefore:
+                                              batteryLevels[spot.id] || 10,
+                                          };
+                                          handleStartSession(startData);
+                                        }
+                                      }}
+                                      className={`mt-2 w-full py-1 rounded-lg text-sm ${
+                                        spot.status === "OCCUPIED"
+                                          ? "bg-red-600 text-white hover:bg-red-700"
+                                          : "bg-[#008236] text-white hover:bg-[#006b1b]"
+                                      }`}
+                                    >
+                                      {spot.status === "OCCUPIED"
+                                        ? "Dừng sạc"
+                                        : "Sạc ngay"}
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </td>
 
                           {activePopoverId === spot.id && (
                             <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10 text-sm text-gray-700 p-3">

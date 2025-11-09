@@ -53,10 +53,9 @@ const VehicleCard = ({ data, onDeleted }) => {
       }
       const response = await getPayment(subId);
       console.log("ress", response);
+      console.log("response123", vehicle?.vehicleSubscriptionResponse?.id);
       if (response) {
-        const paymentid = await createPayment(
-          vehicle?.vehicleSubscriptionResponse?.id
-        );
+        const paymentid = await createPayment(response.id);
         console.log("paymentid", paymentid);
         if (paymentid && paymentid.paymentUrl) {
           window.open(paymentid.paymentUrl, "_blank");
@@ -77,16 +76,21 @@ const VehicleCard = ({ data, onDeleted }) => {
     setOpenHistory(true);
   };
 
+  // Ensure vehicleDetail is populated and handle errors gracefully
   const handleDetail = async () => {
     try {
       const response = await getVehicleById(vehicle?.id);
+      console.log("objectasd", response);
       if (response) {
         const detail = response.result ?? response;
         setVehicleDetail(detail);
         setOpen(true);
+      } else {
+        alert("Không tìm thấy thông tin chi tiết xe.");
       }
     } catch (e) {
-      console.log("Error:", e.message);
+      console.error("Error fetching vehicle details:", e);
+      alert("Đã xảy ra lỗi khi lấy thông tin chi tiết xe.");
     }
   };
 
@@ -212,7 +216,7 @@ const VehicleCard = ({ data, onDeleted }) => {
                 Lịch sử sạc xe{" "}
               </h3>
               <h4 className="text-lg font-semibold text-gray-800">
-                {vehicle?.licensePlate}
+                {vehicle.licensePlate}
               </h4>
             </div>
 
@@ -250,8 +254,13 @@ const VehicleCard = ({ data, onDeleted }) => {
           maxWidth: "900px",
           maxHeight: "85vh",
           overflow: "auto",
+          background: "#fff",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
         }}
-        overlayStyle={{ background: "rgba(0,0,0,0.5)" }}
+        overlayStyle={{
+          background: "rgba(0, 0, 0, 0.6)",
+          backdropFilter: "blur(5px)",
+        }}
       >
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-lg animate-fadeIn overflow-hidden">
@@ -269,7 +278,11 @@ const VehicleCard = ({ data, onDeleted }) => {
             </div>
 
             <div className="p-6 flex flex-col items-center justify-center">
-              <VehicleDetail vehicle={vehicleDetail} onPay={handlePayment} />
+              {vehicleDetail ? (
+                <VehicleDetail vehicle={vehicleDetail} onPay={handlePayment} />
+              ) : (
+                <p className="text-gray-500">Đang tải thông tin xe...</p>
+              )}
             </div>
           </div>
         </div>
