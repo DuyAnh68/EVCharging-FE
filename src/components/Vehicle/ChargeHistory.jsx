@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import useSession from '../../hooks/useSession';
+import React, { useEffect, useState } from "react";
+import useSession from "../../hooks/useSession";
 
 function ChargeHistory({ vehicleId }) {
   const [history, setHistory] = useState([]);
@@ -27,8 +27,8 @@ function ChargeHistory({ vehicleId }) {
     fetchData();
   }, [vehicleId]);
 
-  const formatDate = (iso) => new Date(iso).toLocaleString("vi-VN");
-  const formatMoney = (v) => v.toLocaleString("vi-VN") + " đ";
+  const formatDate = (iso) => new Date(iso)?.toLocaleString("vi-VN");
+  const formatMoney = (v) => v?.toLocaleString("vi-VN") + " đ";
 
   return (
     <div className="w-full">
@@ -58,12 +58,21 @@ function ChargeHistory({ vehicleId }) {
             </thead>
             <tbody className="text-sm">
               {history.map((item, idx) => (
-                <tr key={`${item.datetime}-${idx}`} className="hover:bg-gray-50">
-                  <td className="px-3 py-2 border">{formatDate(item.startTime)}</td>
+                <tr
+                  key={`${item.datetime}-${idx}`}
+                  className="hover:bg-gray-50"
+                >
+                  <td className="px-3 py-2 border">
+                    {formatDate(item.startTime)}
+                  </td>
                   <td className="px-3 py-2 border">{item.stationName}</td>
                   <td className="px-3 py-2 border">{item.spotName}</td>
-                  <td className="px-3 py-2 border">{Math.round(item.energyUsed)}</td>
-                  <td className="px-3 py-2 border">{formatMoney(item.totalCost)}</td>
+                  <td className="px-3 py-2 border">
+                    {Math.round(item.energyUsed)}
+                  </td>
+                  <td className="px-3 py-2 border">
+                    {formatMoney(item.totalCost)}
+                  </td>
                   <td className="px-3 py-2 border">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
