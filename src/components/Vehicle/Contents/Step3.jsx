@@ -120,7 +120,7 @@ function Step3() {
             <p className="text-red-600">Lỗi: {error}</p>
           ) : (
             <div className="flex flex-wrap justify-center gap-4">
-              {subscriptions?.map((s) => (
+              {subscriptions?.filter((s) => s.name.toLowerCase() !== "company")?.map((s) => (
                 <SubscriptionCard
                   key={s.id}
                   data={s}
