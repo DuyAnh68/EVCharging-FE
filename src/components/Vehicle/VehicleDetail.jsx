@@ -14,7 +14,7 @@ function VehicleDetail({ vehicle, onPay }) {
       </div>
 
       <div className="text-gray-700 mb-1">
-        <span className="font-medium">Hãng:</span> {vehicle.model?.brand}
+        <span className="font-medium">Hãng:</span> {vehicle.model?.brandName}
       </div>
 
       <div className="text-gray-700 mb-1">
@@ -52,7 +52,7 @@ function VehicleDetail({ vehicle, onPay }) {
           </div>
 
           <div className="text-gray-700 mb-1">
-            <span className="font-medium">Hạn mức:</span> {plan?.limitValue ?? "-"} kWh/tháng
+            <span className="font-medium">Giảm giá:</span> {plan?.discount ?? "-"} %
           </div>
 
           {plan?.description?.length > 0 && (

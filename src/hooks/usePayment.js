@@ -1,5 +1,6 @@
 import { useState } from "react";
 import paymentApi from "../api/paymentApi";
+import paymentInvoicesApi from "../api/paymentInvoices";
 
 const usePayment = () => {
   const [loading, setLoading] = useState(false);
@@ -27,10 +28,10 @@ const usePayment = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log("có nhận api này");
       const response = await paymentApi.setPayment(paymentTransactionId);
-      // console.log("url12:", response);
-      if (response) {
-        
+      console.log("url12:", response);
+      if (response) {       
         setLoading(false);
         return response.result;
       }
@@ -59,7 +60,27 @@ const usePayment = () => {
     setLoading(false);
   }
 }
+
+  const getPaymentInvoice = async (id) => {
+    setLoading(true);
+    setError(null);
+    try{
+      const response = await paymentInvoicesApi.getPaymentInvoice(id);
+      console.log("paymentInvoice..", response);
+      if(response){
+        setLoading(false);
+        return response.result;
+      }
+    }catch (e) {
+      setError(e.message);
+      return e.message;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
+    getPaymentInvoice,
     getPaymentHistory,
     loading,
     error,

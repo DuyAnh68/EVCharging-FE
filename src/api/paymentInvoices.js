@@ -1,0 +1,8 @@
+import axiosClient from "./axiosClient";
+
+const paymentInvoicesApi = {
+    getPaymentInvoicesId: (id) => axiosClient.get(`/api/admin/payment/user/${id}`),
+    doPaymentInvoices: (id) => axiosClient.post(`/api/member/payment-transaction/payment/${id}`),
+};
+
+export default paymentInvoicesApi;

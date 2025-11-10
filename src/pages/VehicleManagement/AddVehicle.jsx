@@ -26,8 +26,8 @@ const Reset = () => {
 function AddVehicle() {
     
   return (
-    <div className="bg-[#F6F9EE] flex flex-col gap-3 p-10">
-        <div className="flex flex-col items-center mb-10">
+    <div className="flex flex-col gap-3 p-10 ">
+        <div className="flex flex-col items-center mb-10 ">
             {/* <div className="title text-[black] text-4xl font-bold">Logo</div> */}
             <div className="title text-[black] text-4xl font-bold">Đăng ký xe điện của bạn</div>
         </div>

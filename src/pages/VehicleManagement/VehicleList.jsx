@@ -4,8 +4,8 @@ import { Outlet, Link } from "react-router-dom";
 
 function VehicleList() {
   return (
-    <div className="bg-[#F6F9EE] min-h-screen flex flex-col px-6 py-8">
-      <div className="top flex justify-between">
+    <div className="min-h-screen px-6 py-10">
+      <div className="top flex justify-between max-w-7xl mx-auto mb-1">
         <div className="title !text-[#14AE5C] text-4xl font-bold">
           Danh sách xe của bạn
         </div>

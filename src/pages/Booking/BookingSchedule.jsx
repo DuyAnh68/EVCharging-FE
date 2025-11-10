@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import useBooking from "../../hooks/useBooking";
-import { useAuth } from "../../hooks";
 import usePayment from "../../hooks/usePayment";
+import useStation from "../../hooks/useStation";
 
 const BookingSchedule = () => {
   const {
@@ -13,7 +14,10 @@ const BookingSchedule = () => {
     postBooking,
     bookingPayment,
   } = useBooking();
-  const { user } = useAuth();
+  const { getStationById, station } = useStation();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const location = useLocation();
   const { stationId, vehicle } = location.state;
   const [selectedDate, setSelectedDate] = useState(
@@ -23,10 +27,19 @@ const BookingSchedule = () => {
   const { createPayment } = usePayment();
 
   useEffect(() => {
-    if (stationId) fetchBookingsByStationId(stationId);
+    const fetchBooking = async () => {
+      if (stationId) await fetchBookingsByStationId(stationId);
+    };
+    const fetchStation = async () => {
+      if (stationId) await getStationById(stationId);
+    };
+    fetchBooking();
+    fetchStation();
   }, []);
 
-  // Tạo danh sách 48 slot (30 phút/slot)
+  console.log("station booking", stationBookings);
+  console.log("station", station);
+
   const slots = useMemo(() => {
     const result = [];
     for (let h = 0; h < 24; h++) {
@@ -36,19 +49,39 @@ const BookingSchedule = () => {
     return result;
   }, []);
 
-  // Kiểm tra slot đã bị đặt chưa
   const isSlotBooked = (slotTime) => {
-    if (!stationBookings) return false;
+    if (!stationBookings || !station) return false;
+
     const slotDateTime = new Date(`${selectedDate}T${slotTime}:00`);
-    return stationBookings.some((b) => {
+
+    const bookingsAtSameTime = stationBookings.filter((b) => {
       const start = new Date(b.timeToCharge);
       const end = new Date(b.endTime);
       return slotDateTime >= start && slotDateTime < end;
-    });
+    }).length;
+
+    return bookingsAtSameTime >= station.totalSpotsOnline;
   };
 
-  // Chọn slot liên tiếp
+  // New: check if a slot (date + time) is in the past
+  const isSlotInPast = (slotTime) => {
+    try {
+      const slotDateTime = new Date(`${selectedDate}T${slotTime}:00`);
+      const now = new Date();
+      return slotDateTime < now;
+    } catch {
+      return false;
+    }
+  };
+
   const handleSelectSlot = (time) => {
+    // prevent selecting past slots
+    if (isSlotInPast(time)) {
+      // optional: show a small notification instead of alert
+      alert("Không thể chọn khung giờ đã ở quá khứ.");
+      return;
+    }
+
     if (selectedSlots.length === 0) {
       setSelectedSlots([time]);
       return;
@@ -73,7 +106,6 @@ const BookingSchedule = () => {
     }
   };
 
-  // Lấy thời gian bắt đầu và kết thúc
   const getStartEndTime = () => {
     if (selectedSlots.length === 0) return null;
     const sorted = [...selectedSlots].sort(
@@ -86,98 +118,265 @@ const BookingSchedule = () => {
   };
 
   const handleBooking = async () => {
-    const { start, end } = getStartEndTime();
-    console.log(new Date(`${selectedDate}T${start}:00`).toISOString());
-    console.log(end);
+    const period = getStartEndTime();
+    if (!period) {
+      alert("Vui lòng chọn khung giờ trước khi đặt.");
+      return;
+    }
+    const { start, end } = period;
+
+    const startDateTime = new Date(`${selectedDate}T${start}:00`);
+    const now = new Date();
+    if (startDateTime < now) {
+      alert(
+        "Thời gian bắt đầu không được là quá khứ. Vui lòng chọn khung giờ khác."
+      );
+      return;
+    }
+
+    console.log("time", `${selectedDate}T${start}:00`);
+
     const bookingData = {
-      userId: user.user.id,
+      userId: user.id,
       stationId: Number(stationId),
       vehicleId: vehicle.id,
       timeToCharge: `${selectedDate}T${start}:00`,
       endTime: `${selectedDate}T${end}:00`,
     };
+
     const res = await postBooking(bookingData);
-    console.log(res);
-    const paymentRes = await bookingPayment(res.bookingId);
-    console.log("Payment Response:", paymentRes);
-    const paymentVNPayUrl = await createPayment(paymentRes.result.id);
-    console.log(paymentVNPayUrl);
-    alert("Đặt chỗ thành công!");
-    window.open(paymentVNPayUrl.paymentUrl, "_blank");
+    console.log("bookingres:", res);
+    if (res) {
+      const paymentRes = await bookingPayment(res.bookingId);
+      const paymentVNPayUrl = await createPayment(paymentRes.result.id);
+      alert("Đặt chỗ thành công!");
+      window.open(paymentVNPayUrl.paymentUrl, "_blank");
+    }
   };
 
   if (loading)
-    return <p className="text-center text-gray-500">Đang tải dữ liệu...</p>;
-  if (error) return <p className="text-center text-red-500">Lỗi: {error}</p>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent"></div>
+          <p className="mt-4 text-gray-600 font-medium">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-red-50 to-orange-50">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md">
+          <div className="text-red-500 text-5xl mb-4 text-center">⚠️</div>
+          <p className="text-center text-red-600 font-semibold text-lg">
+            Lỗi: {error}
+          </p>
+        </div>
+      </div>
+    );
+
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const cardVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  const slotVariants = {
+    initial: { scale: 0.8, opacity: 0 },
+    animate: {
+      scale: 1,
+      opacity: 1,
+    },
+  };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-2xl mt-6">
-      <h2 className="text-2xl font-bold mb-6 text-center text-green-700">
-        Đặt lịch sạc cho xe {vehicle?.name || ""}
-      </h2>
+    <motion.div
+      className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 py-8 px-4"
+      initial="initial"
+      animate="animate"
+      variants={pageVariants}
+    >
+      <motion.div className="max-w-6xl mx-auto">
+        {/* Header Card */}
+        <motion.div
+          className="bg-white rounded-3xl shadow-xl p-8 mb-6 border border-emerald-100"
+          variants={cardVariants}
+        >
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={512}
+                height={512}
+                viewBox="0 0 512 512"
+              >
+                <path fill="white" d="M376 211H256V16L136 301h120v195z"></path>
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              Đặt lịch sạc xe điện
+            </h2>
+          </div>
+        </motion.div>
 
-      {/* chọn ngày */}
-      <div className="flex justify-center mb-6">
-        <input
-          type="date"
-          className="border rounded-md px-4 py-2 shadow-sm hover:shadow-md transition"
-          value={selectedDate}
-          onChange={(e) => {
-            setSelectedDate(e.target.value);
-            setSelectedSlots([]);
-          }}
-        />
-      </div>
+        {/* Date Picker Card */}
+        <motion.div
+          className="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-emerald-100"
+          variants={cardVariants}
+        >
+          <div className="flex items-center justify-center gap-3">
+            <span className="text-gray-700 font-semibold text-lg">
+              Chọn ngày:
+            </span>
+            <input
+              type="date"
+              className="border-2 border-emerald-200 rounded-xl px-6 py-3 shadow-sm hover:shadow-md hover:border-emerald-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-lg font-medium"
+              value={selectedDate}
+              onChange={(e) => {
+                setSelectedDate(e.target.value);
+                setSelectedSlots([]);
+              }}
+            />
+          </div>
+        </motion.div>
 
-      {/* danh sách slot */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-3">
-        {slots.map((time, idx) => {
-          const booked = isSlotBooked(time);
-          const isSelected = selectedSlots.includes(time);
-          return (
-            <button
-              key={idx}
-              disabled={booked}
-              onClick={() => handleSelectSlot(time)}
-              className={`border rounded-md py-2 text-sm transition-all duration-150
-                ${
-                  booked
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : isSelected
-                    ? "bg-green-600 text-white scale-105"
-                    : "hover:bg-green-50"
-                }`}
+        {/* Time Slots Card */}
+        <motion.div
+          className="bg-white rounded-3xl shadow-xl p-8 border border-emerald-100"
+          variants={cardVariants}
+        >
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              Chọn khung giờ sạc
+            </h3>
+            <div className="flex gap-6 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-emerald-500"></div>
+                <span className="text-gray-600">Đã chọn</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-gray-200"></div>
+                <span className="text-gray-600">Đã đặt</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded border-2 border-gray-300"></div>
+                <span className="text-gray-600">Còn trống</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-gray-300"></div>
+                <span className="text-gray-600">Quá khứ (không chọn được)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2">
+            {slots.map((time, idx) => {
+              const booked = isSlotBooked(time);
+              const past = isSlotInPast(time);
+              const isSelected = selectedSlots.includes(time);
+              return (
+                <motion.button
+                  key={idx}
+                  variants={slotVariants}
+                  whileHover={!booked && !past ? { scale: 1.05 } : {}}
+                  whileTap={!booked && !past ? { scale: 0.95 } : {}}
+                  disabled={booked || past}
+                  onClick={() => handleSelectSlot(time)}
+                  className={`relative border-2 rounded-xl py-3 px-2 text-sm font-semibold transition-all duration-200 transform
+                    ${
+                      booked
+                        ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                        : past
+                        ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                        : isSelected
+                        ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-emerald-600 shadow-lg"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 shadow-sm hover:shadow-md"
+                    }`}
+                >
+                  {time}
+                  {isSelected && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"
+                    />
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          {/* Summary Card */}
+          {selectedSlots.length > 0 && (
+            <motion.div
+              className="mt-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-emerald-200"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              {time}
-            </button>
-          );
-        })}
-      </div>
+              <div className="text-center space-y-3">
+                <div className="inline-block bg-white px-6 py-3 rounded-xl shadow-md">
+                  <p className="text-gray-700 text-lg">
+                    Thời gian đã chọn:{" "}
+                    <span className="font-bold text-emerald-600 text-xl">
+                      {getStartEndTime().start} – {getStartEndTime().end}
+                    </span>
+                  </p>
+                  <p className="text-gray-600 mt-1">
+                    {" "}
+                    {new Date(selectedDate).toLocaleDateString("vi-VN", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
 
-      {/* Thông tin slot được chọn */}
-      {selectedSlots.length > 0 && (
-        <div className="mt-8 text-center space-y-2">
-          <p>
-            Bạn đã chọn từ{" "}
-            <span className="font-semibold text-green-600">
-              {getStartEndTime().start} – {getStartEndTime().end}
-            </span>{" "}
-            ngày {selectedDate}
-          </p>
-          <p className="text-sm text-gray-500">
-            Tổng thời lượng: {selectedSlots.length * 30} phút
-          </p>
+                <div className="flex items-center justify-center gap-2 text-teal-700">
+                  <p className="text-lg font-semibold">
+                    Tổng thời lượng: {selectedSlots.length * 30} phút (
+                    {(selectedSlots.length * 0.5).toFixed(1)} giờ)
+                  </p>
+                </div>
 
-          <button
-            onClick={handleBooking}
-            className="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
-            disabled={selectedSlots.length === 0}
-          >
-            Tiến hành đặt chỗ
-          </button>
-        </div>
-      )}
-    </div>
+                <motion.button
+                  onClick={handleBooking}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+                  disabled={
+                    selectedSlots.length === 0 ||
+                    (getStartEndTime() &&
+                      new Date(
+                        `${selectedDate}T${getStartEndTime().start}:00`
+                      ) < new Date())
+                  }
+                >
+                  Tiến hành đặt chỗ
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

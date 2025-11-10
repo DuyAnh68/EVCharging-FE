@@ -7,8 +7,6 @@ const useBooking = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  console.log(bookingInfo);
-
   const fetchBookingsByStationId = async (stationId) => {
     setLoading(true);
     setError(null);
@@ -32,20 +30,48 @@ const useBooking = () => {
   const postBooking = async (bookingData) => {
     setLoading(true);
     setError(null);
+
+    console.log("bookingData", bookingData);
+
     try {
-      const res = await bookingApi.postBooking(bookingData);
+      // Format datetime to match Java LocalDateTime format yyyy-MM-dd'T'HH:mm:ss
+      // Use local getters to avoid toISOString() -> UTC conversion
+      const formatDateTime = (dateInput) => {
+        const d = dateInput instanceof Date ? dateInput : new Date(dateInput);
+        const pad = (n) => String(n).padStart(2, "0");
+        const year = d.getFullYear();
+        const month = pad(d.getMonth() + 1);
+        const day = pad(d.getDate());
+        const hours = pad(d.getHours());
+        const minutes = pad(d.getMinutes());
+        const seconds = pad(d.getSeconds());
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+      };
+
+      console.log("format data", formatDateTime(bookingData.timeToCharge));
+      // Format dữ liệu trước khi gửi
+      const formattedData = {
+        userId: bookingData.userId,
+        stationId: bookingData.stationId,
+        vehicleId: bookingData.vehicleId,
+        timeToCharge: formatDateTime(bookingData.timeToCharge),
+        endTime: formatDateTime(bookingData.endTime),
+      };
+
+      console.log("Formatted booking data:", formattedData);
+
+      const res = await bookingApi.postBooking(formattedData);
+
       if (res) {
-        console.log(res);
         setBookingInfo(res);
-        setLoading(false);
-        setError(null);
         return res;
       }
     } catch (error) {
+      console.error("Booking error:", error);
       setError(error.message || "Không thể đặt chỗ");
+      throw error;
     } finally {
       setLoading(false);
-      setError(null);
     }
   };
 

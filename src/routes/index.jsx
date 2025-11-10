@@ -27,6 +27,9 @@ import Stations from "../pages/Admin/Stations/Stations";
 import VehicleModels from "../pages/Admin/VehicleModels/VehicleModels.jsx";
 import Spots from "../pages/Admin/Spots/Spots.jsx";
 import VehicleBrands from "../pages/Admin/VehicleBrands/VehicleBrands.jsx";
+import StaffStation from "../pages/Staff/StaffStation.jsx";
+import StationSpot from "../pages/Staff/StationSpot.jsx";
+import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +53,9 @@ const router = createBrowserRouter([
       { path: "/bookingSchedule", element: <BookingSchedule /> },
       { path: "/chargingSession", element: <ChargingSession /> },
       { path: "/session-detail/:id", element: <SessionDetail /> },
+      { path: "/staff/station", element: <StaffStation /> },
+      { path: "/staff/station/spot/:id", element: <StationSpot /> },
+      { path: "/payment/invoice/:id", element: <InvoiceDetail /> },
     ],
   },
   {
