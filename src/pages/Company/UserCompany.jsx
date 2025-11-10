@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import useCompany from "../../hooks/useCompany";
-// import UserList from "../../components/Company/UserList.jsx";
+import UserList from "../../components/Company/UserList.jsx";
 
 const UserCompany = () => {
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState();
     const {getUserCompany, loading, error} = useCompany();
 
     useEffect(() => {
@@ -23,10 +23,11 @@ const UserCompany = () => {
                 <div className="title !text-[#14AE5C] text-4xl font-bold">
                     Danh sách tài xế
                 </div>
-                {/* <div>
-                    <UserList users={users} loading={loading} error={error}/>
-                </div> */}
+                
             </div>
+                <div>
+                    <UserList users={users} loading={loading} error={error}/>
+                </div>
         </div>
     );
 }

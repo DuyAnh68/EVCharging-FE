@@ -34,6 +34,9 @@ import PaymentBookinngSuccess from "../pages/PaymentBooking/PaymentBookingSucces
 import StaffLayout from "../layouts/StaffLayout.jsx";
 import CompanyLayout from "../layouts/CompanyLayout.jsx";
 import UserCompany from "../pages/Company/UserCompany.jsx";
+import AddVehicleCompany from "../pages/Company/AddVehicleCompany.jsx";
+// import CompanyVehicleListGrid from "../components/Company/CompanyVehicleListGrid.jsx";
+import VehicleCompanyList from "../pages/Company/VehicleComanyList.jsx";
 
 const router = createBrowserRouter([
   {
@@ -85,7 +88,8 @@ const router = createBrowserRouter([
     element: <CompanyLayout />,
     children: [
       { path: "user", element: <UserCompany /> },
-      { path: "station/spot/:id", element: <StationSpot /> },
+      { path: "addVehicle", element: <AddVehicleCompany /> },
+      { path: "vehicle", element: <VehicleCompanyList /> },
     ],
   },
   {

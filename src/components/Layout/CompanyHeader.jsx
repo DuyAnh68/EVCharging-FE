@@ -47,7 +47,7 @@ const Header = () => {
               </NavLink>
 
               {isAuthenticated ? (
-                <NavLink to="/booking" className={navLinkClass}>
+                <NavLink to="/company/vehicle" className={navLinkClass}>
                   Xe 
                 </NavLink>
               ) : (
