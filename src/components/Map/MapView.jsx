@@ -3,16 +3,28 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { FaBolt, FaMapMarkerAlt, FaRoute } from "react-icons/fa";
 
-// Icon marker tùy chỉnh (màu xanh VinFast)
 const chargingIcon = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // bạn có thể thay icon khác
-  iconSize: [35, 35],
-  iconAnchor: [17, 35],
-  popupAnchor: [0, -30],
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  popupAnchor: [0, -35],
 });
 
 const MapView = ({ station }) => {
-  if (!station) return <p>Không có dữ liệu trạm sạc</p>;
+  console.log(station);
+
+  if (!station) {
+    return (
+      <div className="flex items-center justify-center h-96 bg-gradient-to-br from-slate-100 to-gray-200 rounded-3xl border-2 border-dashed border-gray-300">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🗺️</div>
+          <p className="text-gray-500 font-semibold text-lg">
+            Không có dữ liệu trạm sạc
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleDirections = () => {
     const { latitude, longitude, name } = station;
@@ -23,11 +35,11 @@ const MapView = ({ station }) => {
   };
 
   return (
-    <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200">
+    <div className="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-slate-200">
       <MapContainer
         center={[station.latitude, station.longitude]}
-        zoom={16}
-        style={{ height: "450px", width: "100%", zIndex: 0 }}
+        zoom={20}
+        style={{ height: "500px", width: "100%", zIndex: 0 }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -38,33 +50,78 @@ const MapView = ({ station }) => {
           position={[station.latitude, station.longitude]}
           icon={chargingIcon}
         >
-          <Popup>
-            <div style={{ minWidth: "220px" }}>
-              <h3 className="font-bold text-green-700 text-base mb-1">
-                <FaBolt className="inline mr-1 text-yellow-500" />
-                {station.name}
-              </h3>
-              <p className="text-sm text-gray-600 mb-1">
-                <FaMapMarkerAlt className="inline mr-1 text-red-500" />
-                {station.location}
-              </p>
-              <p className="text-sm text-gray-500 mb-1">
-                ⚡ Công suất: <b>{station.powerCapacity} kW</b>
-              </p>
-              <p className="text-sm text-gray-500 mb-1">
-                🔋 Số chỗ sạc trống:{" "}
-                <b className="text-green-600">{station.availableSpots}</b>
-              </p>
-              <p className="text-sm text-gray-500 mb-3">
-                🟢 Trạng thái: <b>{station.status}</b>
-              </p>
+          <Popup className="custom-popup" minWidth={280} maxWidth={320}>
+            <div className="p-2">
+              {/* Header */}
+              <div className="mb-4 pb-3 border-b-2 border-emerald-100">
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <FaBolt className="text-white text-xl" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 text-lg leading-tight mb-1">
+                      {station.name}
+                    </h3>
+                    <div className="flex items-start gap-1 text-gray-600 text-sm">
+                      <FaMapMarkerAlt className="text-red-500 mt-1 flex-shrink-0" />
+                      <span className="leading-tight">{station.location}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
+              {/* Info Cards */}
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">⚡</span>
+                    <span className="text-sm text-gray-700 font-medium">
+                      Công suất
+                    </span>
+                  </div>
+                  <span className="font-bold text-amber-600 text-lg">
+                    {station.powerCapacity} kW
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🔋</span>
+                    <span className="text-sm text-gray-700 font-medium">
+                      Chỗ trống
+                    </span>
+                  </div>
+                  <span className="font-bold text-emerald-600 text-lg">
+                    {station.totalSpotsOnline}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🟢</span>
+                    <span className="text-sm text-gray-700 font-medium">
+                      Trạng thái
+                    </span>
+                  </div>
+                  <span
+                    className={`font-bold text-lg ${
+                      station.status === "AVAILABLE"
+                        ? "text-emerald-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {station.status === "Active" ? "Hoạt động" : station.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Direction Button */}
               <button
                 onClick={handleDirections}
-                className="!bg-green-600 !text-white px-3 py-2 rounded-md w-full flex items-center justify-center hover:bg-green-700 transition"
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                <FaRoute className="mr-2" />
-                Chỉ đường
+                <FaRoute className="text-lg" />
+                <span>Chỉ đường đến đây</span>
               </button>
             </div>
           </Popup>

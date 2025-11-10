@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import ModelCar from "../../assets/icons/modelCar";
 import ChargeHistory from "./ChargeHistory";
 
-
 const VehicleCard = ({ data, onDeleted }) => {
   const vehicle = data;
   const { getVehicleById, deleteVehicle } = useVehicle();
@@ -47,15 +46,16 @@ const VehicleCard = ({ data, onDeleted }) => {
         subscriptionId ||
         vehicle?.vehicleSubscriptionResponse?.id ||
         vehicleDetail?.vehicleSubscriptionResponse?.id;
-        console.log("reponsesybid", vehicle?.vehicleSubscriptionResponse?.id);
+      console.log("reponsesybid", vehicle?.vehicleSubscriptionResponse?.id);
       if (!subId) {
         alert("Không tìm thấy thông tin thanh toán.");
         return;
       }
       const response = await getPayment(subId);
       console.log("ress", response);
+      console.log("response123", vehicle?.vehicleSubscriptionResponse?.id);
       if (response) {
-        const paymentid = await createPayment(vehicle?.vehicleSubscriptionResponse?.id);
+        const paymentid = await createPayment(response.id);
         console.log("paymentid", paymentid);
         if (paymentid && paymentid.paymentUrl) {
           window.open(paymentid.paymentUrl, "_blank");
@@ -74,19 +74,23 @@ const VehicleCard = ({ data, onDeleted }) => {
   const handleChargeHistory = async (e) => {
     e.stopPropagation();
     setOpenHistory(true);
-  }
+  };
 
-
+  // Ensure vehicleDetail is populated and handle errors gracefully
   const handleDetail = async () => {
     try {
       const response = await getVehicleById(vehicle?.id);
+      console.log("objectasd", response);
       if (response) {
         const detail = response.result ?? response;
         setVehicleDetail(detail);
         setOpen(true);
+      } else {
+        alert("Không tìm thấy thông tin chi tiết xe.");
       }
     } catch (e) {
-      console.log("Error:", e.message);
+      console.error("Error fetching vehicle details:", e);
+      alert("Đã xảy ra lỗi khi lấy thông tin chi tiết xe.");
     }
   };
 
@@ -103,8 +107,12 @@ const VehicleCard = ({ data, onDeleted }) => {
       }}
       className="max-w-sm rounded-2xl overflow-hidden shadow bg-white border border-gray-200 m-4 transition hover:shadow-lg cursor-pointer focus:outline-none"
     >
-      <div className="w-full h-40 !bg-gray-100 flex items-center justify-center">
-        <ModelCar imageUrl={vehicle?.model?.url} modelName={data.modelName} />
+      <div className="w-full h-46 !bg-gray-100 flex items-center justify-center">
+        <img
+          src={vehicle?.model?.url}
+          alt={vehicle?.model?.modelName}
+          className="w-full h-full object-cover"
+        />
       </div>
 
       <div className="px-6 py-4">
@@ -144,7 +152,9 @@ const VehicleCard = ({ data, onDeleted }) => {
               }`}
               onClick={(e) => {
                 e.stopPropagation();
-                if (vehicle?.vehicleSubscriptionResponse?.status === "PENDING") {
+                if (
+                  vehicle?.vehicleSubscriptionResponse?.status === "PENDING"
+                ) {
                   handlePayment(vehicle.vehicleSubscriptionResponse.id);
                 }
               }}
@@ -155,7 +165,6 @@ const VehicleCard = ({ data, onDeleted }) => {
         </div>
       </div>
 
-      
       <div className="px-6 pt-3 pb-4 flex gap-3 bg-gray-50">
         <button
           onClick={handleDelete}
@@ -183,16 +192,53 @@ const VehicleCard = ({ data, onDeleted }) => {
         closeOnDocumentClick
         lockScroll
         closeOnEscape
-        contentStyle={{ borderRadius: "16px", padding: "16px", width: "90vw", maxWidth: "900px", maxHeight: "85vh", overflow: "auto" }}
-        overlayStyle={{ background: "rgba(0,0,0,0.5)" }}
+        contentStyle={{
+          borderRadius: "20px",
+          padding: "0",
+          width: "95vw",
+          maxWidth: "1200px",
+          maxHeight: "85vh",
+          overflow: "hidden",
+          background: "white",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
+          animation: "popup-fade-in 0.25s ease-out",
+        }}
+        overlayStyle={{
+          background: "rgba(0,0,0,0.5)",
+          backdropFilter: "blur(4px)",
+        }}
       >
-        <div className="p-1">
-          <ChargeHistory
-            vehicleId={vehicle.id}
-            onClose={() => setOpenHistory(false)}
-          />
+        <div className="flex flex-col h-full max-h-[85vh]">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-gray-50">
+            <div className="flex flex-col">
+              <h3 className="text-lg font-semibold text-gray-800">
+                Lịch sử sạc xe{" "}
+              </h3>
+              <h4 className="text-lg font-semibold text-gray-800">
+                {vehicle.licensePlate}
+              </h4>
+            </div>
+
+            <button
+              onClick={() => setOpenHistory(false)}
+              className="text-gray-500 hover:text-gray-700 transition"
+              aria-label="Đóng"
+            >
+              <X size={22} />
+            </button>
+          </div>
+
+          {/* Nội dung */}
+          <div className="p-5 overflow-y-auto">
+            <ChargeHistory
+              vehicleId={vehicle.id}
+              onClose={() => setOpenHistory(false)}
+            />
+          </div>
         </div>
-      </Popup>    
+      </Popup>
+
       <Popup
         open={open}
         onClose={() => setOpen(false)}
@@ -201,23 +247,43 @@ const VehicleCard = ({ data, onDeleted }) => {
         closeOnDocumentClick
         lockScroll
         closeOnEscape
-        contentStyle={{ borderRadius: "16px", padding: "0", width: "90vw", maxWidth: "900px", maxHeight: "85vh", overflow: "auto" }}
-        overlayStyle={{ background: "rgba(0,0,0,0.5)" }}
+        contentStyle={{
+          borderRadius: "16px",
+          padding: "0",
+          width: "90vw",
+          maxWidth: "900px",
+          maxHeight: "85vh",
+          overflow: "auto",
+          background: "#fff",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
+        }}
+        overlayStyle={{
+          background: "rgba(0, 0, 0, 0.6)",
+          backdropFilter: "blur(5px)",
+        }}
       >
-        <div className="">
-          <div className="flex items-center justify-between px-4 py-3 border-b">
-            <h3 className="text-lg font-semibold">Thông tin xe</h3>
-            <button
-              onClick={() => setOpen(false)}
-              className="text-gray-500 hover:text-black"
-              aria-label="Đóng"
-            >
-              <X size={20} />
-            </button>
-          </div>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-lg animate-fadeIn overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-800">
+                Thông tin xe
+              </h3>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-gray-500 hover:text-gray-700 transition"
+                aria-label="Đóng"
+              >
+                <X size={22} />
+              </button>
+            </div>
 
-          <div className="p-4 flex flex-col items-center justify-center">
-            <VehicleDetail vehicle={vehicleDetail} onPay={handlePayment} />
+            <div className="p-6 flex flex-col items-center justify-center">
+              {vehicleDetail ? (
+                <VehicleDetail vehicle={vehicleDetail} onPay={handlePayment} />
+              ) : (
+                <p className="text-gray-500">Đang tải thông tin xe...</p>
+              )}
+            </div>
           </div>
         </div>
       </Popup>

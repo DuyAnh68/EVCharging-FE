@@ -2,7 +2,7 @@ import React from "react";
 import { Check } from "lucide-react";
 
 const SubscriptionCard = ({ data, selectedPlan, onSelect }) => {
-  const { id, name, price, limitValue, description } = data;
+  const { id, name, price, discount, description } = data;
   const isSelected = String(selectedPlan) === String(id);
   const formattedPrice = price.toLocaleString("vi-VN") + " đ/tháng";
 
@@ -24,7 +24,7 @@ const SubscriptionCard = ({ data, selectedPlan, onSelect }) => {
 
         <div className="flex flex-col items-center mb-3">
           <p className="text-xl md:text-2xl font-extrabold text-[#009951]">{formattedPrice}</p>
-          <p className="text-sm text-gray-600">Giới hạn: {limitValue} kWh</p>
+          <p className="text-sm text-gray-600">Giảm giá: {discount} %</p>
         </div>
 
         <ul className="flex-1 space-y-2 mb-4 px-2">

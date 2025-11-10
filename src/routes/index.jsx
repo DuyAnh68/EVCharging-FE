@@ -30,6 +30,9 @@ import VehicleBrands from "../pages/Admin/VehicleBrands/VehicleBrands.jsx";
 import SubscriptionPlans from "../pages/Admin/SubscriptionPlans/SubscriptionPlans.jsx";
 import Companies from "../pages/Admin/Companies/Companies.jsx";
 import Staffs from "../pages/Admin/Staffs/Staffs.jsx";
+import StaffStation from "../pages/Staff/StaffStation.jsx";
+import StationSpot from "../pages/Staff/StationSpot.jsx";
+import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +56,9 @@ const router = createBrowserRouter([
       { path: "/bookingSchedule", element: <BookingSchedule /> },
       { path: "/chargingSession", element: <ChargingSession /> },
       { path: "/session-detail/:id", element: <SessionDetail /> },
+      { path: "/staff/station", element: <StaffStation /> },
+      { path: "/staff/station/spot/:id", element: <StationSpot /> },
+      { path: "/payment/invoice/:id", element: <InvoiceDetail /> },
     ],
   },
   {
