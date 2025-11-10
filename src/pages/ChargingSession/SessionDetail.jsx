@@ -135,9 +135,9 @@ const SessionDetail = () => {
 
     try {
       const response = await endSession(sessionId, endData);
+      console.log(response);
       if (response) {
         setSession(response);
-        console.log(session);
         setShowSummary(true);
       }
     } catch (error) {
@@ -297,7 +297,6 @@ const SessionDetail = () => {
           </button>
         </div>
 
-        {/* --- Khối 2: Thông tin phiên sạc --- */}
         <div className="flex-1 bg-white rounded-2xl shadow-sm p-5">
           <h3 className="font-semibold text-gray-700 mb-3">
             Thông tin phiên sạc
@@ -404,13 +403,13 @@ const SessionDetail = () => {
               <p>
                 <span className="text-gray-500">Giá điện:</span>{" "}
                 <span className="font-medium">
-                  {station?.pricePerKwh?.toLocaleString()} đ/kWh
+                  {station?.pricePerKwh} đ/kWh
                 </span>
               </p>
               <p>
                 <span className="text-gray-500">Tổng tiền ước tính:</span>{" "}
                 <span className="font-semibold text-green-600">
-                  {(powerUse * station?.pricePerKwh || 0).toLocaleString()} đ
+                  {(session.totalCost || 0).toLocaleString()} đ
                 </span>
               </p>
             </div>

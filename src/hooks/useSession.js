@@ -12,7 +12,7 @@ const useSession = () => {
       const response = await sessionApi.getSessionsByVehicleId(vehicleId);
       if (response) {
         setLoading(false);
-        return response;
+        return JSON.parse(response);
       }
     } catch (e) {
       setError(e.message);

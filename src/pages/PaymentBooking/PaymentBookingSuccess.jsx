@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 
-const Success = () => {
+const PaymentBookinngSuccess = () => {
   const navigate = useNavigate();
 
   return (
@@ -17,18 +17,18 @@ const Success = () => {
         </h1>
 
         <p className="text-gray-600 mb-6">
-          Cảm ơn bạn đã thanh toán. Gói thuê bao của bạn đã được kích hoạt.
+          Cảm ơn bạn đã thanh toán. Đặt chỗ của bạn đã được xác nhận.
         </p>
 
         <button
-          onClick={() => navigate("/vehicle")}
+          onClick={() => navigate("/chargingSession")}
           className="w-full bg-[#009951] text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors"
         >
-          Quay lại danh sách xe
+          Đi đến xem các đặt chỗ của tôi
         </button>
       </div>
     </div>
   );
 };
 
-export default Success;
+export default PaymentBookinngSuccess;
