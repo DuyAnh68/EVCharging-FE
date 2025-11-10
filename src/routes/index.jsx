@@ -27,6 +27,9 @@ import Stations from "../pages/Admin/Stations/Stations";
 import VehicleModels from "../pages/Admin/VehicleModels/VehicleModels.jsx";
 import Spots from "../pages/Admin/Spots/Spots.jsx";
 import VehicleBrands from "../pages/Admin/VehicleBrands/VehicleBrands.jsx";
+import SubscriptionPlans from "../pages/Admin/SubscriptionPlans/SubscriptionPlans.jsx";
+import Companies from "../pages/Admin/Companies/Companies.jsx";
+import Staffs from "../pages/Admin/Staffs/Staffs.jsx";
 
 const router = createBrowserRouter([
   {
@@ -60,7 +63,10 @@ const router = createBrowserRouter([
       { path: "stations", element: <Stations /> },
       { path: "vehicle-models", element: <VehicleModels /> },
       { path: "spots", element: <Spots />},
-      { path: "vehicle-brands", element: <VehicleBrands />}
+      { path: "vehicle-brands", element: <VehicleBrands />},
+      { path: "subscription-plans", element: <SubscriptionPlans /> },
+      { path: "companies", element: <Companies /> },
+      { path: "staffs", element: <Staffs /> }
     ],
   },
   {
