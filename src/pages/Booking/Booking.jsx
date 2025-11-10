@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useStation from "../../hooks/useStation";
+import { motion } from "framer-motion";
 
 function Booking() {
   const navigate = useNavigate();
@@ -15,17 +16,71 @@ function Booking() {
       </div>
     );
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const headingVariants = {
+    hidden: {
+      opacity: 0,
+      x: -20,
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.7,
+        ease: "easeOut",
+      },
+    },
+  };
+
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Danh sách trạm sạc</h1>
+    <motion.div
+      className="container mx-auto p-4"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.h1
+        className="text-2xl font-bold pb-10"
+        variants={headingVariants}
+      >
+        Danh sách trạm sạc
+      </motion.h1>
 
       <div className="space-y-4">
-        {stations.map((station) => (
-          <div
+        {stations.map((station, index) => (
+          <motion.div
             key={station.id}
-            className="flex items-center border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow"
+            variants={itemVariants}
+            whileHover={{
+              transition: { duration: 0.2 },
+            }}
+            className="flex items-center border rounded-lg p-4 bg-white shadow-sm"
           >
-            <div className="w-24 h-24 mr-4">
+            <motion.div className="w-24 h-24 mr-4" whileHover={{ scale: 1.1 }}>
               <img
                 src={
                   station.image ||
@@ -34,7 +89,7 @@ function Booking() {
                 alt={station.name}
                 className="w-full h-full object-cover rounded-lg"
               />
-            </div>
+            </motion.div>
 
             <div className="flex-grow">
               <h2 className="text-lg font-semibold">{station.name}</h2>
@@ -60,23 +115,23 @@ function Booking() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate(`/station/${station.id}`)}
-                disabled={station.status !== "AVAILABLE"}
-                className={`px-4 py-2 rounded transition-colors ${
-                  station.status !== "AVAILABLE"
-                    ? "!bg-gray-400 !text-white cursor-not-allowed"
-                    : "!bg-[#0F9456] text-white hover:!bg-[#109857]"
-                }`}
-              >
-                ĐẶT CHỖ
-              </button>
-            </div>
-          </div>
+            <motion.button
+              onClick={() => navigate(`/station/${station.id}`)}
+              disabled={station.status !== "AVAILABLE"}
+              whileHover={{ scale: station.status === "AVAILABLE" ? 1.05 : 1 }}
+              whileTap={{ scale: station.status === "AVAILABLE" ? 0.95 : 1 }}
+              className={`px-4 py-2 rounded transition-colors ${
+                station.status !== "AVAILABLE"
+                  ? "!bg-gray-400 !text-white cursor-not-allowed"
+                  : "!bg-[#0F9456] text-white hover:!bg-[#109857]"
+              }`}
+            >
+              ĐẶT CHỖ
+            </motion.button>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

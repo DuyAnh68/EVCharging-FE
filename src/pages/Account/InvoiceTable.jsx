@@ -60,7 +60,6 @@ const InvoiceTable = ({ invoices }) => {
             <th className="px-6 py-3">Giảm giá</th>
             <th className="px-6 py-3">Tổng tiền</th>
             <th className="px-6 py-3">Thành tiền</th>
-            <th className="px-6 py-3 rounded-tr-2xl text-center">Trạng thái</th>
           </tr>
         </thead>
 
@@ -90,13 +89,6 @@ const InvoiceTable = ({ invoices }) => {
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-900">
                     {formatMoney(invoice.finalCost)}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span
-                      className={`px-3 py-1 text-xs font-medium rounded-full ${statusInfo.color}`}
-                    >
-                      {statusInfo.label}
-                    </span>
                   </td>
                 </tr>
               );
