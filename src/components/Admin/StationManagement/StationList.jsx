@@ -1,7 +1,7 @@
 import StationCard from "./StationCard.jsx";
 import StationFormModal from "./StationFormModal.jsx";
 import {useState} from "react";
-import ConfirmModal from "./ConfirmModal.jsx";
+import ConfirmModal from "../../Modal/ConfirmModal.jsx";
 import ChargerFormModal from "./ChargerFormModal.jsx";
 
 const StationList = ({ stations }) => {
