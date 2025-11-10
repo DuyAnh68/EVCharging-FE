@@ -23,7 +23,6 @@ const StationSpot = () => {
       console.log("data", startData);
       console.log("response", response);
       if (response) {
-        // Handle successful start session
         setSessionStart((prev) => ({ ...prev, [startData.spotId]: response }));
       }
     } catch (error) {
@@ -37,7 +36,6 @@ const StationSpot = () => {
     try {
       const response = await endSessionStaff(sessionId, endData);
       if (response) {
-        // Handle successful end session
         setSessionEnd(response);
       }
     } catch (error) {
@@ -244,10 +242,9 @@ const StationSpot = () => {
                                     <button
                                       onClick={() => {
                                         if (spot.status === "OCCUPIED") {
-                                          // Dừng session
                                           const session =
                                             sessionStart[spot.id``];
-                                          if (!session) return; // kiểm tra phòng trường hợp null
+                                          if (!session) return;
 
                                           const endData = {
                                             ratePerKWh: 4500,

@@ -30,6 +30,8 @@ import VehicleBrands from "../pages/Admin/VehicleBrands/VehicleBrands.jsx";
 import StaffStation from "../pages/Staff/StaffStation.jsx";
 import StationSpot from "../pages/Staff/StationSpot.jsx";
 import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
+import PaymentBookinngSuccess from "../pages/PaymentBooking/PaymentBookingSuccess.jsx";
+import StaffLayout from "../layouts/StaffLayout.jsx";
 
 const router = createBrowserRouter([
   {
@@ -53,9 +55,8 @@ const router = createBrowserRouter([
       { path: "/bookingSchedule", element: <BookingSchedule /> },
       { path: "/chargingSession", element: <ChargingSession /> },
       { path: "/session-detail/:id", element: <SessionDetail /> },
-      { path: "/staff/station", element: <StaffStation /> },
-      { path: "/staff/station/spot/:id", element: <StationSpot /> },
       { path: "/payment/invoice/:id", element: <InvoiceDetail /> },
+      { path: "/bookingPaymentSuccess", element: <PaymentBookinngSuccess /> },
     ],
   },
   {
@@ -65,8 +66,16 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "stations", element: <Stations /> },
       { path: "vehicle-models", element: <VehicleModels /> },
-      { path: "spots", element: <Spots />},
-      { path: "vehicle-brands", element: <VehicleBrands />}
+      { path: "spots", element: <Spots /> },
+      { path: "vehicle-brands", element: <VehicleBrands /> },
+    ],
+  },
+  {
+    path: "/staff",
+    element: <StaffLayout />,
+    children: [
+      { path: "station", element: <StaffStation /> },
+      { path: "station/spot/:id", element: <StationSpot /> },
     ],
   },
   {
