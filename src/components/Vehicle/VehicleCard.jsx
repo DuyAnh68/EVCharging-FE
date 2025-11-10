@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Battery, Plug, X } from "lucide-react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
@@ -16,7 +16,21 @@ const VehicleCard = ({ data, onDeleted }) => {
   const [vehicleDetail, setVehicleDetail] = useState(null);
   const [open, setOpen] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Lấy thông tin user từ localStorage
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserRole(user?.roles?.[0]);
+      } catch (e) {
+        console.error("Error parsing user from localStorage:", e);
+      }
+    }
+  }, []);
 
   const handleDelete = async (e) => {
     e.stopPropagation();
@@ -166,12 +180,14 @@ const VehicleCard = ({ data, onDeleted }) => {
       </div>
 
       <div className="px-6 pt-3 pb-4 flex gap-3 bg-gray-50">
-        <button
-          onClick={handleDelete}
-          className="flex-1 bg-red-500 text-[white] rounded-lg px-3 py-1 text-xs md:text-sm hover:bg-red-700 transition"
-        >
-          Xóa
-        </button>
+        {userRole !== "DRIVER" && (
+          <button
+            onClick={handleDelete}
+            className="flex-1 bg-red-500 text-[white] rounded-lg px-3 py-1 text-xs md:text-sm hover:bg-red-700 transition"
+          >
+            Xóa
+          </button>
+        )}
 
         <button
           // onClick={(e) => {

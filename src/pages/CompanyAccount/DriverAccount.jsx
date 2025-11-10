@@ -3,14 +3,17 @@ import { User, Mail, AtSign, Edit2, CreditCard, Link, CalendarCheck } from "luci
 import { useNavigate } from "react-router-dom";
 import './index.css';
 
-import useUser from "../../hooks/useUser";
 import usePayment from "../../hooks/usePayment";
 import InvoiceDetail from "../../components/Payment/InvoiceDetail";
 import useInvoice from "../../hooks/useInvoice";
 import InvoiceTable from "./InvoiceTable";
+import useCompany from "../../hooks/useCompany";
 
-const Account = () => {
-  const { getUser, loading, error, updateUser } = useUser();
+import { useParams } from "react-router-dom";
+
+
+const DriverAccount = () => {
+  const { getDriverById, loading, error, updateUser } = useCompany();
   const { getPaymentHistory } = usePayment();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -22,11 +25,14 @@ const Account = () => {
   const [invoices, setInvoices] = useState([]);
   const [invoiceStatusFilter, setInvoiceStatusFilter] = useState("ALL");
   // const [showInvoiceTable, setShowInvoiceTable] = useState(false);
+  
+  const { id } = useParams();
+  console.log("Driver ID:", id);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userInfor = await getUser();
+        const userInfor = await getDriverById(id);
         setUser(userInfor);
 
         const paymentHistory = await getPaymentHistory();
@@ -110,7 +116,7 @@ const Account = () => {
         {/* Header */}
       <div className="top flex justify-between max-w-7xl mx-auto mb-3">
         <h1 className="title !text-[#14AE5C] !text-4xl !font-bold !mb-5">
-          Tài khoản của bạn
+          Tài khoản của tài xế - {user.name || "User"}
         </h1>
 
         {/* <button
@@ -246,24 +252,20 @@ const Account = () => {
 
   {/* Toolbar */}
   <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-    {user?.roles?.[0] !== "COMPANY" && (
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          onClick={() => navigate("/chargingSession")}
-          className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
-        >
-          Đặt chỗ của bạn
-        </button>
-        {user?.roles?.[0] !== "DRIVER" && (
-          <button
-            onClick={() => navigate(`/payment/invoice/${user.id}`)}
-            className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
-          >
-            Thanh toán
-          </button>
-        )}
-      </div>
-    )}
+    <div className="flex flex-wrap items-center gap-3">
+      {/* <button
+        onClick={() => navigate("/chargingSession")}
+        className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
+      >
+        Đặt chỗ của bạn
+      </button> */}
+      <button
+        onClick={""}
+        className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
+      >
+        Thanh toán
+      </button>
+    </div>
 
     <div className="flex items-center gap-3">
       <select
@@ -345,36 +347,34 @@ const Account = () => {
       </table>
     </div>
   )}
-            {user?.roles?.[0] !== "COMPANY" && (
-              <div className="mt-10">
-                <div className="flex items-center mb-6">
-                  <CalendarCheck size={26} className="text-[#008236] mr-3" />
-                  <h3 className="text-2xl font-semibold text-gray-900">
-                    Lịch sử sạc
-                  </h3>
-                </div>
+            <div className="mt-10">
+  <div className="flex items-center mb-6">
+    <CalendarCheck size={26} className="text-[#008236] mr-3" />
+    <h3 className="text-2xl font-semibold text-gray-900">
+      Lịch sử sạc
+    </h3>
+  </div>
 
-                <div className="flex items-right mb-4 gap-3">
-                  <select
-                    value={invoiceStatusFilter}
-                    onChange={(e) => setInvoiceStatusFilter(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
-                  >
-                    <option value="ALL">Tất cả</option>
-                    <option value="PAID">Đã thanh toán</option>
-                    <option value="PENDING">Đang chờ</option>
-                  </select>
-                </div>
+  <div className="flex items-right mb-4 gap-3">
+  <select
+    value={invoiceStatusFilter}
+    onChange={(e) => setInvoiceStatusFilter(e.target.value)}
+    className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
+  >
+    <option value="ALL">Tất cả</option>
+    <option value="PAID">Đã thanh toán</option>
+    <option value="PENDING">Đang chờ</option>
+  </select>
+</div>
 
-                <InvoiceTable
-                  invoices={invoices.filter((inv) => {
-                    if (invoiceStatusFilter === "ALL") return true;
-                    return inv.status === invoiceStatusFilter;
-                  })}
-                  type="charging"
-                />
-              </div>
-            )}
+  <InvoiceTable
+  invoices={invoices.filter((inv) => {
+  if (invoiceStatusFilter === "ALL") return true;
+  return inv.status === invoiceStatusFilter;
+})}
+  type="charging"
+/>
+</div>
       </div>
 
         </div>
@@ -383,4 +383,4 @@ const Account = () => {
   );
 };
 
-export default Account;
+export default DriverAccount;
