@@ -21,6 +21,8 @@ function Step3() {
   const [subscriptionId, setSubscriptionId] = useState(null);
   // const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  console.log(user);
   useEffect(() => {
     getSubscriptions();
   }, []);
@@ -120,7 +122,13 @@ function Step3() {
             <p className="text-red-600">Lỗi: {error}</p>
           ) : (
             <div className="flex flex-wrap justify-center gap-4">
-              {subscriptions?.map((s) => (
+              {subscriptions?.filter((s) =>{
+                if (user?.roles?.[0]?.toLowerCase() === "company"){
+                  return s.name.toLowerCase() === "company";
+                }
+                return s.name.toLowerCase() !== "company";
+              }) 
+                ?.map((s) => (
                 <SubscriptionCard
                   key={s.id}
                   data={s}

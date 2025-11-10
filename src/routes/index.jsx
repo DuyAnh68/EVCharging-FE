@@ -32,6 +32,8 @@ import StationSpot from "../pages/Staff/StationSpot.jsx";
 import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
 import PaymentBookinngSuccess from "../pages/PaymentBooking/PaymentBookingSuccess.jsx";
 import StaffLayout from "../layouts/StaffLayout.jsx";
+import CompanyLayout from "../layouts/CompanyLayout.jsx";
+import UserCompany from "../pages/Company/UserCompany.jsx";
 
 const router = createBrowserRouter([
   {
@@ -75,6 +77,14 @@ const router = createBrowserRouter([
     element: <StaffLayout />,
     children: [
       { path: "station", element: <StaffStation /> },
+      { path: "station/spot/:id", element: <StationSpot /> },
+    ],
+  },
+  {
+    path: "/company",
+    element: <CompanyLayout />,
+    children: [
+      { path: "user", element: <UserCompany /> },
       { path: "station/spot/:id", element: <StationSpot /> },
     ],
   },
