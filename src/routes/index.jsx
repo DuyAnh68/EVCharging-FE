@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
+import AdminLayout from "../layouts/AdminLayout";
 
 import HomePage from "../pages/Home/HomePage.jsx";
 import Subscription from "../pages/SubscriptionManagement/Subscription";
@@ -18,13 +19,21 @@ import StationDetail from "../pages/Booking/BookingDetail.jsx";
 import VerifySuccess from "../pages/Success/VerifySuccess.jsx";
 import Success from "../pages/PaymentSuccess/Success.jsx";
 import Fail from "../pages/PaymentSuccess/Fail.jsx";
-import StationManagementPage from "../pages/Admin/StationManagement/StationManagementPage.jsx";
 import BookingSchedule from "../pages/Booking/BookingSchedule.jsx";
 import ChargingSession from "../pages/ChargingSession/ChargingSession.jsx";
 import SessionDetail from "../pages/ChargingSession/SessionDetail.jsx";
+import Dashboard from "../pages/Admin/Dashboard/Dashboard";
+import Stations from "../pages/Admin/Stations/Stations";
+import VehicleModels from "../pages/Admin/VehicleModels/VehicleModels.jsx";
+import Spots from "../pages/Admin/Spots/Spots.jsx";
+import VehicleBrands from "../pages/Admin/VehicleBrands/VehicleBrands.jsx";
 import StaffStation from "../pages/Staff/StaffStation.jsx";
 import StationSpot from "../pages/Staff/StationSpot.jsx";
 import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
+import PaymentBookinngSuccess from "../pages/PaymentBooking/PaymentBookingSuccess.jsx";
+import StaffLayout from "../layouts/StaffLayout.jsx";
+import CompanyLayout from "../layouts/CompanyLayout.jsx";
+import UserCompany from "../pages/Company/UserCompany.jsx";
 
 const router = createBrowserRouter([
   {
@@ -45,13 +54,38 @@ const router = createBrowserRouter([
       { path: "/verifySuccess", element: <VerifySuccess /> },
       { path: "/success", element: <Success /> },
       { path: "/fail", element: <Fail /> },
-      { path: "/admin/station", element: <StationManagementPage /> },
       { path: "/bookingSchedule", element: <BookingSchedule /> },
       { path: "/chargingSession", element: <ChargingSession /> },
       { path: "/session-detail/:id", element: <SessionDetail /> },
-      { path: "/staff/station", element: <StaffStation /> },
-      { path: "/staff/station/spot/:id", element: <StationSpot /> },
       { path: "/payment/invoice/:id", element: <InvoiceDetail /> },
+      { path: "/bookingPaymentSuccess", element: <PaymentBookinngSuccess /> },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: "stations", element: <Stations /> },
+      { path: "vehicle-models", element: <VehicleModels /> },
+      { path: "spots", element: <Spots /> },
+      { path: "vehicle-brands", element: <VehicleBrands /> },
+    ],
+  },
+  {
+    path: "/staff",
+    element: <StaffLayout />,
+    children: [
+      { path: "station", element: <StaffStation /> },
+      { path: "station/spot/:id", element: <StationSpot /> },
+    ],
+  },
+  {
+    path: "/company",
+    element: <CompanyLayout />,
+    children: [
+      { path: "user", element: <UserCompany /> },
+      { path: "station/spot/:id", element: <StationSpot /> },
     ],
   },
   {

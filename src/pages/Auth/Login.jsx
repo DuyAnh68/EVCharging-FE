@@ -25,9 +25,16 @@ function Login() {
     const result = await login(formData);
 
     if (result.success) {
-      navigate("/");
+      if (result.user.roles[0] === "MEMBER") {
+        navigate("/");
+      } else if (result.user.roles[0] === "ADMIN") {
+        navigate("/admin");
+      } else if (result.user.roles[0] === "STAFF") {
+        navigate("/staff");
+      }else if (result.user.roles[0] === "COMPANY") {
+        navigate("/company");
+      }
     }
-    // Nếu có lỗi, error sẽ được hiển thị từ useAuth hook
   };
 
   return (
