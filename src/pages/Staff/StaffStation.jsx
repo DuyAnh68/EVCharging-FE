@@ -48,7 +48,7 @@ const StaffStation = () => {
     );
 
   return (
-    <div className="flex flex-col min-h-screen px-6 py-10 bg-gray-50">
+    <div className="flex flex-col min-h-screen px-6">
       <div className="max-w-6xl mx-auto w-full">
         <h1 className="text-4xl !font-bold !text-[#14AE5C] !mb-8 text-left">
           Danh sách các trạm sạc
