@@ -25,7 +25,10 @@ function Login() {
     const result = await login(formData);
 
     if (result.success) {
-      if (result.user.roles[0] === "MEMBER") {
+      if (
+        result.user.roles[0] === "MEMBER" ||
+        result.user.roles[0] === "DRIVER"
+      ) {
         navigate("/");
       } else if (result.user.roles[0] === "ADMIN") {
         navigate("/admin");
