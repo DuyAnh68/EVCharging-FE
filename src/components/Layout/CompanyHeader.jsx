@@ -25,7 +25,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo + Nav */}
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link to="/company/user" className="flex items-center gap-2 group">
               <img
                 className="h-10 w-auto transition-transform group-hover:scale-105"
                 src={Logo}
@@ -47,7 +47,7 @@ const Header = () => {
               </NavLink>
 
               {isAuthenticated ? (
-                <NavLink to="/booking" className={navLinkClass}>
+                <NavLink to="/company/vehicle" className={navLinkClass}>
                   Xe 
                 </NavLink>
               ) : (
@@ -60,8 +60,8 @@ const Header = () => {
               )}
 
               {isAuthenticated ? (
-                <NavLink to="/vehicle" className={navLinkClass}>
-                  Xe của bạn
+                <NavLink to={`/company/invoice/${user?.companyResponse?.id}`} className={navLinkClass}>
+                  Hóa đơn
                 </NavLink>
               ) : (
                 <NavLink
@@ -73,7 +73,7 @@ const Header = () => {
               )}
 
               {isAuthenticated ? (
-                <NavLink to="/account" className={navLinkClass}>
+                <NavLink to={`/company/account/${user?.companyResponse?.id}`} className={navLinkClass}>
                   Tài khoản
                 </NavLink>
               ) : (

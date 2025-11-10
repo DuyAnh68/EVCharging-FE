@@ -1,36 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Battery, Plug, X } from "lucide-react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
-import useVehicle from "../../hooks/useVehicle";
-import VehicleDetail from "./VehicleDetail";
+// import useVehicle from "../../hooks/useVehicle";
+// import VehicleDetail from "./VehicleDetail";
 import usePayment from "../../hooks/usePayment";
 import { useNavigate } from "react-router-dom";
 import ModelCar from "../../assets/icons/modelCar";
-import ChargeHistory from "./ChargeHistory";
+import VehicleCompanyDetail from "./VehicleCompanyDetail";
+import useCompany from "../../hooks/useCompany";
+import ChargeHistory from "../Vehicle/ChargeHistory";
 
-const VehicleCard = ({ data, onDeleted }) => {
+
+const CompanyVehicleCard = ({ data, onDeleted }) => {
   const vehicle = data;
-  const { getVehicleById, deleteVehicle } = useVehicle();
+  const { getCompanyVehicleById  } = useCompany();
   const { createPayment, getPayment } = usePayment();
   const [vehicleDetail, setVehicleDetail] = useState(null);
   const [open, setOpen] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
-  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Lấy thông tin user từ localStorage
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        setUserRole(user?.roles?.[0]);
-      } catch (e) {
-        console.error("Error parsing user from localStorage:", e);
-      }
-    }
-  }, []);
 
   const handleDelete = async (e) => {
     e.stopPropagation();
@@ -93,7 +82,7 @@ const VehicleCard = ({ data, onDeleted }) => {
   // Ensure vehicleDetail is populated and handle errors gracefully
   const handleDetail = async () => {
     try {
-      const response = await getVehicleById(vehicle?.id);
+      const response = await getCompanyVehicleById(vehicle?.id);
       console.log("objectasd", response);
       if (response) {
         const detail = response.result ?? response;
@@ -180,14 +169,12 @@ const VehicleCard = ({ data, onDeleted }) => {
       </div>
 
       <div className="px-6 pt-3 pb-4 flex gap-3 bg-gray-50">
-        {userRole !== "DRIVER" && (
-          <button
-            onClick={handleDelete}
-            className="flex-1 bg-red-500 text-[white] rounded-lg px-3 py-1 text-xs md:text-sm hover:bg-red-700 transition"
-          >
-            Xóa
-          </button>
-        )}
+        <button
+          onClick={handleDelete}
+          className="flex-1 bg-red-500 text-[white] rounded-lg px-3 py-1 text-xs md:text-sm hover:bg-red-700 transition"
+        >
+          Xóa
+        </button>
 
         <button
           // onClick={(e) => {
@@ -295,7 +282,7 @@ const VehicleCard = ({ data, onDeleted }) => {
 
             <div className="p-6 flex flex-col items-center justify-center">
               {vehicleDetail ? (
-                <VehicleDetail vehicle={vehicleDetail} onPay={handlePayment} />
+                <VehicleCompanyDetail vehicle={vehicleDetail} onPay={handlePayment} />
               ) : (
                 <p className="text-gray-500">Đang tải thông tin xe...</p>
               )}
@@ -307,4 +294,6 @@ const VehicleCard = ({ data, onDeleted }) => {
   );
 };
 
-export default VehicleCard;
+export default CompanyVehicleCard;
+
+
