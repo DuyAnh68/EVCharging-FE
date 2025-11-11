@@ -6,7 +6,6 @@ const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
   const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user);
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -26,7 +25,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo + Nav */}
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link to="/company/user" className="flex items-center gap-2 group">
               <img
                 className="h-10 w-auto transition-transform group-hover:scale-105"
                 src={Logo}
@@ -39,17 +38,17 @@ const Header = () => {
 
             <nav className="hidden md:flex items-center space-x-2">
               <NavLink
-                to="/"
+                to="/company/user"
                 className={
                   isAuthenticated ? navLinkClass : navLinkClassUnauthenticated
                 }
               >
-                Bản đồ
+                Tài xế
               </NavLink>
 
               {isAuthenticated ? (
-                <NavLink to="/booking" className={navLinkClass}>
-                  Đặt chỗ
+                <NavLink to="/company/vehicle" className={navLinkClass}>
+                  Xe 
                 </NavLink>
               ) : (
                 <NavLink
@@ -61,8 +60,8 @@ const Header = () => {
               )}
 
               {isAuthenticated ? (
-                <NavLink to="/vehicle" className={navLinkClass}>
-                  Xe của bạn
+                <NavLink to={`/company/invoice/${user?.companyResponse?.id}`} className={navLinkClass}>
+                  Hóa đơn
                 </NavLink>
               ) : (
                 <NavLink
@@ -74,7 +73,7 @@ const Header = () => {
               )}
 
               {isAuthenticated ? (
-                <NavLink to="/account" className={navLinkClass}>
+                <NavLink to={`/company/account/${user?.companyResponse?.id}`} className={navLinkClass}>
                   Tài khoản
                 </NavLink>
               ) : (

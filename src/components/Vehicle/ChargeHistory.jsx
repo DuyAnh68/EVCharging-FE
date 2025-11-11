@@ -59,29 +59,29 @@ function ChargeHistory({ vehicleId }) {
             <tbody className="text-sm">
               {history.map((item, idx) => (
                 <tr
-                  key={`${item.datetime}-${idx}`}
+                  key={`${item?.startTime}-${idx}`}
                   className="hover:bg-gray-50"
                 >
                   <td className="px-3 py-2 border">
-                    {formatDate(item.startTime)}
+                    {formatDate(item?.startTime)}
                   </td>
-                  <td className="px-3 py-2 border">{item.stationName}</td>
-                  <td className="px-3 py-2 border">{item.spotName}</td>
+                  <td className="px-3 py-2 border">{item?.stationName}</td>
+                  <td className="px-3 py-2 border">{item?.spotName}</td>
                   <td className="px-3 py-2 border">
-                    {Math.round(item.energyUsed)}
+                    {Math.round(item?.energyUsed)}
                   </td>
                   <td className="px-3 py-2 border">
-                    {formatMoney(item.totalCost)}
+                    {formatMoney(item?.totalCost)}
                   </td>
                   <td className="px-3 py-2 border">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        item.status === "COMPLETED"
+                        item?.status === "COMPLETED"
                           ? "bg-green-100 text-green-700"
                           : "bg-gray-100 text-gray-500"
                       }`}
                     >
-                      {item.status}
+                      {item?.status}
                     </span>
                   </td>
                 </tr>

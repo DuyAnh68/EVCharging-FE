@@ -3,17 +3,21 @@ import { useEffect, useState } from "react";
 import usePaymentInvoice from "../../hooks/usePaymentInvoice";
 import { Loader2 } from "lucide-react";
 import usePayment from "../../hooks/usePayment";
+import useCompany from "../../hooks/useCompany";
 
-const InvoiceDetail = () => {
+const CompanyInvoice = () => {
   const { id } = useParams();
-  const { loading, error, createPaymentInvoice, doPaymentInvoice } = usePaymentInvoice();
+//   console.log("object", id);
+  const { loading, error, doPaymentInvoice } = usePaymentInvoice();
   const [invoice, setInvoice] = useState(null);
+  const { getCompanyInvoice } = useCompany();
   const { createPayment } = usePayment();
 
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const inv = await createPaymentInvoice(id);
+        const inv = await getCompanyInvoice(id);
+        // console.log("id", id);
         console.log("Invoice:", inv);
         setInvoice(inv[0]);
       } catch (err) {
@@ -191,9 +195,7 @@ const InvoiceDetail = () => {
                 Ngày tạo (UTC):
                 <br />
                 <span className="text-gray-700">
-                  {invoice.period 
-                    ? new Date(invoice.period).toISOString().replace("T", " ").replace("Z", " UTC")
-                    : "—"}
+                  {new Date(invoice.period).toISOString().replace("T", " ").replace("Z", " UTC")}
                 </span>
               </p>
               <p className="mt-3">
@@ -237,4 +239,4 @@ const InvoiceDetail = () => {
   );
 };
 
-export default InvoiceDetail;
+export default CompanyInvoice;

@@ -33,6 +33,17 @@ import Staffs from "../pages/Admin/Staffs/Staffs.jsx";
 import StaffStation from "../pages/Staff/StaffStation.jsx";
 import StationSpot from "../pages/Staff/StationSpot.jsx";
 import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
+import PaymentBookinngSuccess from "../pages/PaymentBooking/PaymentBookingSuccess.jsx";
+import StaffLayout from "../layouts/StaffLayout.jsx";
+import CompanyLayout from "../layouts/CompanyLayout.jsx";
+import UserCompany from "../pages/Company/UserCompany.jsx";
+import AddVehicleCompany from "../pages/Company/AddVehicleCompany.jsx";
+// import CompanyVehicleListGrid from "../components/Company/CompanyVehicleListGrid.jsx";
+import VehicleCompanyList from "../pages/Company/VehicleComanyList.jsx";
+import AddDriver from "../pages/Company/AddDriver.jsx";
+import DriverAccount from "../pages/CompanyAccount/DriverAccount.jsx";
+import CompanyInvoice from "../components/Company/CompanyInvoice.jsx";
+
 
 const router = createBrowserRouter([
   {
@@ -56,9 +67,8 @@ const router = createBrowserRouter([
       { path: "/bookingSchedule", element: <BookingSchedule /> },
       { path: "/chargingSession", element: <ChargingSession /> },
       { path: "/session-detail/:id", element: <SessionDetail /> },
-      { path: "/staff/station", element: <StaffStation /> },
-      { path: "/staff/station/spot/:id", element: <StationSpot /> },
       { path: "/payment/invoice/:id", element: <InvoiceDetail /> },
+      { path: "/bookingPaymentSuccess", element: <PaymentBookinngSuccess /> },
     ],
   },
   {
@@ -73,6 +83,30 @@ const router = createBrowserRouter([
       { path: "subscription-plans", element: <SubscriptionPlans /> },
       { path: "companies", element: <Companies /> },
       { path: "staffs", element: <Staffs /> }
+      { path: "spots", element: <Spots /> },
+      { path: "vehicle-brands", element: <VehicleBrands /> },
+    ],
+  },
+  {
+    path: "/staff",
+    element: <StaffLayout />,
+    children: [
+      
+      { path: "station", element: <StaffStation /> },
+      { path: "station/spot/:id", element: <StationSpot /> },
+    ],
+  },
+  {
+    path: "/company",
+    element: <CompanyLayout />,
+    children: [
+      { index: true, element: <UserCompany /> },
+      { path: "user", element: <UserCompany /> },
+      { path: "addVehicle", element: <AddVehicleCompany /> },
+      { path: "vehicle", element: <VehicleCompanyList /> },
+      { path: "addDriver", element: <AddDriver /> },
+      { path: "account/:id", element: <Account /> },
+      { path: "invoice/:id", element: <CompanyInvoice /> },
     ],
   },
   {
@@ -81,6 +115,7 @@ const router = createBrowserRouter([
     children: [
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
+
     ],
   },
   { path: "*", element: <Navigate to="/" /> },

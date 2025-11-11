@@ -7,38 +7,38 @@ import { useState } from "react";
 const StaffStation = () => {
   const navigate = useNavigate();
   const { stations, loading, error } = useStation();
-//   const { startSessionStaff, endSessionStaff } = useStaff();
-// //   const [sessionStart, setSessionStart] = useState(null);
-// //   const [sessionEnd, setSessionEnd] = useState(null);
+  //   const { startSessionStaff, endSessionStaff } = useStaff();
+  // //   const [sessionStart, setSessionStart] = useState(null);
+  // //   const [sessionEnd, setSessionEnd] = useState(null);
 
-// //   const handleStartSession = async (startData) => {
-// //     try {
-// //       const response = await startSessionStaff(startData);
-// //     if (response) {
-// //       // Handle successful start session
-// //       setSessionStart(response);
-// //     }
-// //   } catch (error) {
-// //     console.error("Error starting session:", error);
-// //   }
-// // };
+  // //   const handleStartSession = async (startData) => {
+  // //     try {
+  // //       const response = await startSessionStaff(startData);
+  // //     if (response) {
+  // //       // Handle successful start session
+  // //       setSessionStart(response);
+  // //     }
+  // //   } catch (error) {
+  // //     console.error("Error starting session:", error);
+  // //   }
+  // // };
 
+  // //   const handleEndSession = async (sessionId, endData) => {
+  // //     try {
+  // //       const response = await endSessionStaff(sessionId, endData);
+  // //       if (response) {
+  // //         // Handle successful end session
+  // //         setSessionEnd(response);
+  // //       }
+  // //     } catch (error) {
+  // //       console.error("Error ending session:", error);
+  // //     }
+  // //   };
 
-// //   const handleEndSession = async (sessionId, endData) => {
-// //     try {
-// //       const response = await endSessionStaff(sessionId, endData);
-// //       if (response) {
-// //         // Handle successful end session
-// //         setSessionEnd(response);
-// //       }
-// //     } catch (error) {
-// //       console.error("Error ending session:", error);
-// //     }
-// //   };
-
-  
   if (loading)
-    return <div className="text-center mt-10 text-gray-600">Đang tải dữ liệu...</div>;
+    return (
+      <div className="text-center mt-10 text-gray-600">Đang tải dữ liệu...</div>
+    );
 
   if (error)
     return (
@@ -48,7 +48,7 @@ const StaffStation = () => {
     );
 
   return (
-    <div className="flex flex-col min-h-screen px-6 py-10 bg-gray-50">
+    <div className="flex flex-col min-h-screen px-6">
       <div className="max-w-6xl mx-auto w-full">
         <h1 className="text-4xl !font-bold !text-[#14AE5C] !mb-8 text-left">
           Danh sách các trạm sạc
