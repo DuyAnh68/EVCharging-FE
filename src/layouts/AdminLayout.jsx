@@ -8,6 +8,9 @@ import {
   CarOutlined,
   HomeOutlined,
   ThunderboltOutlined,
+  CreditCardOutlined,
+  BankOutlined,
+  TeamOutlined
 } from '@ant-design/icons';
 import Logo from "../assets/Images/Logo.png";
 
@@ -42,7 +45,23 @@ const AdminLayout = () => {
       key: '5',
       icon: <CarOutlined />,
       label: <Link to="/admin/vehicle-brands">Hãng xe</Link>,
-    }
+    },
+    {
+      key: '6',
+      icon: <CreditCardOutlined />,
+      label: <Link to="/admin/subscription-plans">Gói đăng ký</Link>,
+    },
+    {
+      key: '7',
+      icon: <BankOutlined  />,
+      label: <Link to="/admin/companies">Công ty</Link>,
+    },
+    {
+      key: '8',
+      icon: <TeamOutlined />,
+      label: <Link to="/admin/staffs">Nhân viên</Link>,
+    },
+
   ];
 
   const selectedKey = () => {
@@ -52,6 +71,9 @@ const AdminLayout = () => {
     if (path.startsWith('/admin/spots')) return '3';
     if (path.startsWith('/admin/vehicle-models')) return '4';
     if (path.startsWith('/admin/vehicle-brands')) return '5';
+    if (path.startsWith('/admin/subscription-plans')) return '6';
+    if (path.startsWith('/admin/companies')) return '7';
+    if (path.startsWith('/admin/staffs')) return '8';
     return '1';
   };
 
