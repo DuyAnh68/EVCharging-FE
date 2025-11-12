@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Input, Typography, Tag, message } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {Table, Button, Input, Typography, Tag} from "antd";
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined, DollarOutlined  } from "@ant-design/icons";
 import StationFormModal from "../../../components/Admin/StationManagement/StationFormModal";
 import ConfirmModal from "../../../components/Modal/ConfirmModal";
 import { useAppDispatch, useAppSelector } from "../../../store";
-import { 
-  selectAllStations, 
-  fetchStations, 
-  createStation, 
-  updateStation, 
+import {
+  selectAllStations,
+  fetchStations,
+  createStation,
+  updateStation,
   deleteStation,
   selectStationsStatus,
   selectStationsError
 } from "../../../store/slices/chargingStationSlice.js";
+import StationRevenueModal from "../../../components/Admin/StationManagement/StationRevenueModal.jsx";
 
 const { Title } = Typography;
 
@@ -24,21 +25,16 @@ const Stations = () => {
   const [modalMode, setModalMode] = useState("add");
   const [editingStation, setEditingStation] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [revenueModalVisible, setRevenueModalVisible] = useState(false);
+  const [selectedStation, setSelectedStation] = useState(null);
   
   const dispatch = useAppDispatch();
   const stations = useAppSelector(selectAllStations);
   const status = useAppSelector(selectStationsStatus);
-  const error = useAppSelector(selectStationsError);
 
   useEffect(() => {
     dispatch(fetchStations());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
-  }, [error]);
 
   const handleOpenAddModal = () => {
     setModalMode("add");
@@ -50,13 +46,11 @@ const Stations = () => {
     try {
       if (modalMode === "add") {
         await dispatch(createStation(values)).unwrap();
-        message.success("Thêm trạm sạc thành công");
       } else {
         await dispatch(updateStation(values)).unwrap();
-        message.success("Cập nhật trạm sạc thành công");
       }
     } catch (error) {
-      message.error(error || "Đã xảy ra lỗi");
+      console.error(error || "Đã xảy ra lỗi");
     } finally {
       setModalOpen(false);
     }
@@ -76,16 +70,20 @@ const Stations = () => {
   const confirmDelete = async () => {
     try {
       await dispatch(deleteStation(editingStation.id)).unwrap();
-      message.success("Xóa trạm sạc thành công");
       setConfirmOpen(false);
     } catch (error) {
-      message.error(error || "Đã xảy ra lỗi khi xóa trạm sạc");
+      console.error(error || "Đã xảy ra lỗi khi xóa trạm sạc");
     }
   };
 
   const onSearchChange = (e) => {
     setSearch(e.target.value);
     setPage(1);
+  };
+
+  const handleViewRevenue = (station) => {
+    setSelectedStation(station);
+    setRevenueModalVisible(true);
   };
 
   const columns = [
@@ -130,6 +128,13 @@ const Stations = () => {
       key: "actions",
       render: (_, record) => (
         <div className="flex">
+          <Button
+              title="Xem doanh thu"
+              type="text"
+              icon={<DollarOutlined />}
+              onClick={() => handleViewRevenue(record)}
+          >
+          </Button>
           <Button
             type="text"
             onClick={() => handleEdit(record)}
@@ -224,6 +229,12 @@ const Stations = () => {
         okText="Xóa"
         cancelText="Hủy"
         confirmLoading={status === 'loading'}
+      />
+
+      <StationRevenueModal
+          open={revenueModalVisible}
+          onCancel={() => setRevenueModalVisible(false)}
+          station={selectedStation}
       />
     </div>
   );

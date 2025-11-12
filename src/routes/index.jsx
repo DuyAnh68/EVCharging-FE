@@ -82,7 +82,7 @@ const router = createBrowserRouter([
       { path: "vehicle-brands", element: <VehicleBrands />},
       { path: "subscription-plans", element: <SubscriptionPlans /> },
       { path: "companies", element: <Companies /> },
-      { path: "staffs", element: <Staffs /> }
+      { path: "staffs", element: <Staffs /> },
       { path: "spots", element: <Spots /> },
       { path: "vehicle-brands", element: <VehicleBrands /> },
     ],
