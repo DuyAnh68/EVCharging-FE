@@ -1,12 +1,30 @@
-import { Navigate, useNavigate } from "react-router-dom";
+// import { Navigate, useNavigate } from "react-router-dom";
 import DriverPopup from "./DriverPopup";
 import { useState } from "react";
+// import useCompany from "../../hooks/useCompany";
+// import { toast } from "react-toastify";
 
-function UserList({ users, loading, error }) {
+function UserList({ users, loading, error,  onDelete }) {
     // const navigate = useNavigate();
     const [selectedId, setSelectedId] = useState(null);
+    // const { deleteDriver } = useCompany();
+    // const navigate = useNavigate();
     // const [invoices, setInvoices] = useState([]);
 
+    // const handleDelete = (id) => {
+    //   try{
+    //     const response = deleteDriver(id);
+    //     console.log(response);
+    //     if(response){
+    //       toast.success(response);
+    //       window.location.reload();
+    //   }else{
+    //       toast.error("Xóa tài xế thất bại. Vui lòng thử lại.");
+    //   }
+    // }catch(error){
+    //     toast.error("Đã xảy ra lỗi khi xóa tài xế: " + (error?.message || ""));
+    // }
+    // };
 
 
   if (loading) {
@@ -143,7 +161,7 @@ function UserList({ users, loading, error }) {
                       Chi tiết
                     </button>
                     <button
-                      onClick={() => console.log('Delete:', u.id)}
+                      onClick={() => onDelete(u.id)}
                       className="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -27,6 +27,9 @@ import Stations from "../pages/Admin/Stations/Stations";
 import VehicleModels from "../pages/Admin/VehicleModels/VehicleModels.jsx";
 import Spots from "../pages/Admin/Spots/Spots.jsx";
 import VehicleBrands from "../pages/Admin/VehicleBrands/VehicleBrands.jsx";
+import SubscriptionPlans from "../pages/Admin/SubscriptionPlans/SubscriptionPlans.jsx";
+import Companies from "../pages/Admin/Companies/Companies.jsx";
+import Staffs from "../pages/Admin/Staffs/Staffs.jsx";
 import StaffStation from "../pages/Staff/StaffStation.jsx";
 import StationSpot from "../pages/Staff/StationSpot.jsx";
 import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
@@ -75,6 +78,11 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "stations", element: <Stations /> },
       { path: "vehicle-models", element: <VehicleModels /> },
+      { path: "spots", element: <Spots />},
+      { path: "vehicle-brands", element: <VehicleBrands />},
+      { path: "subscription-plans", element: <SubscriptionPlans /> },
+      { path: "companies", element: <Companies /> },
+      { path: "staffs", element: <Staffs /> },
       { path: "spots", element: <Spots /> },
       { path: "vehicle-brands", element: <VehicleBrands /> },
     ],
@@ -82,8 +90,7 @@ const router = createBrowserRouter([
   {
     path: "/staff",
     element: <StaffLayout />,
-    children: [
-      
+    children: [    
       { path: "station", element: <StaffStation /> },
       { path: "station/spot/:id", element: <StationSpot /> },
     ],

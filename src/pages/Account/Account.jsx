@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { User, Mail, AtSign, Edit2, CreditCard, Link, CalendarCheck } from "lucide-react";
+import { User, Mail, AtSign, Edit2, CreditCard, Link, CalendarCheck, KeyRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import './index.css';
 
@@ -8,9 +8,12 @@ import usePayment from "../../hooks/usePayment";
 import InvoiceDetail from "../../components/Payment/InvoiceDetail";
 import useInvoice from "../../hooks/useInvoice";
 import InvoiceTable from "./InvoiceTable";
+import useCompany from "../../hooks/useCompany";
+import { toast } from "react-toastify";
 
 const Account = () => {
   const { getUser, loading, error, updateUser } = useUser();
+  const { updateCompany} = useCompany();
   const { getPaymentHistory } = usePayment();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -20,7 +23,8 @@ const Account = () => {
   const [sortOrder, setSortOrder] = useState("DESC");
   const {getInvoiceByUserId} = useInvoice();
   const [invoices, setInvoices] = useState([]);
-  const [invoiceStatusFilter, setInvoiceStatusFilter] = useState("ALL");
+  const [invoiceSortOrder, setInvoiceSortOrder] = useState("DESC");
+  const [form, setForm] = useState({ name: "", password: "", confirmPassword: "" });
   // const [showInvoiceTable, setShowInvoiceTable] = useState(false);
 
   useEffect(() => {
@@ -45,6 +49,65 @@ const Account = () => {
     fetchData();
   }, []);
 
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  console.log("user", user);
+
+  const updateAccount = async (e) => {
+    e.preventDefault();
+
+    // Validate password confirmation if password is being updated
+    if (form.password && form.password !== form.confirmPassword) {
+      toast.error("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+
+    // Build update data object with only filled fields
+    const updateData = {};
+    if (form.name && form.name.trim() !== "") {
+      updateData.name = form.name.trim();
+    }
+    if (form.password && form.password.trim() !== "") {
+      updateData.password = form.password.trim();
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      toast.error("Vui lòng nhập ít nhất 1 trường để cập nhật!");
+      return;
+    }
+
+    try {
+      let response;
+      console.log("roles", user.roles[0]);
+      if (user.roles[0] === "COMPANY") {
+        response = await updateCompany(user.id, updateData);
+      } else {
+        response = await updateUser(updateData);
+      }
+      console.log("dataa", response);
+
+      if (response) {
+        toast.success(response);
+        setForm({ name: "", password: "", confirmPassword: "" });
+        setIsEditing(false);
+        const updatedUser = await getUser();
+        setUser(updatedUser);
+      } else {
+        toast.error("Cập nhật thông tin thất bại. Vui lòng thử lại.");
+      }
+    } catch (e) {
+      toast.error("Cập nhật thông tin thất bại. Vui lòng thử lại.");
+      console.error("Update error:", e);
+    }
+  };
+
+
+
   const handleInvoiceList = async () => {
     try{
       const response = await getInvoiceByUserId(user.id);
@@ -61,6 +124,7 @@ const Account = () => {
   if (user && user.id) {
     handleInvoiceList();
   }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [user]);
 
 
@@ -166,18 +230,54 @@ const Account = () => {
                   </label>
                   <input
                     type="text"
-                    value={user.name || ""}
+                    name="name"
+                    value={isEditing ? form.name : user.name || ""}
                     disabled={!isEditing}
+                    placeholder={isEditing ? "Nhập tên mới (để trống nếu không đổi)" : ""}
                     className={`w-full px-4 py-2 rounded-lg outline-none transition ${
                       isEditing
                         ? "border border-[#00B35C] focus:ring-2 focus:ring-[#00B35C]"
                         : "border border-gray-200 bg-gray-50"
                     }`}
-                    onChange={(e) =>
-                      setUser({ ...user, name: e.target.value })
-                    }
+                    onChange={handleChange}
                   />
                 </div>
+
+                {/* Password - Only show when editing */}
+                {isEditing && (
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                      <KeyRound size={16} className="mr-1 mb-1 text-gray-500 inline-flex" />
+                      Mật khẩu mới
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={form.password}
+                      placeholder="Nhập mật khẩu mới (để trống nếu không đổi)"
+                      className="w-full px-4 py-2 rounded-lg outline-none transition border border-[#00B35C] focus:ring-2 focus:ring-[#00B35C]"
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
+
+                {/* Confirm Password - Only show when editing */}
+                {isEditing && (
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                      <KeyRound size={16} className="mr-1 mb-1 text-gray-500 inline-flex" />
+                      Xác nhận mật khẩu
+                    </label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={form.confirmPassword}
+                      placeholder="Nhập lại mật khẩu mới"
+                      className="w-full px-4 py-2 rounded-lg outline-none transition border border-[#00B35C] focus:ring-2 focus:ring-[#00B35C]"
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
 
                 {/* Email */}
                 <div>
@@ -218,13 +318,16 @@ const Account = () => {
               {isEditing && (
                 <div className="mt-6 flex gap-3">
                   <button
-                    onClick={() => setIsEditing(false)}
+                    onClick={updateAccount}
                     className="flex-1 bg-[#00B35C] text-white py-2 rounded-lg hover:bg-[#008236] transition font-medium"
                   >
                     Lưu thay đổi
                   </button>
                   <button
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => {
+                      setIsEditing(false);
+                      setForm({ name: "", password: "", confirmPassword: "" });
+                    }}
                     className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition font-medium"
                   >
                     Hủy
@@ -347,29 +450,29 @@ const Account = () => {
   )}
             {user?.roles?.[0] !== "COMPANY" && (
               <div className="mt-10">
-                <div className="flex items-center mb-6">
-                  <CalendarCheck size={26} className="text-[#008236] mr-3" />
-                  <h3 className="text-2xl font-semibold text-gray-900">
-                    Lịch sử sạc
-                  </h3>
-                </div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center">
+                    <CalendarCheck size={26} className="text-[#008236] mr-3" />
+                    <h3 className="text-2xl font-semibold text-gray-900">
+                      Lịch sử sạc
+                    </h3>
+                  </div>
 
-                <div className="flex items-right mb-4 gap-3">
                   <select
-                    value={invoiceStatusFilter}
-                    onChange={(e) => setInvoiceStatusFilter(e.target.value)}
+                    value={invoiceSortOrder}
+                    onChange={(e) => setInvoiceSortOrder(e.target.value)}
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
                   >
-                    <option value="ALL">Tất cả</option>
-                    <option value="PAID">Đã thanh toán</option>
-                    <option value="PENDING">Đang chờ</option>
+                    <option value="DESC">Mới nhất trước</option>
+                    <option value="ASC">Cũ nhất trước</option>
                   </select>
                 </div>
 
                 <InvoiceTable
-                  invoices={invoices.filter((inv) => {
-                    if (invoiceStatusFilter === "ALL") return true;
-                    return inv.status === invoiceStatusFilter;
+                  invoices={[...invoices].sort((a, b) => {
+                    const dateA = new Date(a.createdAt);
+                    const dateB = new Date(b.createdAt);
+                    return invoiceSortOrder === "ASC" ? dateA - dateB : dateB - dateA;
                   })}
                   type="charging"
                 />

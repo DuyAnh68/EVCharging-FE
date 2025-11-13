@@ -30,14 +30,14 @@ const useUser = () => {
         setError(null);
         try {
             const response = await userApi.updateUser(userData);
-            if (response) {
-                setUser(response.result);
+            console.log("updatedata", response);
+            if (response.code === 1000) {
                 setLoading(false);
-                return response.result;
+                return "Cập nhật thông tin người dùng thành công";
             }
-        }catch (e) {
-            setError(e.message);
-            return e.message;
+        }catch (error) {
+            setError(error?.message || "Đã xảy ra lỗi khi cập nhật thông tin người dùng.");
+            setLoading(false);
         } finally {
             setLoading(false);
         }

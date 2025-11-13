@@ -7,7 +7,9 @@ const companyApi = {
     postCompanyVehicle: (data) => axiosClient.post(`/api/company/vehicle`, data),
     postCompanyDriver: (data) => axiosClient.post(`/api/company/user`, data),
     getDriverById: (id) => axiosClient.get(`/api/company/user/${id}`),
-    getCompanyInvoice: (id) => axiosClient.get(`/api/admin/payment/company/${id}`)
+    getCompanyInvoice: (id) => axiosClient.get(`/api/admin/payment/company/${id}`),
+    deleteDriver: (id) => axiosClient.delete(`/api/company/user/${id}`),
+    updateCompany: (id, data) => axiosClient.put(`/api/company/user/${id}`, data)
 }
 
 export default companyApi;

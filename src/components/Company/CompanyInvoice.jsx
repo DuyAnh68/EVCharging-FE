@@ -38,7 +38,8 @@ const CompanyInvoice = () => {
   if (error)
     return (
       <div className="text-center text-red-500 mt-10">
-        Lỗi: {error}
+         Lỗi: {error.message || error.error || "Đã xảy ra lỗi không xác định."}
+         console.log("Error object:", error);
       </div>
     );
 
