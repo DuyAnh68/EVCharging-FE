@@ -27,6 +27,9 @@ import Stations from "../pages/Admin/Stations/Stations";
 import VehicleModels from "../pages/Admin/VehicleModels/VehicleModels.jsx";
 import Spots from "../pages/Admin/Spots/Spots.jsx";
 import VehicleBrands from "../pages/Admin/VehicleBrands/VehicleBrands.jsx";
+import SubscriptionPlans from "../pages/Admin/SubscriptionPlans/SubscriptionPlans.jsx";
+import Companies from "../pages/Admin/Companies/Companies.jsx";
+import Staffs from "../pages/Admin/Staffs/Staffs.jsx";
 import StaffStation from "../pages/Staff/StaffStation.jsx";
 import StationSpot from "../pages/Staff/StationSpot.jsx";
 import InvoiceDetail from "../components/Payment/InvoiceDetail.jsx";
@@ -42,6 +45,7 @@ import DriverAccount from "../pages/CompanyAccount/DriverAccount.jsx";
 import CompanyInvoice from "../components/Company/CompanyInvoice.jsx";
 import ChargingOnStation from "../pages/ChargingSession/ChargingOnStation.jsx";
 import ChargingOnStationDetail from "../pages/ChargingSession/ChargingOnStationDetail.jsx";
+import StaffCharging from "../pages/Staff/StaffCharging.jsx";
 
 const router = createBrowserRouter([
   {
@@ -80,6 +84,11 @@ const router = createBrowserRouter([
       { path: "vehicle-models", element: <VehicleModels /> },
       { path: "spots", element: <Spots /> },
       { path: "vehicle-brands", element: <VehicleBrands /> },
+      { path: "subscription-plans", element: <SubscriptionPlans /> },
+      { path: "companies", element: <Companies /> },
+      { path: "staffs", element: <Staffs /> },
+      { path: "spots", element: <Spots /> },
+      { path: "vehicle-brands", element: <VehicleBrands /> },
     ],
   },
   {
@@ -88,6 +97,7 @@ const router = createBrowserRouter([
     children: [
       { path: "station", element: <StaffStation /> },
       { path: "station/spot/:id", element: <StationSpot /> },
+      { path: "charging/:id", element: <StaffCharging /> },
     ],
   },
   {

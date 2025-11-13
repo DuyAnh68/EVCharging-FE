@@ -99,7 +99,7 @@ const Spots = () => {
             title: 'Tên cổng',
             dataIndex: 'spotName',
             key: 'spotName',
-            render: (text) => <Text strong>{text}</Text>,
+            render: (text) => <Text>{text}</Text>,
             sorter: (a, b) => a.spotName.localeCompare(b.spotName),
         },
         {
@@ -223,7 +223,6 @@ const Spots = () => {
                         defaultPageSize: 10
                     }}
                     scroll={{ x: 'max-content' }}
-                    bordered
                 />
             </div>
 

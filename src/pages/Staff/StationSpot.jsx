@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useSpots from "../../hooks/useSpot";
 import useStation from "../../hooks/useStation";
 import useBooking from "../../hooks/useBooking";
 import dayjs from "dayjs";
 
 const StationSpot = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const {
     spots,
@@ -33,6 +34,12 @@ const StationSpot = () => {
       fetchBookingsByStationId(id);
     }
   }, [id]);
+
+  console.log(spots);
+
+  const availableSpots = spots.filter(
+    (spot) => spot.status === "AVAILABLE" && spot.spotType === "WALK_IN"
+  );
 
   console.log(stationBookings);
 
@@ -101,13 +108,14 @@ const StationSpot = () => {
         {/* Spots Section */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Danh sách các điểm sạc
+            Điểm sạc cho khách vãng lai
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {spots.map((spot) => (
+            {availableSpots.map((spot) => (
               <div
+                onClick={() => navigate(`/staff/charging/${spot.id}`)}
                 key={spot.id}
-                className="border border-gray-200 bg-white rounded-xl p-4 shadow-sm hover:border-[#14AE5C] hover:shadow-lg transition-all duration-300"
+                className="border border-gray-200 bg-white rounded-xl p-4 shadow-sm hover:border-[#14AE5C] hover:shadow-lg transition-all duration-300 hover:cursor-pointer"
               >
                 <h3 className="text-lg font-semibold text-gray-800">
                   {spot.spotName}
@@ -129,9 +137,6 @@ const StationSpot = () => {
                         ? "Có sẵn"
                         : "Không khả dụng"}
                     </span>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Loại: {spot.spotType || "Chưa xác định"}
                   </p>
                 </div>
               </div>

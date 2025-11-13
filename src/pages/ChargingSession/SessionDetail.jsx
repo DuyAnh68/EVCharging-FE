@@ -407,7 +407,7 @@ const SessionDetail = () => {
                 </span>
               </p>
               <p>
-                <span className="text-gray-500">Tổng tiền ước tính:</span>{" "}
+                <span className="text-gray-500">Tổng tiền:</span>{" "}
                 <span className="font-semibold text-green-600">
                   {(session.totalCost || 0).toLocaleString()} đ
                 </span>

@@ -77,6 +77,7 @@ const useSession = () => {
         spotId: startData.spotId,
         userId: startData.userId,
         vehicleId: startData.vehicleId,
+        stationId: startData.stationId,
         percentBefore: startData.percentBefore,
       };
 
@@ -118,7 +119,33 @@ const useSession = () => {
     }
   };
 
+  const startSessionStaff = async (startData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const payload = {
+        spotId: startData.spotId,
+        userId: startData.userId,
+        vehicleId: startData.vehicleId,
+        stationId: startData.stationId,
+        percentBefore: startData.percentBefore,
+      };
+
+      const response = await sessionApi.startSessionStaff(payload);
+      if (response) {
+        setLoading(false);
+        return response;
+      }
+    } catch (e) {
+      setError(e.message);
+      return e.message;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
+    startSessionStaff,
     endSessionOnStation,
     startSessionOnStation,
     getVehicleSession,

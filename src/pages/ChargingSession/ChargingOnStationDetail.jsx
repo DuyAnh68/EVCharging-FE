@@ -1,35 +1,34 @@
-import { useNavigate, useParams } from "react-router-dom";
-import useBooking from "../../hooks/useBooking";
-import { useEffect, useState } from "react";
-import { BatteryCharging, Clock, PlugZap, Zap } from "lucide-react";
-import dayjs from "dayjs";
+import { useParams } from "react-router-dom";
 import useSpots from "../../hooks/useSpot";
+import { useEffect, useState } from "react";
 import useStation from "../../hooks/useStation";
+import { BatteryCharging, Clock, PlugZap, Zap } from "lucide-react";
 import useVehicle from "../../hooks/useVehicle";
-import useSession from "../../hooks/useSession"; // Add this import
-import { set } from "date-fns";
+import useSession from "../../hooks/useSession";
 import useInvoice from "../../hooks/useInvoice";
 
 const ChargingOnStationDetail = () => {
-  const { id } = useParams();
+  const stationId = useParams().id;
+  const { getSpotsByStationId, stationSpots } = useSpots();
+  const { getStationById, station } = useStation();
   const [chargingPointId, setChargingPointId] = useState("");
-  const [isCharging, setIsCharging] = useState(false);
-  const { startSession, endSession } = useSession();
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [timerInterval, setTimerInterval] = useState(null);
-  const [powerUse, setPowerUse] = useState(0); // kWh consumed
-  const [percentBefore, setPercentBefore] = useState(null);
-  const [currentPercent, setCurrentPercent] = useState(null);
   const [isVehicleConnected, setIsVehicleConnected] = useState(false);
+  const { getVehicle, vehicle, getVehicleById, vehicleById } = useVehicle();
+  const [vehicleId, setVehicleId] = useState("");
+  const [percentBefore, setPercentBefore] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const { startSessionOnStation, endSessionOnStation } = useSession();
   const [sessionId, setSessionId] = useState(null);
-  const { getInvoiceBySessionId, postInvoiceById } = useInvoice();
-  const navigate = useNavigate();
+  const [isCharging, setIsCharging] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [powerUse, setPowerUse] = useState(0);
+  const [currentPercent, setCurrentPercent] = useState(null);
+  const [timerInterval, setTimerInterval] = useState(null);
   const [isEnding, setIsEnding] = useState(false);
   const [session, setSession] = useState(null);
+  const { getInvoiceBySessionId, postInvoiceById } = useInvoice();
   const [showSummary, setShowSummary] = useState(false);
-  const { user } = localStorage.getItem("user");
-  const { getVehicle, vehicle, getVehicleById, vehicleById } = useVehicle();
-  // format HH:MM:SS
+
   const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -38,6 +37,47 @@ const ChargingOnStationDetail = () => {
       2,
       "0"
     )}:${String(s).padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    getSpotsByStationId(stationId);
+    getStationById(stationId);
+    getVehicle();
+    getVehicleById(vehicleId);
+  }, [stationId, vehicleId]);
+
+  const handleConnectVehicle = () => {
+    setPercentBefore(Math.floor(Math.random() * 100));
+    setIsVehicleConnected(!isVehicleConnected);
+  };
+
+  const handleSaveInvoice = async () => {
+    try {
+      const res = await getInvoiceBySessionId(sessionId);
+      if (res) {
+        const res1 = await postInvoiceById(res);
+        if (res1) {
+          alert("Đã lưu hóa đơn thành công!");
+          setShowSummary(false);
+          navigate("/chargingSession");
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi lưu hóa đơn:", error);
+      alert("Không thể lưu hóa đơn. Vui lòng thử lại.");
+    }
+  };
+
+  const getAvailableBookingSpots = () => {
+    return stationSpots?.filter(
+      (spot) => spot.status === "AVAILABLE" && spot.spotType === "WALK_IN"
+    );
+  };
+
+  const getAvailableVehicles = () => {
+    return vehicle?.filter(
+      (veh) => veh.vehicleSubscriptionResponse.status === "ACTIVE"
+    );
   };
 
   const handleStart = async () => {
@@ -50,10 +90,8 @@ const ChargingOnStationDetail = () => {
       return;
     }
 
-    const selectedSpot = spots?.find(
-      (p) =>
-        String(p.id) === String(chargingPointId) ||
-        p.spotName === chargingPointId
+    const selectedSpot = stationSpots?.find(
+      (p) => String(p.id) === String(chargingPointId)
     );
 
     if (!selectedSpot) {
@@ -63,11 +101,13 @@ const ChargingOnStationDetail = () => {
 
     const startData = {
       spotId: selectedSpot.id,
+      userId: user.id,
+      vehicleId: vehicleId,
+      stationId: stationId,
       percentBefore: percentBefore ?? 0,
     };
-
     try {
-      const res = await startSession(id, startData);
+      const res = await startSessionOnStation(startData);
       if (res) {
         setSessionId(res.sessionId);
         setIsCharging(true);
@@ -88,7 +128,6 @@ const ChargingOnStationDetail = () => {
 
         const powerKw = Number(selectedSpot.powerOutput) || 0;
         const kWhPerSecond = powerKw / 3600;
-        const percentPerSecond = (kWhPerSecond / batteryCapacity) * 100;
 
         if (timerInterval) {
           clearInterval(timerInterval);
@@ -133,7 +172,7 @@ const ChargingOnStationDetail = () => {
     };
 
     try {
-      const response = await endSession(sessionId, endData);
+      const response = await endSessionOnStation(sessionId, endData);
       console.log(response);
       if (response) {
         setSession(response);
@@ -148,75 +187,38 @@ const ChargingOnStationDetail = () => {
     }
   };
 
-  const handleSaveInvoice = async () => {
-    try {
-      const res = await getInvoiceBySessionId(sessionId);
-      if (res) {
-        const res1 = await postInvoiceById(res);
-        if (res1) {
-          alert("Đã lưu hóa đơn thành công!");
-          setShowSummary(false);
-          navigate("/chargingSession");
-        }
-      }
-    } catch (error) {
-      console.error("Lỗi khi lưu hóa đơn:", error);
-      alert("Không thể lưu hóa đơn. Vui lòng thử lại.");
-    }
-  };
+  const availableVehicles = getAvailableVehicles();
 
-  useEffect(() => {
-    return () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-      }
-    };
-  }, [timerInterval]);
-
-  const { spots, getSpotsByStationId } = useSpots();
-  const { getStationById, station } = useStation();
-
-  const handleConnectVehicle = () => {
-    setPercentBefore(Math.floor(Math.random() * 100));
-    setIsVehicleConnected(true);
-  };
-
-  useEffect(() => {
-    if (id) {
-      getSpotsByStationId(id);
-      getStationById(id);
-      getVehicle();
-    }
-  }, [id]);
-
-  console.log(vehicle);
-
-  const getAvailableBookingSpots = () => {
-    if (!spots) return [];
-    return spots.filter(
-      (spot) =>
-        spot.spotType === "BOOKING" &&
-        spot.status !== "UNAVAILABLE" &&
-        spot.available
-    );
-  };
+  const availableSpots = getAvailableBookingSpots();
 
   return (
     <div className="min-h-screen px-4 py-6 flex flex-col items-center">
-      {/* --- Header Booking Info --- */}
       <div className="w-full max-w-5xl mb-6">
         <h2 className="text-lg font-semibold text-gray-700">
           Trạm: {station?.stationName}
         </h2>
       </div>
 
-      {/* --- Hai khối trên cùng hàng --- */}
       <div className="flex flex-col md:flex-row gap-6 w-full max-w-5xl mb-6">
-        {/* --- Khối 1: Chọn trụ sạc --- */}
         <div className="flex-1 bg-white rounded-2xl shadow-sm p-5 flex flex-col items-center justify-center">
-          <h3 className="font-semibold text-gray-700 mb-2">Chọn trụ sạc</h3>
+          <h3 className="font-semibold text-gray-700 mb-2">Chọn xe</h3>
 
-          {/* Spot Selection - First Step */}
+          <select
+            value={vehicleId}
+            onChange={(e) => setVehicleId(e.target.value)}
+            className="border border-gray-300 rounded-lg w-full text-center py-2 mb-4 
+              focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">-- Chọn xe --</option>
+            {availableVehicles?.map((veh) => (
+              <option key={veh.id} value={veh.id}>
+                {veh?.model.brandName} {veh?.model.modelName} -{" "}
+                {veh?.licensePlate}
+              </option>
+            ))}
+          </select>
+
+          <h3 className="font-semibold text-gray-700 mb-2">Chọn trụ sạc</h3>
           <select
             value={chargingPointId}
             onChange={(e) => setChargingPointId(e.target.value)}
@@ -224,20 +226,19 @@ const ChargingOnStationDetail = () => {
               focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">-- Chọn trụ sạc --</option>
-            {getAvailableBookingSpots().map((spot) => (
+            {availableSpots?.map((spot) => (
               <option key={spot.id} value={spot.id}>
                 {spot.spotName} - {spot.powerOutput}kW
               </option>
             ))}
           </select>
 
-          {/* Connect Vehicle Button - Second Step */}
           <button
             onClick={handleConnectVehicle}
-            disabled={!chargingPointId || isVehicleConnected}
+            disabled={!chargingPointId || !vehicleId}
             className={`w-full font-semibold py-2 rounded-lg transition flex items-center justify-center gap-2 mb-4 
               ${
-                !chargingPointId
+                !chargingPointId || !vehicleId
                   ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                   : isVehicleConnected
                   ? "bg-green-100 text-green-700 cursor-not-allowed"
@@ -246,13 +247,12 @@ const ChargingOnStationDetail = () => {
           >
             <PlugZap className="w-5 h-5" />
             {isVehicleConnected
-              ? "Đã kết nối xe"
+              ? "Ngắt kết nối"
               : !chargingPointId
               ? "Vui lòng chọn trụ sạc"
               : "Kết nối xe"}
           </button>
 
-          {/* Start Button - Final Step */}
           <button
             onClick={handleStart}
             disabled={!chargingPointId || !isVehicleConnected}
@@ -278,7 +278,7 @@ const ChargingOnStationDetail = () => {
           </h3>
           <div className="text-sm space-y-2">
             <p>
-              <span className="text-gray-500">Trụ:</span>{" "}
+              <span className="text-gray">Trụ:</span>
               <span className="font-medium">#{chargingPointId}</span>
             </p>
             <p>
@@ -294,7 +294,9 @@ const ChargingOnStationDetail = () => {
                   isVehicleConnected ? "text-green-600" : "text-gray-500"
                 }`}
               >
-                {isVehicleConnected ? "Đã kết nối" : "Chưa kết nối"}
+                {isVehicleConnected
+                  ? `Đã kết nối với xe ${vehicleById.model.brandName} ${vehicleById.model.modelName}`
+                  : "Chưa kết nối"}
               </span>
             </p>
             <p>
@@ -305,7 +307,6 @@ const ChargingOnStationDetail = () => {
         </div>
       </div>
 
-      {/* --- Khối 3: Trạng thái sạc --- */}
       <div className="bg-white rounded-2xl shadow-sm p-5 w-full max-w-5xl">
         <h3 className="font-semibold text-gray-700 mb-3">Trạng thái sạc</h3>
 
@@ -382,7 +383,7 @@ const ChargingOnStationDetail = () => {
                 </span>
               </p>
               <p>
-                <span className="text-gray-500">Tổng tiền ước tính:</span>{" "}
+                <span className="text-gray-500">Tổng tiền:</span>{" "}
                 <span className="font-semibold text-green-600">
                   {(session.totalCost || 0).toLocaleString()} đ
                 </span>
