@@ -50,8 +50,20 @@ export const deleteStation = createAsyncThunk(
   }
 );
 
+export const fetchStationRevenue = createAsyncThunk(
+    'chargingStations/fetchRevenue',
+    async (stationId, { rejectWithValue }) => {
+      try {
+        return await axiosClient.get(`${ENDPOINT_STATIONS}/${stationId}/revenue`);
+      } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+    }
+);
+
 const initialState = {
   stations: [],
+  currentStation: null,
   status: 'idle',
   error: null,
 };
@@ -115,6 +127,21 @@ const chargingStationSlice = createSlice({
       .addCase(deleteStation.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+      .addCase(fetchStationRevenue.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchStationRevenue.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentStation = {
+          ...state.currentStation,
+          ...action.payload
+        }
+      })
+      .addCase(fetchStationRevenue.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -125,5 +152,6 @@ export const selectStationById = (state, stationId) =>
   state.chargingStations.stations.find(station => station.id === stationId);
 export const selectStationsStatus = (state) => state.chargingStations.status;
 export const selectStationsError = (state) => state.chargingStations.error;
+export const selectStationRevenue = (state) => state.chargingStations.currentStation;
 
 export default chargingStationSlice.reducer;
