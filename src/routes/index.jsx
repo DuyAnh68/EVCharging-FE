@@ -43,7 +43,9 @@ import VehicleCompanyList from "../pages/Company/VehicleComanyList.jsx";
 import AddDriver from "../pages/Company/AddDriver.jsx";
 import DriverAccount from "../pages/CompanyAccount/DriverAccount.jsx";
 import CompanyInvoice from "../components/Company/CompanyInvoice.jsx";
-
+import ChargingOnStation from "../pages/ChargingSession/ChargingOnStation.jsx";
+import ChargingOnStationDetail from "../pages/ChargingSession/ChargingOnStationDetail.jsx";
+import StaffCharging from "../pages/Staff/StaffCharging.jsx";
 
 const router = createBrowserRouter([
   {
@@ -69,6 +71,8 @@ const router = createBrowserRouter([
       { path: "/session-detail/:id", element: <SessionDetail /> },
       { path: "/payment/invoice/:id", element: <InvoiceDetail /> },
       { path: "/bookingPaymentSuccess", element: <PaymentBookinngSuccess /> },
+      { path: "/chargingOnStation", element: <ChargingOnStation /> },
+      { path: "/chargingOnStation/:id", element: <ChargingOnStationDetail /> },
     ],
   },
   {
@@ -78,11 +82,11 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "stations", element: <Stations /> },
       { path: "vehicle-models", element: <VehicleModels /> },
-      { path: "spots", element: <Spots />},
-      { path: "vehicle-brands", element: <VehicleBrands />},
+      { path: "spots", element: <Spots /> },
+      { path: "vehicle-brands", element: <VehicleBrands /> },
       { path: "subscription-plans", element: <SubscriptionPlans /> },
       { path: "companies", element: <Companies /> },
-      { path: "staffs", element: <Staffs /> }
+      { path: "staffs", element: <Staffs /> },
       { path: "spots", element: <Spots /> },
       { path: "vehicle-brands", element: <VehicleBrands /> },
     ],
@@ -91,9 +95,9 @@ const router = createBrowserRouter([
     path: "/staff",
     element: <StaffLayout />,
     children: [
-      
       { path: "station", element: <StaffStation /> },
       { path: "station/spot/:id", element: <StationSpot /> },
+      { path: "charging/:id", element: <StaffCharging /> },
     ],
   },
   {
@@ -115,7 +119,6 @@ const router = createBrowserRouter([
     children: [
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
-
     ],
   },
   { path: "*", element: <Navigate to="/" /> },

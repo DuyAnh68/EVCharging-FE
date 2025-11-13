@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { User, Mail, AtSign, Edit2, CreditCard, Link, CalendarCheck } from "lucide-react";
+import {
+  User,
+  Mail,
+  AtSign,
+  Edit2,
+  CreditCard,
+  Link,
+  CalendarCheck,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import './index.css';
+import "./index.css";
 
 import useUser from "../../hooks/useUser";
 import usePayment from "../../hooks/usePayment";
@@ -18,7 +26,7 @@ const Account = () => {
   const [transactions, setTransactions] = useState([]);
   const [filterType, setFilterType] = useState("ALL");
   const [sortOrder, setSortOrder] = useState("DESC");
-  const {getInvoiceByUserId} = useInvoice();
+  const { getInvoiceByUserId } = useInvoice();
   const [invoices, setInvoices] = useState([]);
   const [invoiceStatusFilter, setInvoiceStatusFilter] = useState("ALL");
   // const [showInvoiceTable, setShowInvoiceTable] = useState(false);
@@ -46,23 +54,22 @@ const Account = () => {
   }, []);
 
   const handleInvoiceList = async () => {
-    try{
+    try {
       const response = await getInvoiceByUserId(user.id);
       console.log("response invoices:", response);
-      if(response){
+      if (response) {
         setInvoices(response);
       }
-    }catch(e){
+    } catch (e) {
       console.error("Error fetching invoices:", e);
     }
   };
 
   useEffect(() => {
-  if (user && user.id) {
-    handleInvoiceList();
-  }
-}, [user]);
-
+    if (user && user.id) {
+      handleInvoiceList();
+    }
+  }, [user]);
 
   const formatDate = (isoDate) =>
     new Date(isoDate).toLocaleString("vi-VN", {
@@ -73,8 +80,7 @@ const Account = () => {
       minute: "2-digit",
     });
 
-  const formatMoney = (amount) =>
-    amount.toLocaleString("vi-VN") + " đ";
+  const formatMoney = (amount) => amount.toLocaleString("vi-VN") + " đ";
 
   const filteredTransactions = transactions
     .filter((t) => t.status === "SUCCESS")
@@ -108,19 +114,25 @@ const Account = () => {
     <div className="min-h-screen px-6 py-10">
       <div className="max-w-7xl mx-auto mb-3">
         {/* Header */}
-      <div className="top flex justify-between max-w-7xl mx-auto mb-3">
-        <h1 className="title !text-[#14AE5C] !text-4xl !font-bold !mb-5">
-          Tài khoản của bạn
-        </h1>
+        <div className="top flex justify-between max-w-7xl mx-auto mb-3">
+          <h1 className="title !text-[#14AE5C] !text-4xl !font-bold !mb-5">
+            Tài khoản của bạn
+          </h1>
+          <button
+            onClick={() => navigate("/chargingOnStation")}
+            className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
+          >
+            Sạc tại trạm
+          </button>
 
-        {/* <button
+          {/* <button
           onClick={() => navigate("/chargingSession")}
           className="!bg-[#009951] !text-white border border-[1] !border-black px-4 py-2 rounded-lg hover:!bg-[#00b35c] transition"
         >
           Đặt chỗ
         </button> */}
 
-        {/* <div className="button">
+          {/* <div className="button">
           <Link
             to="/chargingSession"
             className="!bg-[#009951] !text-white border border-[1] !border-black px-4 py-2 rounded-lg hover:!bg-[#00b35c] transition"
@@ -151,7 +163,6 @@ const Account = () => {
                   onClick={() => setIsEditing(!isEditing)}
                   // onClick={handleInvoiceList}
                   className="text-[#00B35C] transition"
-                  
                 >
                   <Edit2 size={18} />
                 </button>
@@ -161,7 +172,10 @@ const Account = () => {
                 {/* Name */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                    <User size={16} className="mr-1 mb-1 text-gray-500 inline-flex" />
+                    <User
+                      size={16}
+                      className="mr-1 mb-1 text-gray-500 inline-flex"
+                    />
                     Họ và tên
                   </label>
                   <input
@@ -173,16 +187,17 @@ const Account = () => {
                         ? "border border-[#00B35C] focus:ring-2 focus:ring-[#00B35C]"
                         : "border border-gray-200 bg-gray-50"
                     }`}
-                    onChange={(e) =>
-                      setUser({ ...user, name: e.target.value })
-                    }
+                    onChange={(e) => setUser({ ...user, name: e.target.value })}
                   />
                 </div>
 
                 {/* Email */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                    <Mail size={16} className="mr-1 mb-1 text-gray-500 inline-flex" />
+                    <Mail
+                      size={16}
+                      className="mr-1 mb-1 text-gray-500 inline-flex"
+                    />
                     Email
                   </label>
                   <input
@@ -203,7 +218,10 @@ const Account = () => {
                 {/* Username */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                    <AtSign size={16} className="mr-1 mb-1 text-gray-500 inline-flex" />
+                    <AtSign
+                      size={16}
+                      className="mr-1 mb-1 text-gray-500 inline-flex"
+                    />
                     Username
                   </label>
                   <input
@@ -236,115 +254,119 @@ const Account = () => {
 
           {/* Transaction History */}
           <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl shadow-md p-6">
-  {/* Header */}
-  <div className="flex items-center mb-6">
-    <CreditCard size={26} className="text-[#008236] mr-3" />
-    <h3 className="text-2xl font-semibold text-gray-900">
-      Lịch sử giao dịch
-    </h3>
-  </div>
+            {/* Header */}
+            <div className="flex items-center mb-6">
+              <CreditCard size={26} className="text-[#008236] mr-3" />
+              <h3 className="text-2xl font-semibold text-gray-900">
+                Lịch sử giao dịch
+              </h3>
+            </div>
 
-  {/* Toolbar */}
-  <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-    {user?.roles?.[0] !== "COMPANY" && (
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          onClick={() => navigate("/chargingSession")}
-          className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
-        >
-          Đặt chỗ của bạn
-        </button>
-        {user?.roles?.[0] !== "DRIVER" && (
-          <button
-            onClick={() => navigate(`/payment/invoice/${user.id}`)}
-            className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
-          >
-            Thanh toán
-          </button>
-        )}
-      </div>
-    )}
+            {/* Toolbar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+              {user?.roles?.[0] !== "COMPANY" && (
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => navigate("/chargingSession")}
+                    className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
+                  >
+                    Đặt chỗ của bạn
+                  </button>
+                  {user?.roles?.[0] !== "DRIVER" && (
+                    <button
+                      onClick={() => navigate(`/payment/invoice/${user.id}`)}
+                      className="px-4 py-2 bg-[#00B35C] text-white rounded-lg hover:bg-[#008236] transition font-medium shadow-sm"
+                    >
+                      Thanh toán
+                    </button>
+                  )}
+                </div>
+              )}
 
-    <div className="flex items-center gap-3">
-      <select
-        value={filterType}
-        onChange={(e) => setFilterType(e.target.value)}
-        className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
-      >
-        <option value="ALL">Tất cả loại</option>
-        <option value="VEHICLE SUBSCRIPTION">Đăng ký xe</option>
-        <option value="BOOKING">Đặt chỗ</option>
-        <option value="PAYMENT">Sạc điện</option>
-      </select>
-
-      <select
-        value={sortOrder}
-        onChange={(e) => setSortOrder(e.target.value)}
-        className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
-      >
-        <option value="DESC">Mới nhất trước</option>
-        <option value="ASC">Cũ nhất trước</option>
-      </select>
-    </div>
-  </div>
-
-  {/* Transaction Table */}
-  {filteredTransactions.length === 0 ? (
-    <div className="text-center py-12 text-gray-500">
-      <CreditCard size={48} className="mx-auto mb-4 text-gray-300" />
-      <p>Không có giao dịch nào</p>
-    </div>
-  ) : (
-    <div className="overflow-x-auto rounded-lg border border-gray-100 mt-10 max-h-[400px] overflow-y-auto">
-      <table className="w-full text-sm text-gray-700">
-        <thead className="bg-[#00B35C] text-white">
-          <tr>
-            <th className="py-3 px-4 text-left">Ngày</th>
-            <th className="py-3 px-4 text-left">Loại</th>
-            <th className="py-3 px-4 text-center">Phương thức</th>
-            <th className="py-3 px-4 text-center">Số tiền</th>
-            <th className="py-3 px-4 text-center">Trạng thái</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTransactions.map((transaction, idx) => (
-            <tr
-              key={idx}
-              className="border-b border-gray-100 hover:bg-gray-50 transition-all duration-150"
-            >
-              <td className="py-3 px-4">{formatDate(transaction.createdAt)}</td>
-              <td className="py-3 px-4 text-left font-medium">
-                {transaction.type === "VEHICLE SUBSCRIPTION"
-                  ? "Đăng ký xe"
-                  : transaction.type === "BOOKING"
-                  ? "Đặt chỗ"
-                  : transaction.type === "PAYMENT"
-                  ? "Sạc điện"
-                  : "Khác"}
-              </td>
-              <td className="py-3 px-4 text-center">{transaction.paymentMethod || "-"}</td>
-              <td className="py-3 px-4 text-center font-semibold text-gray-900">
-                {formatMoney(transaction.amount)}
-              </td>
-              <td className="py-3 px-4 text-center">
-                <span
-                  className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    transaction.status === "SUCCESS"
-                      ? "bg-green-100 text-green-700 border border-green-200"
-                      : transaction.status === "PENDING"
-                      ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
-                      : "bg-red-100 text-red-700 border border-red-200"
-                  }`}
+              <div className="flex items-center gap-3">
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
                 >
-                  {transaction.status}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )}
+                  <option value="ALL">Tất cả loại</option>
+                  <option value="VEHICLE SUBSCRIPTION">Đăng ký xe</option>
+                  <option value="BOOKING">Đặt chỗ</option>
+                  <option value="PAYMENT">Sạc điện</option>
+                </select>
+
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-[#00B35C] focus:outline-none"
+                >
+                  <option value="DESC">Mới nhất trước</option>
+                  <option value="ASC">Cũ nhất trước</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Transaction Table */}
+            {filteredTransactions.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <CreditCard size={48} className="mx-auto mb-4 text-gray-300" />
+                <p>Không có giao dịch nào</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-lg border border-gray-100 mt-10 max-h-[400px] overflow-y-auto">
+                <table className="w-full text-sm text-gray-700">
+                  <thead className="bg-[#00B35C] text-white">
+                    <tr>
+                      <th className="py-3 px-4 text-left">Ngày</th>
+                      <th className="py-3 px-4 text-left">Loại</th>
+                      <th className="py-3 px-4 text-center">Phương thức</th>
+                      <th className="py-3 px-4 text-center">Số tiền</th>
+                      <th className="py-3 px-4 text-center">Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTransactions.map((transaction, idx) => (
+                      <tr
+                        key={idx}
+                        className="border-b border-gray-100 hover:bg-gray-50 transition-all duration-150"
+                      >
+                        <td className="py-3 px-4">
+                          {formatDate(transaction.createdAt)}
+                        </td>
+                        <td className="py-3 px-4 text-left font-medium">
+                          {transaction.type === "VEHICLE SUBSCRIPTION"
+                            ? "Đăng ký xe"
+                            : transaction.type === "BOOKING"
+                            ? "Đặt chỗ"
+                            : transaction.type === "PAYMENT"
+                            ? "Sạc điện"
+                            : "Khác"}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {transaction.paymentMethod || "-"}
+                        </td>
+                        <td className="py-3 px-4 text-center font-semibold text-gray-900">
+                          {formatMoney(transaction.amount)}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <span
+                            className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                              transaction.status === "SUCCESS"
+                                ? "bg-green-100 text-green-700 border border-green-200"
+                                : transaction.status === "PENDING"
+                                ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                                : "bg-red-100 text-red-700 border border-red-200"
+                            }`}
+                          >
+                            {transaction.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
             {user?.roles?.[0] !== "COMPANY" && (
               <div className="mt-10">
                 <div className="flex items-center mb-6">
@@ -375,8 +397,7 @@ const Account = () => {
                 />
               </div>
             )}
-      </div>
-
+          </div>
         </div>
       </div>
     </div>

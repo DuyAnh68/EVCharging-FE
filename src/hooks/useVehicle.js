@@ -106,6 +106,23 @@ const useVehicle = () => {
     }
   };
 
+  const getAllVehicle = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await vehicleListApi.getAll();
+      console.log("all vehicle:", response.result);
+      if (response) {
+        setLoading(false);
+        return response.result;
+      }
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     vehicle,
     loading,
@@ -117,6 +134,7 @@ const useVehicle = () => {
     models,
     vehicleById,
     deleteVehicle,
+    getAllVehicle,
   };
 };
 
