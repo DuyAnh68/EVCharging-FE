@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import useCompany from "../../hooks/useCompany";
 import UserList from "../../components/Company/UserList.jsx";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const UserCompany = () => {
     const [users, setUsers] = useState();
-    const {getUserCompany, loading, error} = useCompany();
+    const {getUserCompany, loading, error, deleteDriver} = useCompany();
   
 
     useEffect(() => {
@@ -18,6 +19,25 @@ const UserCompany = () => {
         };
         fetchUsers();
     }, []);
+
+    
+    const handleDelete = async (id) => {
+        if (!id) return;
+        const ok = window.confirm("Bạn có chắc muốn xóa tài xế này không?");
+        if (!ok) return;
+    try {
+      const response = await deleteDriver(id);
+
+      if (response) {
+        toast.success(response);
+        setUsers(users.filter((u) => u.id !== id)); // cập nhật UI
+      } else {
+        toast.error("Xóa tài xế thất bại. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi xóa tài xế." + (error?.message || ""));
+    }
+  };
 
     return (
         <div className="min-h-screen  py-8 px-4">
@@ -54,7 +74,11 @@ const UserCompany = () => {
 
                 {/* Content Section */}
                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    <UserList users={users} loading={loading} error={error}/>
+                    <UserList 
+                    users={users} 
+                    loading={loading} 
+                    error={error} 
+                    onDelete={handleDelete}/>
                 </div>
             </div>
         </div>

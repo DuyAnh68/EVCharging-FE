@@ -97,6 +97,38 @@ const useCompany = () => {
     }
 };
 
+    const deleteDriver = async (id) => {
+        setLoading(true);
+        setError(null);
+        try{
+            const response = await companyApi.deleteDriver(id);
+            if(response .result === "User has been deleted successfully"){
+                setLoading(false);
+                return "Đã xóa tài xế thành công.";
+            }else{
+                setLoading(false);
+                return "Xóa tài xế thất bại. Vui lòng thử lại.";
+            }
+        }catch(error){
+            setError(error?.message || "Đã xảy ra lỗi khi xóa tài xế của công ty.");
+            setLoading(false);
+        }
+    };
+
+    const updateCompany = async (id, data) => {
+        setLoading(true);
+        setError(null);
+        try{
+            const response = await companyApi.updateCompany(id, data);
+            if (response.code === 1000){
+                setLoading(false);
+                return "Cập nhật thông tin doanh nghiệp thành công.";
+            }
+        }catch(error){
+            setError(error?.message || "Đã xảy ra lỗi khi cập nhật thông tin doanh nghiệp.");
+            setLoading(false);
+        }
+    };
 
     const getDriverById = async (id) => {
         setLoading(true);
@@ -147,7 +179,9 @@ const useCompany = () => {
         createCompanyVehicle,
         createDriver,
         getDriverById,
-        getCompanyInvoice
+        getCompanyInvoice,
+        deleteDriver,
+        updateCompany
     };
 }
 export default useCompany;

@@ -10,6 +10,8 @@ import ModelCar from "../../assets/icons/modelCar";
 import VehicleCompanyDetail from "./VehicleCompanyDetail";
 import useCompany from "../../hooks/useCompany";
 import ChargeHistory from "../Vehicle/ChargeHistory";
+import useVehicle from "../../hooks/useVehicle";
+import { toast } from "react-toastify";
 
 
 const CompanyVehicleCard = ({ data, onDeleted }) => {
@@ -20,7 +22,9 @@ const CompanyVehicleCard = ({ data, onDeleted }) => {
   const [open, setOpen] = useState(false);
   const [openHistory, setOpenHistory] = useState(false);
   const navigate = useNavigate();
+  const { deleteVehicle } = useVehicle();
 
+  
   const handleDelete = async (e) => {
     e.stopPropagation();
     if (!vehicle?.id) return;
@@ -32,14 +36,14 @@ const CompanyVehicleCard = ({ data, onDeleted }) => {
       console.log("resdel", res);
       if (res && res.deleteSuccess) {
         if (typeof onDeleted === "function") onDeleted(vehicle.id);
-        else navigate("/vehicle");
-        navigate("/vehicle");
+        else navigate("/company/vehicle");
+        navigate("/company/vehicle");
       } else {
         alert("Xóa thất bại. Vui lòng thử lại.");
       }
     } catch (err) {
       console.error("delete error:", err);
-      alert("Đã xảy ra lỗi khi xóa xe.");
+      toast.error("Đã xảy ra lỗi khi xóa xe.");
     }
   };
 
@@ -148,7 +152,7 @@ const CompanyVehicleCard = ({ data, onDeleted }) => {
             <span
               className={`px-3 py-1 text-sm rounded-full ${
                 vehicle?.vehicleSubscriptionResponse?.status === "ACTIVE"
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-green-100 text-green-700" 
                   : vehicle?.vehicleSubscriptionResponse?.status === "PENDING"
                   ? "bg-yellow-100 text-yellow-800"
                   : "bg-red-100 text-red-700"
@@ -171,7 +175,12 @@ const CompanyVehicleCard = ({ data, onDeleted }) => {
       <div className="px-6 pt-3 pb-4 flex gap-3 bg-gray-50">
         <button
           onClick={handleDelete}
-          className="flex-1 bg-red-500 text-[white] rounded-lg px-3 py-1 text-xs md:text-sm hover:bg-red-700 transition"
+          disabled={vehicle?.vehicleSubscriptionResponse?.status === "ACTIVE"}
+          className={`flex-1 text-[white] rounded-lg px-3 py-1 text-xs md:text-sm transition ${
+            vehicle?.vehicleSubscriptionResponse?.status === "ACTIVE"
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-red-500 hover:bg-red-700"
+          }`}
         >
           Xóa
         </button>

@@ -4,6 +4,7 @@ import { Car } from "lucide-react";
 import useVehicle from "../../hooks/useVehicle";
 import useBrand from "../../hooks/useBrand";
 import useCompany from "../../hooks/useCompany";
+import { toast } from "react-toastify";
 
 const AddVehicleCompany = () => {
   const { getVehicleByBrand, loading } = useVehicle();
@@ -114,7 +115,7 @@ const AddVehicleCompany = () => {
       console.log("Gửi tạo xe:", payload);
       const res = await createCompanyVehicle(payload);
 
-      alert("Tạo xe thành công!");
+      toast.success("Tạo xe thành công!");
       console.log("Kết quả tạo xe:", res);
 
       // Reset form sau khi tạo thành công
@@ -130,7 +131,7 @@ const AddVehicleCompany = () => {
       setModelList([]);
     } catch (err) {
       console.error("Lỗi khi tạo xe:", err);
-      alert("Không thể tạo xe, vui lòng thử lại!");
+      toast.error("Không thể tạo xe, vui lòng thử lại!");
     }
   };
 
