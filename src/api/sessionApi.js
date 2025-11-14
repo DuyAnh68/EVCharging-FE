@@ -13,6 +13,9 @@ const sessionApi = {
     axiosClient.put(`api/member/sessions/end/${sessionId}`, endData),
   startSessionStaff: (startData) =>
     axiosClient.post(`/api/staff/sessions/start`, startData),
+  getAllSession: () => axiosClient.get("/api/charging-sessions"),
+  endSessionStaff: (sessionId, endData) =>
+    axiosClient.put(`/api/staff/sessions/end/${sessionId}`, endData),
 };
 
 export default sessionApi;

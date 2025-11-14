@@ -45,7 +45,6 @@ import DriverAccount from "../pages/CompanyAccount/DriverAccount.jsx";
 import CompanyInvoice from "../components/Company/CompanyInvoice.jsx";
 import ChargingOnStation from "../pages/ChargingSession/ChargingOnStation.jsx";
 import ChargingOnStationDetail from "../pages/ChargingSession/ChargingOnStationDetail.jsx";
-import StaffCharging from "../pages/Staff/StaffCharging.jsx";
 
 const router = createBrowserRouter([
   {
@@ -97,7 +96,6 @@ const router = createBrowserRouter([
     children: [
       { path: "station", element: <StaffStation /> },
       { path: "station/spot/:id", element: <StationSpot /> },
-      { path: "charging/:id", element: <StaffCharging /> },
     ],
   },
   {

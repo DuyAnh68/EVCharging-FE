@@ -33,8 +33,8 @@ function Login() {
       } else if (result.user.roles[0] === "ADMIN") {
         navigate("/admin");
       } else if (result.user.roles[0] === "STAFF") {
-        navigate("/staff");
-      }else if (result.user.roles[0] === "COMPANY") {
+        navigate("/staff/station");
+      } else if (result.user.roles[0] === "COMPANY") {
         navigate("/company");
       }
     }

@@ -27,6 +27,7 @@ const StaffLayout = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
                 <img
                   className="h-12 w-auto relative z-10 transition-transform group-hover:scale-110 group-hover:rotate-3 duration-300"
+                  onClick={() => navigate("/staff/station")}
                   src={Logo}
                   alt="EV Charge"
                 />
