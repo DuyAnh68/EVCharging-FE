@@ -2,11 +2,6 @@ import React, { useEffect, useState } from "react";
 
   
 const InvoiceTable = ({ invoices }) => {
-  // Chỉ lấy hóa đơn có trạng thái PENDING hoặc PAID
-  const filteredInvoices = invoices?.filter(
-    (invoice) => invoice.status === "PENDING" || invoice.status === "PAID"
-  );
-
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -18,6 +13,7 @@ const InvoiceTable = ({ invoices }) => {
   }, []);
 
   console.log("object", userId);
+  console.log(invoices);
 
   const formatDate = (isoDate) =>
     isoDate
@@ -65,8 +61,8 @@ const InvoiceTable = ({ invoices }) => {
 
         {/* Body */}
         <tbody className="divide-y divide-gray-100">
-          {filteredInvoices?.length > 0 ? (
-            filteredInvoices.map((invoice) => {
+          {invoices?.length > 0 ? (
+            invoices.map((invoice) => {
               const statusInfo = translateStatus(invoice.status);
               return (
                 <tr

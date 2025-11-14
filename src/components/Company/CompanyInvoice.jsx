@@ -4,14 +4,17 @@ import usePaymentInvoice from "../../hooks/usePaymentInvoice";
 import { Loader2 } from "lucide-react";
 import usePayment from "../../hooks/usePayment";
 import useCompany from "../../hooks/useCompany";
+import CompanyInvoiceDetail from "./CompanyInvoiceDetail";
 
 const CompanyInvoice = () => {
   const { id } = useParams();
 //   console.log("object", id);
   const { loading, error, doPaymentInvoice } = usePaymentInvoice();
   const [invoice, setInvoice] = useState(null);
-  const { getCompanyInvoice } = useCompany();
+  const { getCompanyInvoice, getCompanyInvoiceDetails } = useCompany();
   const { createPayment } = usePayment();
+  const [invoiceDetail, setInvoiceDetail] = useState();
+  const [showDetail, setShowDetail] = useState(false);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -26,6 +29,19 @@ const CompanyInvoice = () => {
     };
     fetchInvoice();
   }, [id]);
+
+  const handleInvoiceDetail = async() =>{
+    try{
+      const response = await getCompanyInvoiceDetails();
+      if(response){
+        setInvoiceDetail(response);
+      }
+    }catch(error){
+      console.error("Error fetching invoice details:", error);
+    }
+  }
+
+  console.log("invoice detail", invoiceDetail);
 
   if (loading)
     return (
@@ -223,6 +239,12 @@ const CompanyInvoice = () => {
         {/* Actions */}
         <div className="flex justify-end gap-3 mt-6 print:hidden">
           <button
+            onClick={async () => {await handleInvoiceDetail(); setShowDetail(true);        
+            }}
+            className="bg-[#0ea5a4] text-white px-4 py-2 rounded-lg hover:bg-[#0c8c8a] transition">
+            Chi tiết
+          </button>
+          <button
             onClick={() => window.print()}
             className="bg-[#0ea5a4] text-white px-4 py-2 rounded-lg hover:bg-[#0c8c8a] transition"
           >
@@ -236,6 +258,47 @@ const CompanyInvoice = () => {
           </button>
         </div>
       </div>
+
+      {showDetail && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 backdrop-blur-sm">
+    <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl relative animate-fadeIn overflow-hidden">
+      {/* Header with gradient */}
+      <div className="bg-gradient-to-r from-[#00B35C] to-[#008236] px-6 py-3 flex justify-between items-center">
+        <h2 className="text-xl font-bold text-white">Chi tiết hóa đơn công ty</h2>
+        {/* <button
+          onClick={() => setShowDetail(false)}
+          className="text-white hover:bg-white/20 rounded-full p-1.5 transition-all duration-200 hover:rotate-90"
+          aria-label="Đóng"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button> */}
+      </div>
+
+      {/* Content */}
+      <div className="p-4 max-h-[70vh] overflow-y-auto">
+        <CompanyInvoiceDetail invoiceDetail={invoiceDetail} />
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-gray-200 px-4 py-3 bg-gray-50 flex justify-end gap-2">
+        {/* <button
+          onClick={() => window.print()}
+          className="px-3 py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+        >
+          In hóa đơn
+        </button> */}
+        <button
+          onClick={() => setShowDetail(false)}
+          className="px-3 py-1.5 text-sm bg-[#00B35C] text-white rounded-lg hover:bg-[#009B4D] transition-colors font-medium"
+        >
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };

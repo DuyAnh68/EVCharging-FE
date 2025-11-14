@@ -120,6 +120,7 @@ const Account = () => {
   const handleInvoiceList = async () => {
     try {
       const response = await getInvoiceByUserId(user.id);
+      
       console.log("response invoices:", response);
       if (response) {
         setInvoices(response);
