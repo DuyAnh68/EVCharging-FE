@@ -5,6 +5,7 @@ const useInvoice = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [invoice, setInvoice] = useState(null);
+  const [invoices, setInvoices] = useState();
 
   const getInvoiceBySessionId = async (sessionId) => {
     setLoading(true);
@@ -12,7 +13,9 @@ const useInvoice = () => {
     try {
       const response = await invoiceApi.getInvoiceBySessionId(sessionId);
       if (response) {
-        return response.id;
+        console.log(response);
+        setInvoice(response);
+        return response;
       }
     } catch (err) {
       setError(err.message);
@@ -54,13 +57,49 @@ const useInvoice = () => {
     }
   };
 
+  const confirmPaid = async (invoiceId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await invoiceApi.confirmPaidInvoice(invoiceId);
+      if (response) {
+        return response;
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching invoice by user ID:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStaffInvoice = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await invoiceApi.getStaffInvoice();
+      if (response) {
+        setInvoices(response);
+        return response;
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching invoice by user ID:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
+    getStaffInvoice,
     loading,
     error,
     invoice,
     getInvoiceByUserId,
     getInvoiceBySessionId,
     postInvoiceById,
+    confirmPaid,
+    invoices,
   };
 };
 

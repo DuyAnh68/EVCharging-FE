@@ -4,6 +4,7 @@ import sessionApi from "../api/sessionApi";
 const useSession = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [sessions, setSessions] = useState(null);
 
   const getVehicleSession = async (vehicleId) => {
     setLoading(true);
@@ -125,9 +126,6 @@ const useSession = () => {
     try {
       const payload = {
         spotId: startData.spotId,
-        userId: startData.userId,
-        vehicleId: startData.vehicleId,
-        stationId: startData.stationId,
         percentBefore: startData.percentBefore,
       };
 
@@ -144,7 +142,51 @@ const useSession = () => {
     }
   };
 
+  const endSessionStaff = async (sessionId, endData) => {
+    setLoading(true);
+    setError(null);
+    console.log("endData:", endData);
+    try {
+      const payload = {
+        ratePerKWh: endData.ratePerKwh,
+        batteryCapacity: endData.batteryCapacity,
+        percentBefore: endData.percentBefore,
+      };
+
+      const response = await sessionApi.endSessionStaff(sessionId, payload);
+      if (response) {
+        setLoading(false);
+        console.log(response);
+        return response;
+      }
+    } catch (e) {
+      setError(e.message);
+      return e.message;
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getAllSession = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await sessionApi.getAllSession();
+      if (response) {
+        setLoading(false);
+        setSessions(response);
+        console.log(sessions);
+        return response;
+      }
+    } catch (e) {
+      setError(e.message);
+      return e.message;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
+    getAllSession,
     startSessionStaff,
     endSessionOnStation,
     startSessionOnStation,
@@ -153,6 +195,8 @@ const useSession = () => {
     endSession,
     loading,
     error,
+    sessions,
+    endSessionStaff,
   };
 };
 
