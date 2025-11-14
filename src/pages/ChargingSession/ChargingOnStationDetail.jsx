@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useSpots from "../../hooks/useSpot";
 import { useEffect, useState } from "react";
 import useStation from "../../hooks/useStation";
@@ -28,6 +28,7 @@ const ChargingOnStationDetail = () => {
   const [session, setSession] = useState(null);
   const { getInvoiceBySessionId, postInvoiceById } = useInvoice();
   const [showSummary, setShowSummary] = useState(false);
+  const navigate = useNavigate();
 
   const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600);
