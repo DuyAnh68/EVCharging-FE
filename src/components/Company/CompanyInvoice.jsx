@@ -10,8 +10,9 @@ const CompanyInvoice = () => {
 //   console.log("object", id);
   const { loading, error, doPaymentInvoice } = usePaymentInvoice();
   const [invoice, setInvoice] = useState(null);
-  const { getCompanyInvoice } = useCompany();
+  const { getCompanyInvoice, getCompanyInvoiceDetails } = useCompany();
   const { createPayment } = usePayment();
+  const [invoiceDetail, setInvoiceDetail] = useState([]);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -26,6 +27,17 @@ const CompanyInvoice = () => {
     };
     fetchInvoice();
   }, [id]);
+
+  const handleInvoiceDetail = async() =>{
+    try{
+      const response = await getCompanyInvoiceDetails();
+      if(response){
+        setInvoiceDetail(response);
+      }
+    }catch(error){
+      console.error("Error fetching invoice details:", error);
+    }
+  }
 
   if (loading)
     return (
@@ -222,6 +234,11 @@ const CompanyInvoice = () => {
 
         {/* Actions */}
         <div className="flex justify-end gap-3 mt-6 print:hidden">
+          <button
+            
+            className="bg-[#0ea5a4] text-white px-4 py-2 rounded-lg hover:bg-[#0c8c8a] transition">
+            Chi tiết
+          </button>
           <button
             onClick={() => window.print()}
             className="bg-[#0ea5a4] text-white px-4 py-2 rounded-lg hover:bg-[#0c8c8a] transition"

@@ -149,6 +149,24 @@ const useCompany = () => {
         }
     };
 
+    const getCompanyInvoiceDetails = async () => {
+        setLoading(true);
+        setError(null);
+        try{
+            const response = await companyApi.getCompanyInvoiceDetails();
+            if(response){
+                setLoading(false);
+                return response.result;
+            }else{
+                setLoading(false);
+                return null;
+            }
+        }catch(error){
+            setError(error?.message || "Đã xảy ra lỗi khi tải thông tin chi tiết hóa đơn của công ty.");
+            setLoading(false);
+        }
+    };
+
     const getUserCompany = async () => {
         setLoading(true);
         setError(null);
@@ -181,7 +199,8 @@ const useCompany = () => {
         getDriverById,
         getCompanyInvoice,
         deleteDriver,
-        updateCompany
+        updateCompany,
+        getCompanyInvoiceDetails
     };
 }
 export default useCompany;
